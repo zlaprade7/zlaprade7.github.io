@@ -31,9 +31,16 @@
     <h1 class="rv">Instrumented Water Bottle</h1>
     <p class="deck rv">A hydration tracker with five sensors, a custom analog front end, a two-layer PCB, and a printed enclosure — designed, fabricated, and debugged end to end.</p>
 
-    <figure class="fig wide wipe" data-ph="images/bottle-hero.jpg&#10;&#10;Hero shot: assembled bottle, front-lit, plain background, 16:9">
-      <img src="../images/bottle-hero.jpg" alt="The assembled instrumented water bottle">
-    </figure>
+    <div class="figpair" style="margin-top:56px">
+      <figure class="fig ratio wipe">
+        <img src="../images/bottle-sketch.jpg" alt="Original concept sketch of the sensor housing">
+        <figcaption>The idea. Ultrasonic firing down through the water; thermistor, SHT40, accelerometer, ESP32 and battery stacked in the side column.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe">
+        <img src="../images/bottle-hero.jpg" alt="The printed housing mounted on a water bottle">
+        <figcaption>The object. Printed housing, clamped between bottle and lid.</figcaption>
+      </figure>
+    </div>
 
     <dl class="spec rv">
       <div><dt>Role</dt><dd>Solo — hardware, firmware, CAD</dd></div>
@@ -64,8 +71,9 @@
   <div class="block prose">
     <h2><span class="k">Analog front end</span>Getting a usable signal out of a thermistor.</h2>
     <p>A thermistor's resistance change is small, and reading it directly with the ESP32's ADC throws most of the resolution away. Instead I put it in one leg of a <b>Wheatstone bridge</b>, so the output is a differential voltage that sits near zero at the balance point and swings with temperature.</p>
-    <p>That differential signal goes into an <b>INA121P instrumentation amplifier</b> running at a gain of 2 — high input impedance, high CMRR, gain set by a single external resistor. The in-amp rejects the common-mode noise the bridge picks up and hands the ADC a signal that actually uses its range.</p>
+    <p>That differential signal goes into an <b>INA121P instrumentation amplifier</b> at a gain of 2 — the through-hole DIP part, chosen because it breadboards — high input impedance, high CMRR, gain set by a single external resistor. The in-amp rejects the common-mode noise the bridge picks up and hands the ADC a signal that actually uses its range.</p>
     <p>The thermistor is a <b>Semitec 103AT-2</b>, and its resistance-to-temperature relationship is famously nonlinear. Rather than fake it with a linear fit, I linearise it properly with the <b>Steinhart-Hart equation</b> — three coefficients, good to a fraction of a degree across the range that matters.</p>
+    <p>When the design moved to a PCB, the INA121P became an <b>INA333</b> — same job, surface-mount package. Prototype with the part you can hold; ship the part that fits the board.</p>
 
     <div class="callout">
       <strong>Why this matters:</strong> this is the difference between a project that <em>reads a sensor</em> and a project that <em>conditions a signal</em>. The bridge sets up the measurement; the in-amp makes it survivable. Everything downstream — the ADC bits, the calibration curve, the accuracy claim — depends on getting this stage right.
@@ -90,32 +98,44 @@
       <strong>This is the tradeoff I'd want to be asked about.</strong> The easy sensor was the wrong sensor. Choosing the harder one — and then doing the filtering work to make it behave — is the actual engineering.
     </div>
 
-    <p>The remaining sensors are digital and comparatively well-behaved: an <b>SHT40</b> for ambient temperature and humidity over I²C, an <b>LSM6DSO IMU</b> for orientation and motion, and an <b>A02YYUW ultrasonic sensor</b> for fill level. Each gets its own filter chosen to match its failure mode — <b>Kalman</b> on the noisy analog channel, <b>EMA</b> for smoothing slow drift, and a <b>median filter</b> to kill the ultrasonic's outlier spikes. One filter for all five sensors would have been the lazy answer and a worse one.</p>
+    <p>The remaining sensors are digital and comparatively well-behaved: an <b>SHT40</b> for ambient temperature and humidity over I²C, an <b>MPU-6050 IMU</b> for orientation and motion, and an <b>A02YYUW ultrasonic sensor</b> for fill level. Each gets its own filter chosen to match its failure mode — <b>Kalman</b> on the noisy analog channel, <b>EMA</b> for smoothing slow drift, and a <b>median filter</b> to kill the ultrasonic's outlier spikes. One filter for all five sensors would have been the lazy answer and a worse one.</p>
   </div>
 
   <div class="block prose">
-    <h2><span class="k">Board</span>From breadboard to fabricated PCB.</h2>
-    <p>Once the front end worked on a breadboard, I laid out a two-layer board in <b>EasyEDA</b> and had it fabricated by <b>JLCPCB</b>. The layout decisions that mattered: keeping the bridge's high-impedance nodes short and away from the switching noise of the radio, giving the analog section its own return path, and placing the connectors so the board could actually be assembled inside the enclosure rather than just look correct in CAD.</p>
+    <h2><span class="k">Prototype</span>Measure the circuit, then design around it.</h2>
+    <p>Before any CAD, I built the whole signal chain on a breadboard and got it working — then put <b>calipers on it</b> and measured the footprint.</p>
+    <p>That's the order the housing depended on. The enclosure was designed around the real, measured dimensions of a circuit I'd already proven, rather than a shape I hoped the electronics would fit inside. Doing it the other way round is how you end up with a beautiful printed part and a board that won't go in it.</p>
 
-    <figure class="fig wide wipe" data-ph="images/bottle-pcb.png&#10;&#10;EasyEDA 3D board render, or a photo of the bare board">
-      <img src="../images/bottle-pcb.png" alt="Two-layer PCB layout">
-      <figcaption>Two-layer board. Analog front end kept clear of the RF section.</figcaption>
+    <figure class="fig wide wipe" style="margin:40px 0">
+      <img src="../images/bottle-breadboard.jpg" alt="The prototype circuit being measured with digital calipers">
+      <figcaption>The full signal chain on a breadboard — ESP32-C3, SHT40, MPU-6050, and the instrumentation amp — measured with calipers so the housing could be modelled around it.</figcaption>
+    </figure>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Board</span>The part nobody looks at: power.</h2>
+    <p>Two-layer board, laid out in <b>EasyEDA</b>, fabricated by <b>JLCPCB</b>, built around an <b>ESP32-C3-MINI-1</b>.</p>
+    <p>The sensors get the attention, but the power path is where a portable device actually lives or dies. Mine is a complete chain, and every link is there for a reason:</p>
+    <ul>
+      <li><b>USB-C in</b> (USB4105-GF-A) — with <b>5.1kΩ CC pull-downs</b>, without which a USB-C host will not deliver current at all. It's the single most common mistake on a first USB-C board.</li>
+      <li><b>USBLC6-2SC6</b> — ESD protection on the data lines. A port a human touches is a port that will eventually get zapped.</li>
+      <li><b>TP4056</b> — LiPo charge management.</li>
+      <li><b>DW01A + FS8205A</b> — battery protection: over-charge, over-discharge, over-current. A lithium cell in a bottle I carry around is not a place to skip this.</li>
+      <li><b>AP2112K-3.3</b> — regulation down to the 3.3V rail the ESP32 and sensors run on.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Why this matters more than it looks:</strong> most student boards are a microcontroller with a USB cable hanging off it. This one charges, protects, and regulates a lithium battery safely, and negotiates USB-C properly. None of that is glamorous and all of it is the difference between a demo and a device.
+    </div>
+
+    <figure class="fig wide wipe" style="margin-top:44px">
+      <img src="../images/bottle-pcb.jpg" alt="EasyEDA PCB layout for the water bottle">
+      <figcaption>Layout. ESP32-C3-MINI-1 centre; analog front end and instrumentation amp to the right of it; the USB-C, charge, protection and regulation chain along the bottom edge.</figcaption>
     </figure>
 
     <p class="pullquote">[Zack — replace this pull-quote with one true sentence about a real mistake on this board. If nothing went wrong, delete it.]</p>
 
-    <p>The enclosure was modeled in <b>Fusion 360</b> and printed. Designing it alongside the board — rather than after — is what turned the second revision into a device instead of a bare PCB with wires hanging off it.</p>
-
-    <div class="figpair">
-      <figure class="fig ratio wipe" data-ph="images/bottle-cad.png&#10;&#10;Fusion 360 model of the enclosure">
-        <img src="../images/bottle-cad.png" alt="Fusion 360 enclosure model">
-        <figcaption>Enclosure, modeled around the board.</figcaption>
-      </figure>
-      <figure class="fig ratio wipe" data-ph="images/bottle-assembly.jpg&#10;&#10;Photo: board seated in the printed enclosure">
-        <img src="../images/bottle-assembly.jpg" alt="Board seated in the printed enclosure">
-        <figcaption>Board seated in the printed shell.</figcaption>
-      </figure>
-    </div>
+    <p>The housing was modelled in <b>Fusion 360</b> and printed — the black clamp you can see at the top of this page, designed to sit between the bottle and the lid.</p>
   </div>
 
   <div class="block prose">
@@ -150,7 +170,7 @@
     </div>
 
     <div class="quick" style="display:flex;gap:26px;margin-top:36px;font-family:var(--mono);font-size:12.5px">
-      <a href="https://github.com/YOUR_USERNAME/REPO" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source &amp; design files →</a>
+      <a href="https://github.com/zlaprade7" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source &amp; design files →</a>
     </div>
   </div>
 

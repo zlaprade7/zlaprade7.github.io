@@ -30,15 +30,22 @@
     <h1 class="rv">Raspberry Pi Bench Instrument</h1>
     <p class="deck rv">Four instruments in one box — function generator, voltmeter, ohmmeter, and DC reference — driven by a rotary encoder and a 20×4 LCD. I led a team of five as <b>project lead and electrical lead</b>, and designed the analog side: the Class AB output stage, a discrete successive-approximation ADC, and the ohmmeter.</p>
 
-    <figure class="fig wide wipe" data-ph="images/bench-hero.jpg&#10;&#10;The finished instrument — LCD lit, encoder, probes out. 16:9">
-      <img src="../images/bench-hero.jpg" alt="The finished bench instrument">
-    </figure>
+    <div class="figpair" style="margin-top:56px">
+      <figure class="fig ratio wipe">
+        <img src="../images/bench-breadboard.jpg" alt="The breadboard prototype">
+        <figcaption>Every stage prototyped and probed on the bench first. The tape labels are the debugging.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe">
+        <img src="../images/bench-pcb.jpg" alt="The populated four-layer board">
+        <figcaption>Then the board: 4 layers, dedicated ground and power planes, six revisions — hand-populated and hand-soldered.</figcaption>
+      </figure>
+    </div>
 
     <dl class="spec rv">
       <div><dt>Role</dt><dd>Project lead &amp; electrical lead</dd></div>
       <div><dt>Team</dt><dd>5 engineers</dd></div>
       <div><dt>I designed</dt><dd>Push-pull amp, voltmeter, ohmmeter</dd></div>
-      <div><dt>Status</dt><dd>Built, calibrated, delivered</dd></div>
+      <div><dt>Board</dt><dd>4-layer, v6</dd></div>
     </dl>
   </div>
 </header>
@@ -50,6 +57,7 @@
     <p>The constraint that made this project worth doing: <b>no instrumentation ICs</b>. No ADC chip, no dedicated ohmmeter front end. If the box needed to measure a voltage, we had to build the thing that measures voltage.</p>
     <p>That turns a software exercise into an analog design problem. A Raspberry Pi has no analog input at all — so the voltmeter isn't a library call, it's a circuit you have to invent. Which is exactly the point.</p>
     <p>I ran the project and owned the analog side of it. What follows is the part I designed.</p>
+    <p>The final board is <b>four layers</b> — dedicated ground and power planes, not a 2-layer student board — and it took <b>six revisions</b> to get there.</p>
   </div>
 
   <div class="block prose">
@@ -66,9 +74,9 @@
         <img src="../images/bench-r2r.png" alt="R-2R ladder DAC and comparator">
         <figcaption>R-2R ladder across six GPIOs, comparator returning one bit per trial.</figcaption>
       </figure>
-      <figure class="fig ratio wipe" data-ph="images/bench-breadboard.jpg&#10;&#10;Process photo: the breadboard build">
-        <img src="../images/bench-breadboard.jpg" alt="Breadboard prototype">
-        <figcaption>Breadboard, before the board.</figcaption>
+      <figure class="fig ratio wipe" data-ph="images/bench-r2r-scope.png&#10;&#10;Scope capture of a conversion, or the SAR code">
+        <img src="../images/bench-r2r-scope.png" alt="SAR conversion">
+        <figcaption>Six comparisons, six bits, one conversion.</figcaption>
       </figure>
     </div>
 
@@ -107,8 +115,13 @@
     </ul>
     <p>All three share a shape: the code was self-consistent and the reasoning was wrong. That's the failure mode simulation can't catch, and it's the argument for building the thing.</p>
 
+    <figure class="fig wide wipe" style="margin-top:44px">
+      <img src="../images/bench-back.jpg" alt="Reverse of the board, showing the team silkscreen">
+      <figcaption>Reverse side. Five names on the silkscreen — I led the project, but I didn't build it alone.</figcaption>
+    </figure>
+
     <div class="quick" style="display:flex;gap:26px;margin-top:36px;font-family:var(--mono);font-size:12.5px">
-      <a href="https://github.com/YOUR_USERNAME/REPO" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source &amp; schematics →</a>
+      <a href="https://github.com/zlaprade7" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source &amp; schematics →</a>
     </div>
   </div>
 

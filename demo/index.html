@@ -2,475 +2,601 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>JARVIS / MonCoeur — Live Demo (synthetic data)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>MonCoeur — Live Demo (synthetic data)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════════════════════════
-   JARVIS / MonCoeur — public demo build
-   Same layout and logic as the Pi build; synthetic data layer.
-   ══════════════════════════════════════════════════════════════ */
-:root{
-  --bg:#F4F5F7; --card:#FFFFFF; --card2:#F7F8FA;
-  --tx:#1A1D23; --tm:#7A8090;
-  --br:#E6E8ED; --brF:#C3C8D2;
-  --ac:#5B7CFA; --acL:#EEF2FF;
-  --wn:#D97706;
-  --r:14px; --rs:8px;
-  --sh:0 1px 2px rgba(16,24,40,.05);
-  --shH:0 6px 18px rgba(16,24,40,.09);
-  --f:'Outfit',system-ui,sans-serif;
-  --fm:'JetBrains Mono',monospace;
+
+    :root,[data-theme="light"]{
+      --bg:#f2f4f7;--card:#fff;--card2:#f8f9fb;--hover:#eef1f5;--inp:#fff;
+      --br:#dde2ea;--brF:#3b82f6;--tx:#1a1d26;--t2:#4b5563;
+      --tm:#6b7280;
+      --ac:#3b82f6;--acL:#dbeafe;--acD:#1d4ed8;
+      --dot-ev:#3b82f6;--dot-td:#f59e0b;--dot-hw:#8b5cf6;--dot-hd:#10b981;
+      --sh:0 1px 4px rgba(0,0,0,.05);--shH:0 4px 16px rgba(0,0,0,.08);
+      --r:14px;--rs:8px;
+      --topBg:rgba(255,255,255,.82);--topBlur:saturate(180%) blur(18px);
+      --f:'Outfit',sans-serif; --fm:'JetBrains Mono',monospace;
+    }
+    [data-theme="dark"]{
+      --bg:#0d0f14;--card:#161921;--card2:#1c1f2a;--hover:#22263a;--inp:#1c1f2a;
+      --br:#282d3e;--brF:#60a5fa;--tx:#f3f4f6;--t2:#9ca3af;--tm:#6b7280;
+      --ac:#60a5fa;--acL:#1a2e4a;--acD:#93bbfc;
+      --dot-ev:#60a5fa;--dot-td:#fbbf24;--dot-hw:#a78bfa;--dot-hd:#34d399;
+      --sh:0 1px 4px rgba(0,0,0,.2);--shH:0 4px 16px rgba(0,0,0,.35);
+      --topBg:rgba(13,15,20,.82);
+    }
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body {
+    font-family: var(--f);
+    background: var(--bg);
+    color: var(--tx);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; /* This stops the 'scroll form' */
+    display: flex;
+    flex-direction: column;
+    }
+    .mono{font-family:var(--fm);}
+
+    .moncoeur-top{
+      position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:10px 20px;background:var(--topBg);backdrop-filter:var(--topBlur);-webkit-backdrop-filter:var(--topBlur);
+      border-bottom:1px solid var(--br);flex-shrink:0;gap:12px;
+    }
+    .brand{font-size:28px;font-weight:800;letter-spacing:-.5px;white-space:nowrap;text-transform:none;}
+    .brand-ac{color:var(--ac);}
+
+    .top-mid {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 64px;
+    }
+    .clock{
+      font-size:32px;
+      font-weight:800;
+      color:var(--tx);
+      letter-spacing:.5px;
+      font-family:var(--f);
+    }
+    .top-btn:hover{border-color:var(--ac);background:var(--hover);}
+
+    .grid-two {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 6fr 4fr;
+    gap: 16px;
+    padding: 16px 20px;
+    height: calc(100vh - 60px); /* Adjust based on your header height */
+    overflow: hidden; /* Prevents the grid from expanding past the screen */
+    }
+    .col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    min-height: 0; /* Important for grid alignment */
+    overflow: hidden;
+    }
+    .side-col{min-width:0;}
+
+    .card{
+      background:var(--card);border:1px solid var(--br);border-radius:var(--r);
+      box-shadow:var(--sh);display:flex;flex-direction:column;min-height:0;
+    }
+    .card-h{
+      display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+      border-bottom:1px solid var(--br);flex-shrink:0;gap:8px;
+    }
+    .card-h h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;}
+    .card-b{padding:12px 16px;overflow-y:auto;flex:1;scrollbar-width:none;}
+    .timeline-card{height:100%;}
+
+    .badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:16px;text-transform:uppercase;letter-spacing:.5px;}
+    .btn{padding:8px 14px;border-radius:var(--rs);border:none;background:var(--ac);color:#fff;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;transition:.15s;}
+    .btn:hover{background:var(--acD);}
+    .btn-ghost{padding:6px 12px;border-radius:var(--rs);border:1px solid var(--br);background:transparent;color:var(--t2);font-size:13px;font-weight:600;font-family:var(--f);cursor:pointer;}
+    .btn-ghost:hover{border-color:var(--ac);color:var(--ac);}
+    .empty{color:var(--t2);font-size:16px;font-weight:600;text-align:center;padding:20px 0;}
+
+    .tl-body{padding-top:12px;padding-bottom:0;}
+    .tl-list{display:flex;flex-direction:column;}
+
+    .tl-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--br);position:relative; align-items:center;}
+    .tl-item:last-child{border:none;}
+    .tl-item:hover .tl-x{opacity:1;}
+
+    .tl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+    .tl-content{flex:1;display:flex;flex-direction:column;min-width:0;}
+    .tl-title{font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+    .tl-sub{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+
+    .tl-x {
+          margin-left:auto; width:32px; height:32px; border-radius:6px; background:var(--card2);
+          border:1px solid var(--br);color:var(--tm);display:flex;align-items:center;justify-content:center;
+          cursor:pointer; opacity:0; transition:.15s;font-size:18px;font-weight:bold; flex-shrink:0;
+          position:relative; z-index:100;
+        }
+    .tl-x:hover{color:#ef4444;border-color:#ef4444;background:#fee2e2;}
+    .static-x{opacity:1;}
+
+    .tl-check{
+      width:20px;height:20px;border-radius:4px;border:2px solid var(--br);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;color:transparent;transition:.15s;flex-shrink:0;
+    }
+    .tl-check:hover{border-color:var(--ac);}
+    .tl-item.done .tl-check{background:var(--dot-hd);border-color:var(--dot-hd);color:#fff;}
+    .tl-item.done .tl-title{text-decoration:line-through;opacity:.5;}
+
+    .today-footer{
+      display:flex;justify-content:space-between;padding:18px 24px;border-top:1px solid var(--br);
+      background:var(--card2);font-size:16px;font-weight:700;color:var(--t2);flex-shrink:0;
+      text-transform:uppercase;letter-spacing:.5px;
+    }
+
+    .wh{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+    .wb{font-size:32px;font-weight:700;line-height:1;letter-spacing:-1px;}
+    .wu{font-size:12px;color:var(--tm);}
+    .wm{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;flex:1;}
+    .wsl{font-size:9px;color:var(--tm);text-transform:uppercase;}
+    .wsv{font-size:12px;font-weight:600;}
+    .hourly{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+    .hc{min-width:48px;text-align:center;padding:6px 4px;background:var(--card2);border-radius:6px;}
+    .ht{font-size:9px;color:var(--tm);}
+    .htp{font-size:12px;font-weight:600;display:block;}
+    .hb{width:16px;background:var(--ac);border-radius:2px;margin:2px auto;opacity:.4;}
+
+    .shi{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--br);}
+    .shn{font-size:12px;flex:1;min-width:0;}
+    .shqv{font-size:11px;color:var(--t2);}
+    .shi.shd{opacity:.5;text-decoration:line-through;}
+
+    .away-hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+      gap:10px;
+    }
+    .away-main{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .away-mode{
+      font-size:24px;
+      font-weight:800;
+      letter-spacing:.5px;
+      line-height:1;
+    }
+    .away-dur{
+      font-size:16px;
+      font-weight:700;
+      color:var(--t2);
+      margin-top:0;
+    }
+    .away-list-wrap{border-top:1px solid var(--br);padding-top:12px;}
+    .away-list-title{font-size:12px;text-transform:uppercase;color:var(--tm);font-weight:800;letter-spacing:1px;margin-bottom:10px;}
+    .away-trip{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      font-size:14px;
+      font-weight:500;
+      padding:6px 0;
+      border-bottom:1px solid var(--br);
+      color:var(--tx);
+    }
+    .away-min{margin-left:auto;color:var(--t2);font-weight:700;}
+
+    #jarvis-output {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ac);
+      line-height: 1.5;
+      text-align: left;
+      width: 100%;
+    }
+    .away-trip .mono{font-size:16px;font-weight:700;color:var(--tx);}
+    .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.2);backdrop-filter:blur(2px);}
+    .drawer{
+      position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;background:var(--card);
+      border-left:1px solid var(--br);padding:18px;z-index:201;overflow-y:auto;
+      transform:translateX(100%);transition:transform .22s ease;
+    }
+    .drawer.open{transform:translateX(0);}
+    .dr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .dr-head h2{font-size:18px;font-weight:700;}
+    .dr-s{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--br);}
+    .dr-s h3{font-size:13px;margin-bottom:10px;}
+    .dr-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
+    .dr-cal-title{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px;}
+    .sr{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;}
+
+    .vit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .vit{background:var(--card2);border:1px solid var(--br);border-radius:8px;padding:10px;}
+    .vit-k{display:block;font-size:9px;color:var(--tm);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+    .vit-v{display:block;font-size:12px;font-weight:600;}
+
+    .add-box{display:flex;flex-direction:column;gap:8px;}
+    .add-row{display:flex;gap:6px;}
+    .inp{padding:6px 8px;border-radius:6px;border:1px solid var(--br);background:var(--inp);color:var(--tx);font-family:var(--f);font-size:12px;outline:none;flex:1;}
+    .inp:focus{border-color:var(--brF);}
+    .tg-btn{padding:4px 8px;border-radius:6px;border:1px solid var(--br);background:var(--card);font-size:11px;font-weight:600;cursor:pointer;color:var(--tm);}
+    .tg-btn.act{background:var(--acL);color:var(--ac);border-color:var(--ac);}
+    .rep-days{display:flex;gap:2px;margin-top:4px;flex-wrap:wrap;}
+    .r-day{width:22px;height:22px;border-radius:4px;border:1px solid var(--br);background:var(--card);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .r-day.on{background:var(--ac);color:#fff;border-color:var(--ac);}
+
+    .room-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .room-c{background:var(--card2);border:1px solid var(--br);border-radius:6px;padding:8px;text-align:center;}
+    .room-v{font-size:16px;font-weight:700;display:block;}
+    .room-l{font-size:9px;color:var(--tm);text-transform:uppercase;}
+    .hwc{display:flex;align-items:center;justify-content:space-between;padding:8px;background:var(--card2);border:1px solid var(--br);border-radius:6px;margin-bottom:6px;}
+    .hwc.done{opacity:.5;}
+    .hw-x{cursor:pointer;color:var(--tm);font-weight:bold;padding:0 4px;}
+    .hw-x:hover{color:#ef4444;}
+
+    .cal-nav{display:flex;gap:4px;align-items:center;}
+    .nb{width:24px;height:24px;border-radius:6px;border:1px solid var(--br);background:var(--card2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .ns{padding:2px 8px;border-radius:6px;border:1px solid var(--br);background:var(--card2);font-size:10px;cursor:pointer;}
+    .cal-wd{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:9px;font-weight:600;text-transform:uppercase;color:var(--tm);margin-bottom:4px;}
+    .cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+    .cc{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;}
+    .cc:hover{background:var(--hover);}
+    .cc.act{border:1px solid var(--ac);background:var(--acL);}
+    .cc.blank{cursor:default;}
+    .cc.blank:hover{background:transparent;}
+    .cn{font-size:12px;font-weight:500;}
+    .today{background:var(--ac);color:#fff;}
+    .today .cn{font-weight:700;}
+    .cd{display:flex;gap:2px;height:4px;}
+    .dot{width:4px;height:4px;border-radius:50%;}
+    /* 1. Hide the mouse everywhere by default (for the clean dashboard look) */
+    body {
+      cursor: none;
+    }
+
+    /* 2. Reveal the standard mouse cursor when hovering over the top bar or inside the settings drawer */
+    .moncoeur-top, .drawer {
+      cursor: default;
+    }
+
+    /* 3. Bring back the pointing "hand" cursor for buttons inside those allowed areas */
+    .moncoeur-top button, .drawer button, .drawer .vit, .drawer .cc, .drawer .r-day, .drawer .hw-x {
+      cursor: pointer;
+    }
+
+    /* 4. Show the typing cursor (and the blinking caret) so you can type in the add item boxes */
+    .drawer input, .drawer select {
+      cursor: text;
+      caret-color: auto;
+    }
+    @media(max-width:900px){
+      body{overflow:auto;}
+      .grid-two{display:flex;flex-direction:column;overflow:visible;padding-bottom:max(20px, env(safe-area-inset-bottom));}
+      .col{overflow:visible;height:auto;}
+      .card{min-height:auto;}
+      .card-b{overflow-y:visible;}
+      .drawer{width:100%;max-width:none;}
+      .top-mid{display:none;}
+    }
+  
+
+/* ── demo banner (not part of the real build) ─────────────────────── */
+.demo-banner{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:8px 20px;background:var(--tx);color:var(--bg);
+  font-family:var(--fm);font-size:11px;line-height:1.6;flex-shrink:0;
 }
-[data-theme="dark"]{
-  --bg:#0F1116; --card:#171A21; --card2:#1D212A;
-  --tx:#E8EAEF; --tm:#7F8696;
-  --br:#262B35; --brF:#3A4150;
-  --acL:#1B2340;
-  --sh:0 1px 2px rgba(0,0,0,.3);
-  --shH:0 6px 18px rgba(0,0,0,.4);
+.demo-banner b{color:#f59e0b}
+.demo-banner a{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+#jarvis-output{
+  font-size:15px;line-height:1.65;text-align:center;color:var(--t2);max-width:42ch;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:var(--bg);color:var(--tx);font-family:var(--f);
-  padding-bottom:env(safe-area-inset-bottom);
-  -webkit-font-smoothing:antialiased;transition:background .3s,color .3s;
-}
+body{height:100vh;overflow:hidden;display:flex;flex-direction:column}
+@media(max-width:900px){ body{height:auto;overflow:auto} }
 
-/* ── demo banner ─────────────────────────────────────────────── */
-.demo{
-  background:var(--tx);color:var(--bg);padding:9px 20px;
-  font-family:var(--fm);font-size:11.5px;line-height:1.6;
-  display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
-}
-.demo b{color:#F0A868}
-.demo a{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
-
-/* ── topbar ──────────────────────────────────────────────────── */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 22px;background:var(--card);border-bottom:1px solid var(--br);
-  position:sticky;top:0;z-index:20;
-}
-.logo{font-size:22px;font-weight:700;letter-spacing:-.02em}
-.logo-dot{color:var(--ac)}
-.logo-label{font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--tm);margin-left:9px}
-.top-time{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
-.top-divider{color:var(--tm);margin:0 9px}
-.top-date{font-size:13px;color:var(--tm)}
-.topbar-btn{
-  width:34px;height:34px;border-radius:var(--rs);border:1px solid var(--br);
-  background:var(--card2);color:var(--tx);cursor:pointer;font-size:15px;
-  display:flex;align-items:center;justify-content:center;transition:.15s;
-}
-.topbar-btn:hover{border-color:var(--brF);transform:translateY(-1px)}
-@media(max-width:700px){.topbar-center{display:none}}
-
-/* ── grid ────────────────────────────────────────────────────── */
-.grid{
-  display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:16px;
-  padding:18px 22px 40px;max-width:1600px;margin:0 auto;align-items:start;
-}
-@media(max-width:1150px){.grid{grid-template-columns:1fr 1fr}.col-mid{grid-column:1/-1;order:-1}}
-@media(max-width:800px){.grid{grid-template-columns:1fr;padding:14px}}
-.col{display:flex;flex-direction:column;gap:16px}
-
-.card{
-  background:var(--card);border:1px solid var(--br);border-radius:var(--r);
-  padding:16px 18px;box-shadow:var(--sh);transition:box-shadow .25s;
-  animation:pop .5s both;
-}
-.card:hover{box-shadow:var(--shH)}
-@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;gap:10px}
-.ch h3{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tm)}
-.badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-.b-ok{background:#DCFCE7;color:#166534}
-.b-wn{background:#FEF3C7;color:#92400E}
-.b-ac{background:var(--acL);color:var(--ac)}
-[data-theme="dark"] .b-ok{background:#0F3D24;color:#86EFAC}
-[data-theme="dark"] .b-wn{background:#3D2E0A;color:#FCD34D}
-
-/* ── today's schedule (the centrepiece) ──────────────────────── */
-.today-big{padding:22px 24px}
-.today-big .ch h3{font-size:12px}
-.ev{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--br);align-items:flex-start}
-.ev:last-of-type{border-bottom:none}
-.ev-bar{width:3px;align-self:stretch;border-radius:2px;background:var(--ac);flex-shrink:0}
-.ev-t{font-family:var(--fm);font-size:12px;color:var(--tm);width:52px;flex-shrink:0;padding-top:2px}
-.ev-n{font-size:15px;font-weight:500}
-.ev-s{font-size:12px;color:var(--tm);margin-top:2px}
-.ev.past{opacity:.42}
-.ev.now .ev-n{color:var(--ac);font-weight:600}
-.task-dot{width:7px;height:7px;border-radius:50%;background:var(--wn);margin-top:7px;flex-shrink:0}
-
-.jmsg{
-  background:linear-gradient(135deg,var(--acL),var(--card2));
-  border:1px solid var(--br);border-radius:var(--rs);
-  padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6;
-}
-.jmsg b{color:var(--ac);font-weight:600}
-
-/* ── sensors ─────────────────────────────────────────────────── */
-.sens{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.si{background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:10px 12px}
-.sil{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--tm);display:block;margin-bottom:3px}
-.siv{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;display:block}
-.siv small{font-size:11px;color:var(--tm);font-weight:400}
-.siv.hot{color:var(--wn)}
-
-/* ── lights ──────────────────────────────────────────────────── */
-.lrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
-.lrow span{font-size:14px;font-weight:500}
-.tg{width:42px;height:23px;border-radius:12px;background:var(--brF);position:relative;cursor:pointer;border:none;transition:background .25s;flex-shrink:0}
-.tg.on{background:var(--ac)}
-.tg::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.3,.7,.3,1)}
-.tg.on::after{transform:translateX(19px)}
-.sld{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--br);outline:none;margin:4px 0 2px}
-.sld::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--ac);cursor:pointer}
-.sld::-moz-range-thumb{width:15px;height:15px;border:none;border-radius:50%;background:var(--ac);cursor:pointer}
-.slabel{display:flex;justify-content:space-between;font-family:var(--fm);font-size:10.5px;color:var(--tm);margin-bottom:12px}
-.rec{font-size:12px;color:var(--tm);background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:9px 11px;margin-top:4px;line-height:1.55}
-.rec b{color:var(--tx);font-weight:600}
-
-/* ── calendar ────────────────────────────────────────────────── */
-.cal-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
-.cal-h .m{font-size:16px;font-weight:600}
-.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.cal-d{font-size:9px;font-weight:700;color:var(--tm);text-align:center;text-transform:uppercase;letter-spacing:.5px;padding-bottom:5px}
-.cd{
-  aspect-ratio:1;border-radius:var(--rs);background:var(--card2);border:1px solid transparent;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  font-size:12px;cursor:pointer;transition:.15s;
-}
-.cd:hover{border-color:var(--brF);transform:translateY(-1px)}
-.cd.out{opacity:.28}
-.cd.today{background:var(--ac);color:#fff;font-weight:700}
-.pips{display:flex;gap:2px;height:4px}
-.pip{width:4px;height:4px;border-radius:50%;background:var(--ac)}
-.cd.today .pip{background:rgba(255,255,255,.85)}
-.pip.w{background:var(--wn)}
-
-/* ── weather ─────────────────────────────────────────────────── */
-.wx-now{display:flex;align-items:baseline;gap:12px}
-.wx-t{font-size:38px;font-weight:600;letter-spacing:-.02em}
-.wx-c{font-size:13px;color:var(--tm)}
-.wx-m{font-family:var(--fm);font-size:11px;color:var(--tm);margin-top:8px}
-.hourly{display:flex;gap:8px;overflow-x:auto;margin-top:13px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-.hr{flex-shrink:0;background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:8px 10px;text-align:center;min-width:52px}
-.hr .h{font-family:var(--fm);font-size:9.5px;color:var(--tm)}
-.hr .d{font-size:15px;margin:3px 0}
-.hr .t{font-size:12px;font-weight:600}
-
-/* ── sleep ───────────────────────────────────────────────────── */
-.sl-info{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:11px}
-.sq{background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:8px;text-align:center}
-.sql{display:block;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--tm);margin-bottom:2px}
-.sqv{display:block;font-size:13px;font-weight:600}
-.sl-bars{display:flex;gap:4px;height:52px}
-.sbc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
-.sbt{flex:1;width:100%;background:var(--card2);border:1px solid var(--br);border-radius:3px;display:flex;align-items:flex-end;overflow:hidden}
-.sbf{width:100%;background:var(--ac);border-radius:2px;transition:height 1s cubic-bezier(.2,.7,.2,1);min-height:2px}
-.sbf.low{background:var(--wn)}
-.sbl{font-size:8px;font-weight:600;color:var(--tm);text-transform:uppercase}
-
-/* ── hair wash ───────────────────────────────────────────────── */
-.hw-chips{display:flex;gap:7px;flex-wrap:wrap}
-.hwc{
-  padding:7px 12px;border-radius:var(--rs);background:var(--card2);
-  border:1px solid var(--br);display:flex;flex-direction:column;align-items:center;
-  min-width:56px;position:relative;transition:.15s;
-}
-.hwc:hover{transform:translateY(-2px)}
-.hwc.best{background:linear-gradient(135deg,var(--acL),var(--card2));border-color:var(--ac)}
-.hwcday{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.hwcdt{font-size:11px;color:var(--tm);margin-top:1px}
-.hwck{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:var(--ac);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
-.hw-why{font-size:11.5px;color:var(--tm);margin-top:11px;line-height:1.6}
-.hw-why b{color:var(--tx);font-weight:600}
-
-/* ── todos ───────────────────────────────────────────────────── */
-.td{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--br);font-size:14px}
-.td:last-child{border-bottom:none}
-.cb{
-  width:17px;height:17px;border-radius:5px;border:1.5px solid var(--brF);
-  cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  font-size:10px;color:transparent;transition:.15s;background:transparent;padding:0;
-}
-.cb.done{background:var(--ac);border-color:var(--ac);color:#fff}
-.td.done .txt{text-decoration:line-through;color:var(--tm)}
-.star{color:var(--wn);font-size:12px;margin-left:auto}
-
-/* ── away ────────────────────────────────────────────────────── */
-.away{display:flex;align-items:center;justify-content:space-between;gap:14px}
-.away .sub{font-size:11.5px;color:var(--tm);margin-top:3px}
-
-footer{text-align:center;padding:26px 20px 44px;font-family:var(--fm);font-size:11px;color:var(--tm);line-height:2}
-footer a{color:var(--tx)}
 </style>
 </head>
 <body>
 
-<div class="demo">
-  <span><b>DEMO BUILD — SYNTHETIC DATA.</b> Same layout and logic as the real system, which runs on a Raspberry Pi in my room against my actual calendar, sensors and lights. Every event and reading here is invented.</span>
+<div class="demo-banner">
+  <span><b>DEMO — SYNTHETIC DATA.</b> This is the real MonCoeur interface. The live system runs on a Raspberry&nbsp;Pi in my room against my actual calendar, sensors and lights. Every event and reading below is invented.</span>
   <a href="../projects/jarvis.html">← Case study</a>
 </div>
 
-<header class="topbar">
-  <div><span class="logo">J<span class="logo-dot">.</span></span><span class="logo-label">MONCOEUR</span></div>
-  <div class="topbar-center">
-    <span class="top-time" id="tTime">--:--</span>
-    <span class="top-divider">·</span>
-    <span class="top-date" id="tDate">—</span>
+<header class="top moncoeur-top">
+  <span class="brand">Mon<span class="brand-ac">Coeur</span></span>
+  <div class="top-mid">
+    <span class="clock mono" id="tlDateLabel" style="text-transform:uppercase;">--</span>
+    <span class="clock mono" id="clock">--:--</span>
   </div>
-  <button class="topbar-btn" id="theme" title="Toggle theme">◐</button>
+  <div class="top-r">
+    <button class="top-btn" id="themeBtn" title="Toggle theme">
+      <svg id="icSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg id="icMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+      </svg>
+    </button>
+    <button class="top-btn" onclick="toggleDrawer()" title="Settings">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
 </header>
 
-<div class="grid">
+<div class="overlay" id="overlay" style="display:none" onclick="toggleDrawer()"></div>
 
-  <!-- ══════════ LEFT ══════════ -->
-  <div class="col">
+<aside class="drawer" id="drawer">
+  <div class="dr-head">
+    <h2>Settings</h2>
+    <button class="btn-ghost" onclick="toggleDrawer()">Close</button>
+  </div>
 
-    <div class="card">
-      <div class="ch"><h3>Room</h3><span class="badge b-ok">Occupied</span></div>
-      <div class="sens">
-        <div class="si"><span class="sil">Temp</span><span class="siv" id="rt">73.4<small>°F</small></span></div>
-        <div class="si"><span class="sil">Humidity</span><span class="siv" id="rh">46<small>%</small></span></div>
-        <div class="si"><span class="sil">Motion</span><span class="siv" style="font-size:14px">Active</span></div>
-        <div class="si"><span class="sil">Last seen</span><span class="siv" style="font-size:14px">now</span></div>
+  <section class="dr-s">
+    <h3>Vitals</h3>
+    <div class="vit-grid">
+      <div class="vit"><span class="vit-k">Room Temp</span><span class="vit-v mono" id="setTemp">73.4&deg;F</span></div>
+      <div class="vit"><span class="vit-k">Humidity</span><span class="vit-v mono" id="setHum">46%</span></div>
+      <div class="vit" onclick="toggleLights()" style="cursor:pointer;border-color:var(--brF);">
+        <span class="vit-k">Lights</span><span class="vit-v" id="setLight">On</span>
       </div>
-      <div class="rec">SHT40 over I²C, PIR on GPIO. Sensors push to <b>POST /api/update</b>; the browser polls <b>GET /api/status</b>.</div>
+      <div class="vit"><span class="vit-k">Sleep</span><span class="vit-v mono" id="setSleep">6h 12m</span></div>
+      <div class="vit"><span class="vit-k">Away</span><span class="vit-v" id="setAway">Home</span></div>
+      <div class="vit"><span class="vit-k">Motion</span><span class="vit-v mono" id="setMotion">now</span></div>
     </div>
+  </section>
 
-    <div class="card">
-      <div class="ch"><h3>Lights — WiZ</h3><span class="badge b-ac">Auto</span></div>
-      <div class="lrow"><span>Shelf</span><button class="tg on" aria-label="Shelf light"></button></div>
-      <input type="range" class="sld" min="0" max="100" value="38" id="s1">
-      <div class="slabel"><span>Brightness</span><span id="s1v">38%</span></div>
-      <div class="lrow"><span>Ladder</span><button class="tg" aria-label="Ladder light"></button></div>
-      <input type="range" class="sld" min="0" max="100" value="0" id="s2">
-      <div class="slabel"><span>Brightness</span><span id="s2v">0%</span></div>
-      <div class="rec">Automation recommends <b>hold at 38%, warm</b> — past dusk, motion quiet for 20 min. Commands go out over <b>UDP</b> to the bulbs.</div>
+  <section class="dr-s">
+    <div class="dr-row">
+      <h3>Calendar</h3>
+      <div class="cal-nav">
+        <button onclick="chMo(-1)" class="nb">&lsaquo;</button>
+        <button onclick="chMo(0)" class="ns">Today</button>
+        <button onclick="chMo(1)" class="nb">&rsaquo;</button>
+      </div>
     </div>
+    <div class="dr-cal-title" id="calLabel">--</div>
+    <div class="cal-wd"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+    <div class="cal-g" id="calG"></div>
+  </section>
 
-    <div class="card">
-      <div class="ch"><h3>Away Mode</h3></div>
-      <div class="away">
-        <div>
-          <div style="font-size:14px;font-weight:500">Disabled</div>
-          <div class="sub">Lights and display stay under motion control</div>
+  <section class="dr-s">
+    <h3>Room &amp; Hair</h3>
+    <div class="room-g" style="margin-bottom:12px">
+      <div class="room-c"><span class="room-v mono" id="rTempDrawer">73.4&deg;</span><span class="room-l">Temp</span></div>
+      <div class="room-c"><span class="room-v mono" id="rHumDrawer">46%</span><span class="room-l">Humidity</span></div>
+    </div>
+    <div id="hwList"></div>
+  </section>
+
+  <section class="dr-s">
+    <h3>Weather</h3>
+    <div class="wh">
+      <span class="wb">88&deg;</span>
+      <div class="wm">
+        <span class="wsl">High</span><span class="wsv mono">91&deg;</span>
+        <span class="wsl">Low</span><span class="wsv mono">72&deg;</span>
+        <span class="wsl">Humidity</span><span class="wsv mono">71%</span>
+        <span class="wsl">Rain</span><span class="wsv mono">15%</span>
+      </div>
+    </div>
+    <div class="hourly" id="hourly"></div>
+  </section>
+
+  <section class="dr-s">
+    <h3>Shopping</h3>
+    <div id="shL"></div>
+  </section>
+</aside>
+
+<main class="grid grid-two">
+  <div class="col">
+    <section class="card timeline-card">
+      <div class="today-head" style="display:flex;justify-content:center;align-items:center;width:100%;border-bottom:1px solid var(--br);padding:20px;">
+        <div class="th-stats-row" style="display:flex;justify-content:space-between;align-items:center;width:100%;font-size:clamp(14px,1.7vw,18px);font-weight:800;color:var(--tx);text-transform:uppercase;white-space:nowrap;gap:10px;">
+          <span>HIGH: <span id="wHigh" class="mono">91</span>&deg;F</span>
+          <span>LOW: <span id="wLow" class="mono">72</span>&deg;F</span>
+          <span>RAIN: <span id="wRain" class="mono">15%</span></span>
         </div>
-        <button class="tg" aria-label="Away mode"></button>
       </div>
-    </div>
-
+      <div class="card-b tl-body">
+        <div class="tl-list" id="tlList"></div>
+      </div>
+    </section>
   </div>
 
-  <!-- ══════════ MIDDLE — centrepiece ══════════ -->
-  <div class="col col-mid">
+  <div class="col side-col">
+    <section class="card" style="flex:1.2;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:24px 20px;">
+      <h3 style="font-size:22px;font-weight:900;color:var(--tx);letter-spacing:4px;margin-bottom:16px;">JARVIS</h3>
+      <div id="jarvis-output">
+        Afternoon. Three tasks still open and chapter at 4. Humidity's low and your evening is clear &mdash; good wash day. Room's holding at 73&deg;F; I'll start the bedtime dim around 22:30.
+      </div>
+    </section>
 
-    <div class="card today-big">
-      <div class="ch"><h3>Today</h3><span class="badge b-wn">3 tasks open</span></div>
-
-      <div class="ev past">
-        <div class="ev-bar"></div><div class="ev-t">08:00</div>
-        <div><div class="ev-n">Gym — push day</div></div>
+    <section class="card" style="flex:1;">
+      <div class="card-b" style="padding-top:16px;display:flex;flex-direction:column;height:100%;">
+        <div class="away-hero">
+          <div class="away-main">
+            <div class="away-mode" id="awMode">HOME</div>
+            <div class="away-dur mono" id="awDur">4h 20m</div>
+          </div>
+          <button class="btn-ghost" onclick="manualAway()">Toggle</button>
+        </div>
+        <div class="away-list-wrap">
+          <div class="away-list-title">Recent trips</div>
+          <div id="awTrips">
+            <div class="away-trip"><span>Gym</span><span class="away-min mono">82 min</span></div>
+            <div class="away-trip"><span>Class &mdash; Boyd</span><span class="away-min mono">55 min</span></div>
+            <div class="away-trip"><span>Dining hall</span><span class="away-min mono">31 min</span></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;align-items:center;text-align:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--br);color:var(--tx);font-size:16px;font-weight:700;column-gap:12px;">
+          <span>ROOM: <span class="mono" id="rTempAway" style="font-size:16px;font-weight:700;">73.4&deg;</span></span>
+          <span>MOTION: <span class="mono" id="motLastAway" style="font-size:16px;font-weight:700;">now</span></span>
+        </div>
       </div>
-      <div class="ev past">
-        <div class="ev-bar"></div><div class="ev-t">10:10</div>
-        <div><div class="ev-n">ELEE 4270 — Analog Electronics</div><div class="ev-s">Boyd 328</div></div>
-      </div>
-      <div class="ev now">
-        <div class="ev-bar"></div><div class="ev-t">13:30</div>
-        <div><div class="ev-n">Physics PLA session</div><div class="ev-s">In progress</div></div>
-      </div>
-      <div class="ev">
-        <div class="task-dot"></div><div class="ev-t">—</div>
-        <div><div class="ev-n">Finish sensors lab report</div><div class="ev-s">Due today</div></div>
-      </div>
-      <div class="ev">
-        <div class="ev-bar"></div><div class="ev-t">16:00</div>
-        <div><div class="ev-n">Theta Tau — chapter meeting</div></div>
-      </div>
-      <div class="ev">
-        <div class="task-dot"></div><div class="ev-t">—</div>
-        <div><div class="ev-n">Order INA121P samples</div><div class="ev-s">Overdue</div></div>
-      </div>
-
-      <div class="jmsg">
-        Afternoon. <b>3 tasks</b> still open and the chapter meeting at 4. Humidity's low and your evening is clear — <b>good wash day</b>. Room's holding at 73°F; I'll start the bedtime dim around 22:30.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="cal-h">
-        <span class="m" id="calM">July 2026</span>
-        <span style="font-family:var(--fm);font-size:10.5px;color:var(--tm)">Google Calendar</span>
-      </div>
-      <div class="cal-g" id="cal"></div>
-    </div>
-
+    </section>
   </div>
-
-  <!-- ══════════ RIGHT ══════════ -->
-  <div class="col">
-
-    <div class="card">
-      <div class="ch"><h3>Weather</h3><span style="font-family:var(--fm);font-size:10px;color:var(--tm)">Open-Meteo</span></div>
-      <div class="wx-now"><span class="wx-t">88°</span><span class="wx-c">Humid, scattered clouds</span></div>
-      <div class="wx-m">Feels 94° · Humidity 71% · Rain 15%</div>
-      <div class="hourly">
-        <div class="hr"><div class="h">2PM</div><div class="d">☀</div><div class="t">89°</div></div>
-        <div class="hr"><div class="h">3PM</div><div class="d">⛅</div><div class="t">90°</div></div>
-        <div class="hr"><div class="h">4PM</div><div class="d">⛅</div><div class="t">89°</div></div>
-        <div class="hr"><div class="h">5PM</div><div class="d">⛅</div><div class="t">86°</div></div>
-        <div class="hr"><div class="h">6PM</div><div class="d">☁</div><div class="t">83°</div></div>
-        <div class="hr"><div class="h">7PM</div><div class="d">☁</div><div class="t">79°</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ch"><h3>Sleep</h3><span class="badge b-wn">Below average</span></div>
-      <div class="sl-info">
-        <div class="sq"><span class="sql">Asleep</span><span class="sqv">01:14</span></div>
-        <div class="sq"><span class="sql">Woke</span><span class="sqv">07:26</span></div>
-        <div class="sq"><span class="sql">Total</span><span class="sqv">6h 12m</span></div>
-      </div>
-      <div class="sl-bars" id="bars"></div>
-    </div>
-
-    <div class="card">
-      <div class="ch"><h3>Hair Wash</h3><span class="badge b-ac">Today</span></div>
-      <div class="hw-chips">
-        <div class="hwc"><span class="hwcday">Fri</span><span class="hwcdt">Jul 10</span></div>
-        <div class="hwc best"><span class="hwck">★</span><span class="hwcday">Sat</span><span class="hwcdt">Jul 11</span></div>
-        <div class="hwc"><span class="hwcday">Sun</span><span class="hwcdt">Jul 12</span></div>
-        <div class="hwc"><span class="hwcday">Mon</span><span class="hwcdt">Jul 13</span></div>
-      </div>
-      <div class="hw-why">
-        Scored on humidity, rain probability and calendar density. <b>Sunday takes a −3</b> for a 60% rain chance; Monday is loaded with four events. <b>Today wins.</b>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ch"><h3>To-do</h3><span class="badge b-wn">3 open</span></div>
-      <div class="td"><button class="cb" aria-label="Complete"></button><span class="txt">Finish sensors lab report</span><span class="star">★</span></div>
-      <div class="td"><button class="cb" aria-label="Complete"></button><span class="txt">Order INA121P samples</span></div>
-      <div class="td"><button class="cb" aria-label="Complete"></button><span class="txt">Rush chair — update PNM list</span></div>
-      <div class="td done"><button class="cb done" aria-label="Complete">✓</button><span class="txt">Meal prep — chicken bowls</span></div>
-    </div>
-
-  </div>
-</div>
-
-<footer>
-  Real build: Flask · SHT40 · PIR · WiZ over UDP · ddcutil / wlopm · systemd · JSON persistence · SHA-256 auth<br>
-  <a href="../projects/jarvis.html">Read the case study →</a>
-</footer>
+</main>
 
 <script>
-/* ── clock ───────────────────────────────────────────────────── */
-function clock(){
-  const d=new Date();
-  let h=d.getHours(); const m=String(d.getMinutes()).padStart(2,'0');
-  const ap=h>=12?'PM':'AM'; h=h%12||12;
-  document.getElementById('tTime').textContent=h+':'+m+' '+ap;
-  document.getElementById('tDate').textContent=
-    d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+
+/* ── Demo data layer.  In the real build these come from GET /api/status,
+   /api/todos, /api/hair-washes and the Google Calendar sync thread. ───── */
+const EVENTS = [
+  {t:'08:00', title:'Gym — push day',                 type:'ev', done:true},
+  {t:'10:10', title:'ELEE 4270 — Analog Electronics', sub:'Boyd 328', type:'ev', done:true},
+  {t:'',      title:'Finish sensors lab report',      sub:'Due today', type:'td'},
+  {t:'13:30', title:'Physics PLA session',            sub:'In progress', type:'ev'},
+  {t:'',      title:'Order INA333 samples',           sub:'Overdue',   type:'td'},
+  {t:'16:00', title:'Theta Tau — chapter meeting',    type:'ev'},
+  {t:'',      title:'Wash day',                       sub:'Low humidity, clear evening', type:'hw'},
+  {t:'22:30', title:'Suggested bedtime',              sub:'Based on tomorrow\'s 8am start', type:'ev'},
+];
+const DOT = {ev:'var(--dot-ev)', td:'var(--dot-td)', hw:'var(--dot-hw)', hd:'var(--dot-hd)'};
+
+function renderTimeline(){
+  const L = document.getElementById('tlList');
+  L.innerHTML = '';
+  EVENTS.forEach((e,i)=>{
+    const d = document.createElement('div');
+    d.className = 'tl-item' + (e.done ? ' done' : '');
+    const check = e.type==='td'
+      ? `<div class="tl-check" onclick="tick(${i})">✓</div>`
+      : `<div class="tl-dot" style="background:${DOT[e.type]}"></div>`;
+    d.innerHTML = `
+      <div class="tl-time mono">${e.t || '—'}</div>
+      ${check}
+      <div class="tl-content">
+        <div class="tl-title">${e.title}</div>
+        ${e.sub ? `<div class="tl-sub">${e.sub}</div>` : ''}
+      </div>`;
+    L.appendChild(d);
+  });
 }
-clock(); setInterval(clock,1000);
+function tick(i){ EVENTS[i].done = !EVENTS[i].done; renderTimeline(); }
+renderTimeline();
 
-/* ── synthetic sensor feed ───────────────────────────────────────
-   Real build: SHT40 over I2C pushes to POST /api/update and the
-   browser polls GET /api/status. Here we just drift plausibly.   */
-let t=73.4, h=46;
-setInterval(function(){
-  t=Math.min(77,Math.max(71,t+(Math.random()-0.5)*0.16));
-  h=Math.min(55,Math.max(40,h+(Math.random()-0.5)*0.6));
-  const rt=document.getElementById('rt');
-  rt.innerHTML=t.toFixed(1)+'<small>&deg;F</small>';
-  rt.className='siv'+(t>75.5?' hot':'');
-  document.getElementById('rh').innerHTML=Math.round(h)+'<small>%</small>';
-},2800);
+/* ── clock ───────────────────────────────────────────────────────────── */
+function clock(){
+  const d = new Date();
+  let h = d.getHours(); const m = String(d.getMinutes()).padStart(2,'0');
+  const ap = h>=12 ? 'PM':'AM'; h = h%12 || 12;
+  document.getElementById('clock').textContent = `${h}:${m} ${ap}`;
+  document.getElementById('tlDateLabel').textContent =
+    d.toLocaleDateString('en-US',{weekday:'long', month:'short', day:'numeric'});
+}
+clock(); setInterval(clock, 1000);
 
-/* ── calendar ────────────────────────────────────────────────── */
-(function(){
-  const now=new Date(), y=now.getFullYear(), mo=now.getMonth();
-  document.getElementById('calM').textContent=
-    now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  const cal=document.getElementById('cal');
-  ['S','M','T','W','T','F','S'].forEach(function(d){
-    const e=document.createElement('div'); e.className='cal-d'; e.textContent=d; cal.appendChild(e);
-  });
-  const first=new Date(y,mo,1).getDay();
-  const days=new Date(y,mo+1,0).getDate();
-  const prev=new Date(y,mo,0).getDate();
-  const busy={3:2,7:1,11:3,14:1,18:2,21:1,24:2,28:1};   // synthetic event counts
-  for(let i=0;i<42;i++){
-    const c=document.createElement('div'); c.className='cd';
-    let n, isCur=false;
-    if(i<first){ n=prev-first+i+1; c.classList.add('out'); }
-    else if(i-first+1>days){ n=i-first+1-days; c.classList.add('out'); }
-    else { n=i-first+1; isCur=true; }
+/* ── synthetic SHT40 feed (real build: I2C → POST /api/update) ───────── */
+let T = 73.4, H = 46;
+setInterval(()=>{
+  T = Math.min(77, Math.max(71, T + (Math.random()-.5)*0.16));
+  H = Math.min(55, Math.max(40, H + (Math.random()-.5)*0.6));
+  const t1 = T.toFixed(1)+'°F', t2 = T.toFixed(1)+'°', h1 = Math.round(H)+'%';
+  setTxt('setTemp',t1); setTxt('rTempDrawer',t2); setTxt('rTempAway',t2);
+  setTxt('setHum',h1);  setTxt('rHumDrawer',h1);
+}, 2800);
+function setTxt(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
 
-    const num=document.createElement('span'); num.textContent=n; c.appendChild(num);
+/* ── drawer / theme / lights / away ──────────────────────────────────── */
+function toggleDrawer(){
+  const dr = document.getElementById('drawer'), ov = document.getElementById('overlay');
+  const open = dr.classList.toggle('open');
+  ov.style.display = open ? 'block' : 'none';
+}
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('icSun').style.display  = dark ? '' : 'none';
+  document.getElementById('icMoon').style.display = dark ? 'none' : '';
+});
+function toggleLights(){                       // real build: POST /api/lights/control
+  const e = document.getElementById('setLight');
+  e.textContent = e.textContent === 'On' ? 'Off' : 'On';
+}
+function manualAway(){                         // real build: POST /api/away/manual
+  const m = document.getElementById('awMode');
+  const home = m.textContent === 'HOME';
+  m.textContent = home ? 'AWAY' : 'HOME';
+  setTxt('setAway', home ? 'Away' : 'Home');
+}
 
-    if(isCur){
-      if(n===now.getDate()) c.classList.add('today');
-      if(busy[n]){
-        const p=document.createElement('div'); p.className='pips';
-        for(let k=0;k<busy[n];k++){
-          const d=document.createElement('div');
-          d.className='pip'+(k===2?' w':'');
-          p.appendChild(d);
-        }
-        c.appendChild(p);
-      }
-    }
-    cal.appendChild(c);
+/* ── settings-drawer calendar ────────────────────────────────────────── */
+let mOff = 0;
+function chMo(d){ mOff = (d===0) ? 0 : mOff + d; drawCal(); }
+function drawCal(){
+  const now = new Date();
+  const D = new Date(now.getFullYear(), now.getMonth()+mOff, 1);
+  const y = D.getFullYear(), mo = D.getMonth();
+  document.getElementById('calLabel').textContent =
+    D.toLocaleDateString('en-US',{month:'long', year:'numeric'});
+  const G = document.getElementById('calG'); G.innerHTML = '';
+  const first = new Date(y,mo,1).getDay(), days = new Date(y,mo+1,0).getDate();
+  const busy = {3:['ev','td'], 7:['ev'], 11:['ev','td','hw'], 14:['hw'], 18:['ev','ev'], 21:['td'], 24:['ev','hw'], 28:['ev']};
+  for(let i=0;i<first;i++){
+    const c=document.createElement('div'); c.className='cc blank'; G.appendChild(c);
   }
-})();
+  for(let n=1;n<=days;n++){
+    const c = document.createElement('div');
+    const isToday = (mOff===0 && n===now.getDate());
+    c.className = 'cc' + (isToday ? ' today' : '');
+    c.innerHTML = `<span class="cn">${n}</span>`;
+    if(busy[n] && mOff===0){
+      const row = document.createElement('div'); row.className='cd';
+      busy[n].forEach(t=>{
+        const dot = document.createElement('div');
+        dot.className='dot'; dot.style.background = DOT[t];
+        row.appendChild(dot);
+      });
+      c.appendChild(row);
+    }
+    G.appendChild(c);
+  }
+}
+drawCal();
 
-/* ── sleep bars — last 7 nights (synthetic) ──────────────────── */
-(function(){
-  const hrs=[7.4,6.9,8.1,5.8,7.2,6.6,6.2];
-  const lbl=['S','M','T','W','T','F','S'];
-  const box=document.getElementById('bars');
-  hrs.forEach(function(v,i){
-    const c=document.createElement('div'); c.className='sbc';
-    const tr=document.createElement('div'); tr.className='sbt';
-    const f=document.createElement('div');
-    f.className='sbf'+(v<6.5?' low':'');
-    f.style.height='0%';
-    tr.appendChild(f);
-    const l=document.createElement('div'); l.className='sbl'; l.textContent=lbl[i];
-    c.appendChild(tr); c.appendChild(l); box.appendChild(c);
-    setTimeout(function(){ f.style.height=(v/9*100)+'%'; }, 220+i*70);
-  });
-})();
+/* ── hair-wash scoring (real build: humidity + rain% + calendar density) ── */
+const HW = [
+  {d:'Fri 10', why:'Humid — 68%',      done:false},
+  {d:'Sat 11', why:'Best score today', done:false, best:true},
+  {d:'Sun 12', why:'60% rain',         done:false},
+  {d:'Mon 13', why:'4 events booked',  done:false},
+];
+document.getElementById('hwList').innerHTML = HW.map(h=>`
+  <div class="hwc${h.best?'':''}" ${h.best?'style="border-color:var(--dot-hw)"':''}>
+    <div>
+      <div style="font-size:12px;font-weight:600">${h.d}${h.best?' ★':''}</div>
+      <div style="font-size:10px;color:var(--tm)">${h.why}</div>
+    </div>
+    <span class="hw-x">×</span>
+  </div>`).join('');
 
-/* ── interactions ────────────────────────────────────────────── */
-document.querySelectorAll('.tg').forEach(function(t){
-  t.addEventListener('click',function(){ t.classList.toggle('on'); });
-});
-[['s1','s1v'],['s2','s2v']].forEach(function(pair){
-  document.getElementById(pair[0]).addEventListener('input',function(e){
-    document.getElementById(pair[1]).textContent=e.target.value+'%';
-  });
-});
-document.querySelectorAll('.cb').forEach(function(b){
-  b.addEventListener('click',function(){
-    b.classList.toggle('done');
-    b.textContent = b.classList.contains('done') ? '✓' : '';
-    b.closest('.td').classList.toggle('done');
-  });
-});
-document.getElementById('theme').addEventListener('click',function(){
-  const r=document.documentElement;
-  r.dataset.theme = r.dataset.theme==='dark' ? 'light' : 'dark';
-});
+/* ── hourly strip ────────────────────────────────────────────────────── */
+const HRS = [['2PM',89],['3PM',90],['4PM',89],['5PM',86],['6PM',83],['7PM',79],['8PM',77]];
+document.getElementById('hourly').innerHTML = HRS.map(([h,t])=>`
+  <div class="hc">
+    <div class="ht">${h}</div>
+    <div class="hb" style="height:${(t-70)*2.4}px"></div>
+    <span class="htp mono">${t}°</span>
+  </div>`).join('');
+
+/* ── shopping ────────────────────────────────────────────────────────── */
+const SHOP = [['Chicken thighs',2],['Rice',1],['Cilantro',1],['Lemons',3]];
+document.getElementById('shL').innerHTML = SHOP.map(([n,q])=>`
+  <div class="shi"><span class="shn">${n}</span><span class="shqv mono">×${q}</span></div>`).join('');
+
 </script>
 </body>
 </html>
