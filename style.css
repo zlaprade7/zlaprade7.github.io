@@ -80,13 +80,15 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 @media(max-width:560px){.navlinks{gap:16px;font-size:11px}}
 
 /* ---------- reveal on scroll ---------- */
-.rv{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease), transform .7s var(--ease)}
-.rv.in{opacity:1;transform:none}
-/* image clip-wipe reveal */
-.wipe{clip-path:inset(0 0 100% 0);transition:clip-path 1.05s var(--ease)}
-.wipe.in{clip-path:inset(0 0 0 0)}
+/* Content is VISIBLE by default. The .js class is added by an inline script
+   in <head>, so the hidden-then-revealed state only ever applies when
+   JavaScript is confirmed running. If JS fails, everything still shows. */
+.js .rv{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease), transform .7s var(--ease)}
+.js .rv.in{opacity:1;transform:none}
+.js .wipe{clip-path:inset(0 0 100% 0);transition:clip-path 1.05s var(--ease)}
+.js .wipe.in{clip-path:inset(0 0 0 0)}
 @media(prefers-reduced-motion:reduce){
-  .rv,.wipe{opacity:1;transform:none;clip-path:none;transition:none}
+  .js .rv,.js .wipe{opacity:1;transform:none;clip-path:none;transition:none}
   html{scroll-behavior:auto}
 }
 

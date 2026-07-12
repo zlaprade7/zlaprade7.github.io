@@ -49,3 +49,15 @@ document.querySelectorAll('.fig img').forEach(img => {
   img.addEventListener('error', mark);
   if (img.complete && img.naturalWidth === 0) mark();
 });
+
+
+/* ---------- safety net ----------
+   If the observer never fires for an element (odd viewport, browser quirk,
+   restored scroll position), reveal it anyway. Content must never be
+   permanently invisible because an animation didn't run.                */
+setTimeout(() => {
+  document.querySelectorAll('.rv:not(.in), .wipe:not(.in)').forEach(el => {
+    el.style.transitionDelay = '0ms';
+    el.classList.add('in');
+  });
+}, 2500);

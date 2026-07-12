@@ -258,7 +258,7 @@
     .dot{width:4px;height:4px;border-radius:50%;}
     /* 1. Hide the mouse everywhere by default (for the clean dashboard look) */
     body {
-      cursor: none;
+      cursor: default;
     }
 
     /* 2. Reveal the standard mouse cursor when hovering over the top bar or inside the settings drawer */
@@ -420,7 +420,7 @@ body{height:100vh;overflow:hidden;display:flex;flex-direction:column}
     <section class="card" style="flex:1.2;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:24px 20px;">
       <h3 style="font-size:22px;font-weight:900;color:var(--tx);letter-spacing:4px;margin-bottom:16px;">JARVIS</h3>
       <div id="jarvis-output">
-        Afternoon. Three tasks still open and chapter at 4. Humidity's low and your evening is clear &mdash; good wash day. Room's holding at 73&deg;F; I'll start the bedtime dim around 22:30.
+        Afternoon. Three tasks still open and a lab at 4. Nothing scheduled before 10 tomorrow, so a 22:30 wind-down puts you at a full night. Room's holding at 73&deg;F &mdash; I'll start dimming the lights at 22:00.
       </div>
     </section>
 
@@ -437,8 +437,8 @@ body{height:100vh;overflow:hidden;display:flex;flex-direction:column}
           <div class="away-list-title">Recent trips</div>
           <div id="awTrips">
             <div class="away-trip"><span>Gym</span><span class="away-min mono">82 min</span></div>
-            <div class="away-trip"><span>Class &mdash; Boyd</span><span class="away-min mono">55 min</span></div>
-            <div class="away-trip"><span>Dining hall</span><span class="away-min mono">31 min</span></div>
+            <div class="away-trip"><span>Class</span><span class="away-min mono">55 min</span></div>
+            <div class="away-trip"><span>Errands</span><span class="away-min mono">31 min</span></div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;align-items:center;text-align:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--br);color:var(--tx);font-size:16px;font-weight:700;column-gap:12px;">
@@ -455,14 +455,14 @@ body{height:100vh;overflow:hidden;display:flex;flex-direction:column}
 /* ── Demo data layer.  In the real build these come from GET /api/status,
    /api/todos, /api/hair-washes and the Google Calendar sync thread. ───── */
 const EVENTS = [
-  {t:'08:00', title:'Gym — push day',                 type:'ev', done:true},
-  {t:'10:10', title:'ELEE 4270 — Analog Electronics', sub:'Boyd 328', type:'ev', done:true},
-  {t:'',      title:'Finish sensors lab report',      sub:'Due today', type:'td'},
-  {t:'13:30', title:'Physics PLA session',            sub:'In progress', type:'ev'},
-  {t:'',      title:'Order INA333 samples',           sub:'Overdue',   type:'td'},
-  {t:'16:00', title:'Theta Tau — chapter meeting',    type:'ev'},
-  {t:'',      title:'Wash day',                       sub:'Low humidity, clear evening', type:'hw'},
-  {t:'22:30', title:'Suggested bedtime',              sub:'Based on tomorrow\'s 8am start', type:'ev'},
+  {t:'08:00', title:'Gym',                       type:'ev', done:true},
+  {t:'10:10', title:'Electromagnetism',          sub:'Lecture', type:'ev', done:true},
+  {t:'',      title:'Finish lab report',         sub:'Due today', type:'td'},
+  {t:'13:30', title:'Capstone — team sync',      sub:'In progress', type:'ev'},
+  {t:'',      title:'Problem set 4',             sub:'Due Friday', type:'td'},
+  {t:'16:00', title:'Signals & Systems',         sub:'Lab', type:'ev'},
+  {t:'',      title:'Review circuits notes',     type:'td'},
+  {t:'22:30', title:'Suggested bedtime',         sub:'Based on an 8am start tomorrow', type:'ev'},
 ];
 const DOT = {ev:'var(--dot-ev)', td:'var(--dot-td)', hw:'var(--dot-hw)', hd:'var(--dot-hd)'};
 
