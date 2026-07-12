@@ -79,17 +79,6 @@
       <strong>Why this matters:</strong> this is the difference between a project that <em>reads a sensor</em> and a project that <em>conditions a signal</em>. The bridge sets up the measurement; the in-amp makes it survivable. Everything downstream — the ADC bits, the calibration curve, the accuracy claim — depends on getting this stage right.
     </div>
 
-    <div class="figpair">
-      <figure class="fig ratio wipe" data-ph="images/bottle-schematic.png&#10;&#10;Screenshot: the bridge + INA121P stage from your schematic">
-        <img src="../images/bottle-schematic.png" alt="Wheatstone bridge and INA121P gain stage">
-        <figcaption>Bridge and instrumentation-amp stage.</figcaption>
-      </figure>
-      <figure class="fig ratio wipe" data-ph="images/bottle-cal.png&#10;&#10;Plot: measured output vs. reference temperature">
-        <img src="../images/bottle-cal.png" alt="Calibration curve">
-        <figcaption>Calibration against a reference thermometer.</figcaption>
-      </figure>
-    </div>
-
     <h3>The sensor I deliberately didn't use</h3>
     <p>The obvious way to measure water level is <b>capacitive rods</b> — two electrodes in the liquid, read the capacitance. It's cheap, it's linear, and it's what most designs reach for.</p>
     <p>I rejected it. The rods have to sit <em>in the water I'm going to drink</em>, and in a bottle I have to clean regularly. So I took the <b>A02YYUW ultrasonic</b> instead — it measures the surface from above, touching nothing. It's a harder sensor to work with (reflections, condensation, a moving surface, outlier spikes that need a median filter to kill) and I chose it anyway, because a measurement that compromises the thing being measured isn't a measurement worth having.</p>
@@ -143,11 +132,7 @@
     <p>The <b>ESP32-C3 SuperMini</b> polls the sensor set, applies the calibration curve to the conditioned thermistor signal, and filters the IMU stream to distinguish a genuine sip from the bottle being knocked over or carried.</p>
     <p>It then does the thing that makes the device more than a datalogger: it pulls current local conditions from the <b>Open-Meteo API</b>, scales an expected intake against temperature and humidity, compares that to what you've actually drunk, and pushes a notification through <b>ntfy.sh</b> when you're behind. The hydration target is a function of the weather, not a fixed number.</p>
 
-    <figure class="fig wide wipe" data-ph="images/bottle-notify.png&#10;&#10;Phone screenshot: an ntfy notification from the bottle">
-      <img src="../images/bottle-notify.png" alt="Push notification from the bottle">
-      <figcaption>The output, in the form it's actually consumed.</figcaption>
-    </figure>
-  </div>
+    </div>
 
   <div class="block prose">
     <h2><span class="k">Where it's going</span>V2: make it cheaper, and make it fit any bottle.</h2>

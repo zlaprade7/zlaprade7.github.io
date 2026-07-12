@@ -69,17 +69,6 @@
       <strong>Why this is the thing I'd talk about in an interview:</strong> almost everyone reaches for an ADS1115 and moves on. Building the converter means you have to actually understand what an ADC <em>is</em> — the ladder's output impedance, the comparator's offset and propagation delay, the settling time you have to respect between trials, and why 6 bits was the honest limit rather than an arbitrary choice. You can't hand-wave any of it, because there's no datasheet doing the work for you.
     </div>
 
-    <div class="figpair">
-      <figure class="fig ratio wipe" data-ph="images/bench-r2r.png&#10;&#10;Schematic screenshot: the R-2R ladder + comparator">
-        <img src="../images/bench-r2r.png" alt="R-2R ladder DAC and comparator">
-        <figcaption>R-2R ladder across six GPIOs, comparator returning one bit per trial.</figcaption>
-      </figure>
-      <figure class="fig ratio wipe" data-ph="images/bench-r2r-scope.png&#10;&#10;Scope capture of a conversion, or the SAR code">
-        <img src="../images/bench-r2r-scope.png" alt="SAR conversion">
-        <figcaption>Six comparisons, six bits, one conversion.</figcaption>
-      </figure>
-    </div>
-
     <p>The voltmeter also does double duty. The DC reference mode has to display its own output <em>as measured by the voltmeter</em> — the instrument checking its own work. Getting that path clean meant the reference had to stay powered while the voltmeter screen was live, which sounds trivial and was not.</p>
   </div>
 
@@ -99,11 +88,7 @@
     <h3>The detail worth defending</h3>
     <p>The MOSFETs sit <b>inside the op-amp's feedback loop</b>. That's what suppresses crossover distortion — the dead zone where neither device is conducting. The feedback forces the op-amp to swing hard through that region to keep the output tracking the input, so the loop hides the nonlinearity that the output stage would otherwise show. A 100Ω gate resistor limits gate current and keeps the stage from oscillating.</p>
 
-    <figure class="fig wide wipe" data-ph="images/bench-pushpull.png&#10;&#10;Multisim/LTspice screenshot of the push-pull stage&#10;(or a scope capture of the output swing)">
-      <img src="../images/bench-pushpull.png" alt="Class AB push-pull output stage">
-      <figcaption>Class AB stage. ±12V swing into the load.</figcaption>
-    </figure>
-  </div>
+    </div>
 
   <div class="block prose">
     <h2><span class="k">Debugging</span>Three bugs the bench found that the simulation didn't.</h2>

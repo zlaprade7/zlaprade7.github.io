@@ -31,10 +31,6 @@
     <h1 class="rv">JARVIS</h1>
     <p class="deck rv">A Raspberry Pi node that senses my room and acts on it. Over a year of iteration, and the only project I keep coming back to — because the interesting question turned out not to be <em>can I read a sensor</em>, but <em>what should a room do with what it knows?</em></p>
 
-    <figure class="fig wide wipe" data-ph="images/jarvis-hero.jpg&#10;&#10;The dashboard running on the wall display, in the room, at night&#10;16:9">
-      <img src="../images/jarvis-hero.jpg" alt="The JARVIS dashboard running on a wall display">
-    </figure>
-
     <dl class="spec rv">
       <div><dt>Role</dt><dd>Solo — hardware, backend, UI</dd></div>
       <div><dt>Timeline</dt><dd>Ongoing, 1+ year</dd></div>
@@ -77,16 +73,19 @@
       <strong>The detail I'd defend in an interview:</strong> DDC/CI. Most people reach for a smart plug to control a monitor, which is a blunt instrument — it can only cut power. Talking to the display over its own I²C control channel means I can set brightness as a continuous variable, which is what a dimming curve actually requires. It's a small thing that only works if you go a layer lower than the obvious solution.
     </div>
 
-    <div class="figpair">
-      <figure class="fig ratio wipe" data-ph="images/jarvis-board.jpg&#10;&#10;Photo: the sensor board / wiring, plain background">
-        <img src="../images/jarvis-board.jpg" alt="Sensor wiring">
-        <figcaption>The sensing hardware. Unchanged since v1 — it was right the first time.</figcaption>
-      </figure>
-      <figure class="fig ratio wipe" data-ph="images/jarvis-enclosure.jpg&#10;&#10;Photo: the box it lives in, in situ">
-        <img src="../images/jarvis-enclosure.jpg" alt="The enclosure in the room">
-        <figcaption>Where it lives.</figcaption>
-      </figure>
     </div>
+
+  <div class="block prose">
+    <h2><span class="k">The JARVIS panel</span>One box does the thinking. The rest just displays.</h2>
+    <p>Everything on that screen except one panel is a <em>readout</em> — the calendar shows events, the sensors show numbers, the weather shows weather. Useful, but it's a wall of facts and you still have to do the work.</p>
+    <p>The panel on the right is different. It takes the calendar, the weather, the room sensors, and the sleep record and collapses them into <b>one sentence you can act on</b>: what tomorrow looks like, and when you should go to bed to be ready for it. On a quiet night it reads like: nothing scheduled tomorrow, target a 12:30 bedtime, get some rest.</p>
+
+    <div class="callout">
+      <strong>This is the whole project.</strong> Anyone can put sensor values on a screen. The difference between a dashboard and a system is whether something <em>synthesises</em> — and that panel is the only part of MonCoeur that does. It's also where the Oura data lands when I close that loop: readiness and sleep quality become two more inputs to the same sentence.
+    </div>
+
+    <h3>Colour carries meaning</h3>
+    <p>Events are blue, tasks amber, wash days purple, completed items green. One glance tells you not just <em>that</em> something is on the day but <em>what kind</em> of thing it is — which is the difference between a list you read and a list you scan. From across the room, at a glance, that's the only channel that still works.</p>
   </div>
 
   <div class="block prose">
@@ -105,17 +104,6 @@
 
     <h3>The hard part was concurrency, not the sensors</h3>
     <p>Sensor polling, the light automation, calendar sync, weather fetches, sleep detection, and the Flask server all run concurrently — <b>seven threads</b> sharing state. Getting that right meant confronting <b>race conditions</b> head-on: two threads reading and writing the same sensor state, with the last writer silently winning. Nothing crashes when you get this wrong. It just produces answers that are subtly, occasionally incorrect — which is far worse than crashing.</p>
-
-    <div class="figpair">
-      <figure class="fig ratio wipe" data-ph="images/jarvis-v1.png&#10;&#10;Screenshot: the original browser-based UI">
-        <img src="../images/jarvis-v1.png" alt="Dashboard version 1">
-        <figcaption>v1 — browser-based, laptop-sized, abandoned in a week.</figcaption>
-      </figure>
-      <figure class="fig ratio wipe" data-ph="images/jarvis-v-current.png&#10;&#10;Screenshot: current UI (censor the calendar!)">
-        <img src="../images/jarvis-v-current.png" alt="Current dashboard">
-        <figcaption>Current — always-on, glanceable from across the room.</figcaption>
-      </figure>
-    </div>
 
     <p>The circuit has not changed in a year. The interface has changed constantly. That's where the design problem actually lived.</p>
   </div>

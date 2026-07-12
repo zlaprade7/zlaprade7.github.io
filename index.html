@@ -48,21 +48,20 @@
       <span class="note">In depth</span>
     </div>
 
-    <article class="feat">
+    <article class="feat lead">
       <div class="rv">
         <div class="fmeta">
-          <span>2025 — ongoing</span><span class="dot"></span><span>Systems Integration</span><span class="dot"></span><span>Solo</span>
+          <span>2025 — ongoing</span><span class="dot"></span><span>Systems Integration</span><span class="dot"></span><span>Solo</span><span class="dot"></span><span style="color:var(--accent)">Flagship</span>
         </div>
         <h3><a href="projects/jarvis.html">JARVIS — Environmental Feedback System</a></h3>
-        <p>The project I've kept returning to for over a year. A Raspberry Pi node that senses my room — temperature, humidity, presence — and acts on it: driving smart lighting, waking the display over DDC/CI, and surfacing my schedule and the weather on an always-on dashboard. It's now growing into something more interesting: pulling my Oura Ring data so the room adapts to how I actually slept.</p>
-        <div class="tools">Raspberry Pi · Flask · Google Calendar API · Oura API · WiZ · DDC/CI · systemd · GPIO</div>
-        <a class="more" href="projects/jarvis.html">
-          <span>Read the case study</span><span class="arw">→</span>
-        </a>
+        <p style="max-width:64ch">The project I've kept returning to for over a year. A Raspberry Pi node that senses my room — temperature, humidity, presence — and acts on it: driving smart lighting, waking the display over DDC/CI, tracking my sleep, and surfacing my day on an always-on screen.</p>
+        <p style="max-width:64ch">Every panel on that screen is a readout except one. <b>The JARVIS panel takes the calendar, the weather, the room sensors and the sleep record and collapses them into a single sentence I can act on</b> — what tomorrow looks like, and when to go to bed to be ready for it. Anyone can put sensor values on a screen. That one box is the difference between a dashboard and a system.</p>
+        <div class="tools">Raspberry Pi · Flask · 7 threads · SHT40 · PIR · Google Calendar API · WiZ (UDP) · ddcutil / wlopm · systemd</div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <a class="more" href="projects/jarvis.html"><span>Read the case study</span><span class="arw">→</span></a>
+          <a class="more" href="demo/"><span>Use the live demo</span><span class="arw">→</span></a>
+        </div>
       </div>
-      <figure class="fig ratio wipe" data-ph="images/jarvis-hero.jpg&#10;&#10;The dashboard running on the display, in the room, at night">
-        <img src="images/jarvis-hero.jpg" alt="The JARVIS dashboard running on a wall display">
-      </figure>
     </article>
 
     <article class="feat">
@@ -77,8 +76,8 @@
           <span>Read the case study</span><span class="arw">→</span>
         </a>
       </div>
-      <figure class="fig ratio wipe" data-ph="images/bench-hero.jpg&#10;&#10;Final assembled PCB, or the breadboard wired to a scope showing the SPWM sine">
-        <img src="images/bench-hero.jpg" alt="Raspberry Pi bench instrument">
+      <figure class="fig ratio wipe">
+        <img src="images/bench-pcb.jpg" alt="The populated four-layer bench instrument board">
       </figure>
     </article>
 

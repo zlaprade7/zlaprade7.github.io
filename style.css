@@ -295,3 +295,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .next a:hover h3{color:var(--accent)}
 .next .ar{font-family:var(--mono);font-size:20px;color:var(--rule-2);transition:transform .35s var(--ease),color .3s}
 .next a:hover .ar{transform:translateX(8px);color:var(--accent)}
+
+
+/* ---------- flagship lead item (no image) ---------- */
+.feat.lead{
+  grid-template-columns:1fr;
+  padding-bottom:56px;
+  border-bottom:1px solid var(--rule);
+}
+.feat.lead h3{font-size:38px;max-width:20ch}
+.feat.lead .tools{margin-bottom:26px}
