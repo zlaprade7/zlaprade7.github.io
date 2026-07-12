@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instrumented Water Bottle — Zack</title>
+<meta name="description" content="A five-sensor hydration tracker: analog front end, custom PCB, ESP32-C3 firmware, printed enclosure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="progress"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
+      <a class="back" href="../index.html#work">All work</a>
+      <a href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="p-hero">
+  <div class="wrap">
+    <div class="eyebrow rv">Project 001 — 2026</div>
+    <h1 class="rv">Instrumented Water Bottle</h1>
+    <p class="deck rv">A hydration tracker with five sensors, a custom analog front end, a two-layer PCB, and a printed enclosure — designed, fabricated, and debugged end to end.</p>
+
+    <figure class="fig wide wipe" data-ph="images/bottle-hero.jpg&#10;&#10;Hero shot: assembled bottle, front-lit, plain background, 16:9">
+      <img src="../images/bottle-hero.jpg" alt="The assembled instrumented water bottle">
+    </figure>
+
+    <dl class="spec rv">
+      <div><dt>Role</dt><dd>Solo — hardware, firmware, CAD</dd></div>
+      <div><dt>Timeline</dt><dd>10 weeks</dd></div>
+      <div><dt>Context</dt><dd>ELEE 4230, Sensors &amp; Transducers</dd></div>
+      <div><dt>Status</dt><dd>Built and working</dd></div>
+    </dl>
+  </div>
+</header>
+
+<!-- ============ BODY ============ -->
+<div class="narrow">
+
+  <div class="block prose">
+    <h2><span class="k">Why</span>I get migraines. They're linked to dehydration.</h2>
+    <p>That's the whole reason this exists. Not a hypothetical user, not a market gap — a problem I have, that I can measure, and that hardware can plausibly help with. If I drink enough water I get fewer migraines. The difficulty is that I don't notice I've stopped drinking until it's already too late.</p>
+    <p>So: a bottle that notices for me.</p>
+    <p>Building it well meant confronting the fact that each sensor demands a different kind of care:</p>
+    <ul>
+      <li>A <b>thermistor</b> is a resistance, not a voltage. It needs a bridge and a gain stage before an ADC can do anything useful with it — and its response is nonlinear, so a straight-line fit is a lie.</li>
+      <li>An <b>ultrasonic rangefinder</b> inside a bottle is a hostile environment — reflections, condensation, a surface that moves whenever you do.</li>
+      <li>An <b>IMU</b> gives you raw acceleration. "A sip happened" is an inference, not a reading.</li>
+      <li>Five sensors on one microcontroller makes <b>bus arbitration and timing</b> a design constraint, not an afterthought.</li>
+    </ul>
+    <p>The premise is simple enough that nothing lets you hide sloppy engineering behind it. That was the appeal.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Analog front end</span>Getting a usable signal out of a thermistor.</h2>
+    <p>A thermistor's resistance change is small, and reading it directly with the ESP32's ADC throws most of the resolution away. Instead I put it in one leg of a <b>Wheatstone bridge</b>, so the output is a differential voltage that sits near zero at the balance point and swings with temperature.</p>
+    <p>That differential signal goes into an <b>INA121P instrumentation amplifier</b> running at a gain of 2 — high input impedance, high CMRR, gain set by a single external resistor. The in-amp rejects the common-mode noise the bridge picks up and hands the ADC a signal that actually uses its range.</p>
+    <p>The thermistor is a <b>Semitec 103AT-2</b>, and its resistance-to-temperature relationship is famously nonlinear. Rather than fake it with a linear fit, I linearise it properly with the <b>Steinhart-Hart equation</b> — three coefficients, good to a fraction of a degree across the range that matters.</p>
+
+    <div class="callout">
+      <strong>Why this matters:</strong> this is the difference between a project that <em>reads a sensor</em> and a project that <em>conditions a signal</em>. The bridge sets up the measurement; the in-amp makes it survivable. Everything downstream — the ADC bits, the calibration curve, the accuracy claim — depends on getting this stage right.
+    </div>
+
+    <div class="figpair">
+      <figure class="fig ratio wipe" data-ph="images/bottle-schematic.png&#10;&#10;Screenshot: the bridge + INA121P stage from your schematic">
+        <img src="../images/bottle-schematic.png" alt="Wheatstone bridge and INA121P gain stage">
+        <figcaption>Bridge and instrumentation-amp stage.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe" data-ph="images/bottle-cal.png&#10;&#10;Plot: measured output vs. reference temperature">
+        <img src="../images/bottle-cal.png" alt="Calibration curve">
+        <figcaption>Calibration against a reference thermometer.</figcaption>
+      </figure>
+    </div>
+
+    <h3>The sensor I deliberately didn't use</h3>
+    <p>The obvious way to measure water level is <b>capacitive rods</b> — two electrodes in the liquid, read the capacitance. It's cheap, it's linear, and it's what most designs reach for.</p>
+    <p>I rejected it. The rods have to sit <em>in the water I'm going to drink</em>, and in a bottle I have to clean regularly. So I took the <b>A02YYUW ultrasonic</b> instead — it measures the surface from above, touching nothing. It's a harder sensor to work with (reflections, condensation, a moving surface, outlier spikes that need a median filter to kill) and I chose it anyway, because a measurement that compromises the thing being measured isn't a measurement worth having.</p>
+
+    <div class="callout">
+      <strong>This is the tradeoff I'd want to be asked about.</strong> The easy sensor was the wrong sensor. Choosing the harder one — and then doing the filtering work to make it behave — is the actual engineering.
+    </div>
+
+    <p>The remaining sensors are digital and comparatively well-behaved: an <b>SHT40</b> for ambient temperature and humidity over I²C, an <b>LSM6DSO IMU</b> for orientation and motion, and an <b>A02YYUW ultrasonic sensor</b> for fill level. Each gets its own filter chosen to match its failure mode — <b>Kalman</b> on the noisy analog channel, <b>EMA</b> for smoothing slow drift, and a <b>median filter</b> to kill the ultrasonic's outlier spikes. One filter for all five sensors would have been the lazy answer and a worse one.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Board</span>From breadboard to fabricated PCB.</h2>
+    <p>Once the front end worked on a breadboard, I laid out a two-layer board in <b>EasyEDA</b> and had it fabricated by <b>JLCPCB</b>. The layout decisions that mattered: keeping the bridge's high-impedance nodes short and away from the switching noise of the radio, giving the analog section its own return path, and placing the connectors so the board could actually be assembled inside the enclosure rather than just look correct in CAD.</p>
+
+    <figure class="fig wide wipe" data-ph="images/bottle-pcb.png&#10;&#10;EasyEDA 3D board render, or a photo of the bare board">
+      <img src="../images/bottle-pcb.png" alt="Two-layer PCB layout">
+      <figcaption>Two-layer board. Analog front end kept clear of the RF section.</figcaption>
+    </figure>
+
+    <p class="pullquote">[Zack — replace this pull-quote with one true sentence about a real mistake on this board. If nothing went wrong, delete it.]</p>
+
+    <p>The enclosure was modeled in <b>Fusion 360</b> and printed. Designing it alongside the board — rather than after — is what turned the second revision into a device instead of a bare PCB with wires hanging off it.</p>
+
+    <div class="figpair">
+      <figure class="fig ratio wipe" data-ph="images/bottle-cad.png&#10;&#10;Fusion 360 model of the enclosure">
+        <img src="../images/bottle-cad.png" alt="Fusion 360 enclosure model">
+        <figcaption>Enclosure, modeled around the board.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe" data-ph="images/bottle-assembly.jpg&#10;&#10;Photo: board seated in the printed enclosure">
+        <img src="../images/bottle-assembly.jpg" alt="Board seated in the printed enclosure">
+        <figcaption>Board seated in the printed shell.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Firmware</span>Turning readings into something worth acting on.</h2>
+    <p>The <b>ESP32-C3 SuperMini</b> polls the sensor set, applies the calibration curve to the conditioned thermistor signal, and filters the IMU stream to distinguish a genuine sip from the bottle being knocked over or carried.</p>
+    <p>It then does the thing that makes the device more than a datalogger: it pulls current local conditions from the <b>Open-Meteo API</b>, scales an expected intake against temperature and humidity, compares that to what you've actually drunk, and pushes a notification through <b>ntfy.sh</b> when you're behind. The hydration target is a function of the weather, not a fixed number.</p>
+
+    <figure class="fig wide wipe" data-ph="images/bottle-notify.png&#10;&#10;Phone screenshot: an ntfy notification from the bottle">
+      <img src="../images/bottle-notify.png" alt="Push notification from the bottle">
+      <figcaption>The output, in the form it's actually consumed.</figcaption>
+    </figure>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Where it's going</span>V2: make it cheaper, and make it fit any bottle.</h2>
+    <p>V1 works. It's also expensive, complicated, and welded to one specific bottle — which quietly defeats the point. I wanted something I could <em>actually use every day</em>, and a bespoke instrumented bottle isn't that. It's a demo.</p>
+    <p>So I'm rebuilding it as something closer to a <b>keychain hydration counter</b>: small, cheap, bottle-agnostic. Clip it to whatever bottle you're carrying.</p>
+
+    <div class="callout">
+      <strong>The scope cut is the point.</strong> Five sensors was a good exercise and a bad product. Almost all the value sits in one question — <em>have I drunk enough today?</em> — and answering that doesn't need a Wheatstone bridge, an instrumentation amp, and an ultrasonic rangefinder. Stripping the build back to the sensor that actually earns its place is harder than adding four more, and it's the version I'd actually carry.
+    </div>
+
+    <h3>What carries over, and what doesn't</h3>
+    <ul>
+      <li><b>Keep:</b> motion-based sip detection. The IMU was always the sensor doing the real work.</li>
+      <li><b>Reconsider:</b> the analog front end. It's the part I'm proudest of and it may not survive contact with the cost target. Being able to say that out loud is part of the job.</li>
+      <li><b>Fix:</b> the form factor. Bottle-agnostic was always the goal — I just built the opposite of it first.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>[Zack — one more section to write.]</strong> Three specific things that went wrong on the V1 board. A layout decision you'd reverse, a part you'd swap, a measurement that didn't match the simulation. Naming your own mistakes is the one thing a template can't fake.
+    </div>
+
+    <div class="quick" style="display:flex;gap:26px;margin-top:36px;font-family:var(--mono);font-size:12.5px">
+      <a href="https://github.com/YOUR_USERNAME/REPO" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source &amp; design files →</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ NEXT ============ -->
+<div class="next">
+  <div class="wrap">
+    <a href="bench-instrument.html">
+      <div>
+        <div class="lbl">Next project</div>
+        <h3>Raspberry Pi Bench Instrument</h3>
+      </div>
+      <span class="ar">→</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Hand-built. No frameworks, no trackers.</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script src="../main.js"></script>
+</body>
+</html>

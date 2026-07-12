@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raspberry Pi Bench Instrument — Zack LaPrade</title>
+<meta name="description" content="A four-mode bench instrument on a Raspberry Pi. Class AB push-pull output stage, a discrete 6-bit SAR ADC, and a digipot-swept ohmmeter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="progress"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
+      <a class="back" href="../index.html#work">All work</a>
+      <a href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="p-hero">
+  <div class="wrap">
+    <div class="eyebrow rv">Project 002 — 2026</div>
+    <h1 class="rv">Raspberry Pi Bench Instrument</h1>
+    <p class="deck rv">Four instruments in one box — function generator, voltmeter, ohmmeter, and DC reference — driven by a rotary encoder and a 20×4 LCD. I led a team of five as <b>project lead and electrical lead</b>, and designed the analog side: the Class AB output stage, a discrete successive-approximation ADC, and the ohmmeter.</p>
+
+    <figure class="fig wide wipe" data-ph="images/bench-hero.jpg&#10;&#10;The finished instrument — LCD lit, encoder, probes out. 16:9">
+      <img src="../images/bench-hero.jpg" alt="The finished bench instrument">
+    </figure>
+
+    <dl class="spec rv">
+      <div><dt>Role</dt><dd>Project lead &amp; electrical lead</dd></div>
+      <div><dt>Team</dt><dd>5 engineers</dd></div>
+      <div><dt>I designed</dt><dd>Push-pull amp, voltmeter, ohmmeter</dd></div>
+      <div><dt>Status</dt><dd>Built, calibrated, delivered</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="narrow">
+
+  <div class="block prose">
+    <h2><span class="k">The brief</span>Build the instruments, don't buy them.</h2>
+    <p>The constraint that made this project worth doing: <b>no instrumentation ICs</b>. No ADC chip, no dedicated ohmmeter front end. If the box needed to measure a voltage, we had to build the thing that measures voltage.</p>
+    <p>That turns a software exercise into an analog design problem. A Raspberry Pi has no analog input at all — so the voltmeter isn't a library call, it's a circuit you have to invent. Which is exactly the point.</p>
+    <p>I ran the project and owned the analog side of it. What follows is the part I designed.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Voltmeter</span>Building an ADC out of resistors and a comparator.</h2>
+    <p>The Pi can't read an analog voltage. So I built a <b>6-bit successive-approximation ADC</b> from discrete parts.</p>
+    <p>The mechanism is the classic SAR loop. An <b>R-2R ladder DAC</b> across six GPIO pins generates a trial voltage. A <b>comparator</b> compares that trial against the unknown input and reports a single bit: higher or lower. The Pi walks the bits from MSB down, keeping each one that doesn't overshoot. Six comparisons, six bits, one conversion — a binary search performed in hardware.</p>
+
+    <div class="callout">
+      <strong>Why this is the thing I'd talk about in an interview:</strong> almost everyone reaches for an ADS1115 and moves on. Building the converter means you have to actually understand what an ADC <em>is</em> — the ladder's output impedance, the comparator's offset and propagation delay, the settling time you have to respect between trials, and why 6 bits was the honest limit rather than an arbitrary choice. You can't hand-wave any of it, because there's no datasheet doing the work for you.
+    </div>
+
+    <div class="figpair">
+      <figure class="fig ratio wipe" data-ph="images/bench-r2r.png&#10;&#10;Schematic screenshot: the R-2R ladder + comparator">
+        <img src="../images/bench-r2r.png" alt="R-2R ladder DAC and comparator">
+        <figcaption>R-2R ladder across six GPIOs, comparator returning one bit per trial.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe" data-ph="images/bench-breadboard.jpg&#10;&#10;Process photo: the breadboard build">
+        <img src="../images/bench-breadboard.jpg" alt="Breadboard prototype">
+        <figcaption>Breadboard, before the board.</figcaption>
+      </figure>
+    </div>
+
+    <p>The voltmeter also does double duty. The DC reference mode has to display its own output <em>as measured by the voltmeter</em> — the instrument checking its own work. Getting that path clean meant the reference had to stay powered while the voltmeter screen was live, which sounds trivial and was not.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Ohmmeter</span>A divider you sweep until it trips.</h2>
+    <p>Same constraint, different trick. The unknown resistor sits in the top leg of a voltage divider; the bottom leg is an <b>MCP4231 digital potentiometer</b> in series with a fixed resistor. The Pi sweeps the digipot across its 128 steps and watches a comparator. The step at which the divider midpoint crosses the threshold tells you the unknown value.</p>
+    <p>The interesting engineering is in the fixed series resistor, because it sets where the measurable window lands. I started at <b>324Ω</b> and moved to <b>422Ω</b> to centre the range — which put the floor at about <b>526Ω</b> and the ceiling near <b>9.8kΩ</b>, covering the 500Ω–10kΩ target properly instead of wasting half the digipot's travel below the range of interest.</p>
+
+    <p class="pullquote">A comparator gives you one bit. The whole design problem is choosing where to point it.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Push-pull amplifier</span>Driving a real load from a single supply.</h2>
+    <p>The output stage is a <b>Class AB push-pull amplifier</b>: a <b>TL071CP</b> op-amp driving complementary MOSFETs — an <b>IRFZ24N</b> sourcing positive current and an <b>IRF5210</b> sinking negative.</p>
+    <p>The supply was a single 24V rail, so I split it into <b>±12V</b> with a resistor divider, Zener clamps, and a bypass capacitor to make a stable virtual ground. Not as clean as a true dual supply, but it's what the bench gave us, and the Zener-plus-cap arrangement holds the mid-rail steady enough to work against.</p>
+
+    <h3>The detail worth defending</h3>
+    <p>The MOSFETs sit <b>inside the op-amp's feedback loop</b>. That's what suppresses crossover distortion — the dead zone where neither device is conducting. The feedback forces the op-amp to swing hard through that region to keep the output tracking the input, so the loop hides the nonlinearity that the output stage would otherwise show. A 100Ω gate resistor limits gate current and keeps the stage from oscillating.</p>
+
+    <figure class="fig wide wipe" data-ph="images/bench-pushpull.png&#10;&#10;Multisim/LTspice screenshot of the push-pull stage&#10;(or a scope capture of the output swing)">
+      <img src="../images/bench-pushpull.png" alt="Class AB push-pull output stage">
+      <figcaption>Class AB stage. ±12V swing into the load.</figcaption>
+    </figure>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Debugging</span>Three bugs the bench found that the simulation didn't.</h2>
+    <p>This is the section I'd read first if I were hiring someone.</p>
+    <ul>
+      <li><b>The coefficient mismatch.</b> The resistance-to-step conversion and the step-to-resistance conversion had drifted apart — two different pairs of coefficients doing what should have been inverse operations. The ohmmeter read plausibly wrong, which is the worst kind of wrong. Fixed by making one source of truth and forcing every file to use it.</li>
+      <li><b>The floor/ceiling logic was backwards.</b> When the comparator saturates, you're out of range — but the two saturation cases were swapped, and the boundaries were off by about 200Ω. Only bench testing against known resistors caught it; nothing in the code looked incorrect.</li>
+      <li><b>Step 0 wasn't zero volts.</b> The DC reference "clear" routine wrote step 0 to the digipot, which maps to <b>−5V</b>, not 0V. It should have written step 64. A midpoint isn't a minimum, and I'd assumed it was.</li>
+    </ul>
+    <p>All three share a shape: the code was self-consistent and the reasoning was wrong. That's the failure mode simulation can't catch, and it's the argument for building the thing.</p>
+
+    <div class="quick" style="display:flex;gap:26px;margin-top:36px;font-family:var(--mono);font-size:12.5px">
+      <a href="https://github.com/YOUR_USERNAME/REPO" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source &amp; schematics →</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="next">
+  <div class="wrap">
+    <a href="water-bottle.html">
+      <div>
+        <div class="lbl">Next project</div>
+        <h3>Instrumented Water Bottle</h3>
+      </div>
+      <span class="ar">→</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Hand-built. No frameworks, no trackers.</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script src="../main.js"></script>
+</body>
+</html>

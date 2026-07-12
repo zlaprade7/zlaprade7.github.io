@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS — Environmental Feedback System</title>
+<meta name="description" content="A Raspberry Pi node that senses a room and acts on it — and is learning to adapt to the person in it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="progress"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
+      <a class="back" href="../index.html#work">All work</a>
+      <a href="../demo/">Live demo</a>
+      <a href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="p-hero">
+  <div class="wrap">
+    <div class="eyebrow rv">Project 001 — 2025 to present</div>
+    <h1 class="rv">JARVIS</h1>
+    <p class="deck rv">A Raspberry Pi node that senses my room and acts on it. Over a year of iteration, and the only project I keep coming back to — because the interesting question turned out not to be <em>can I read a sensor</em>, but <em>what should a room do with what it knows?</em></p>
+
+    <figure class="fig wide wipe" data-ph="images/jarvis-hero.jpg&#10;&#10;The dashboard running on the wall display, in the room, at night&#10;16:9">
+      <img src="../images/jarvis-hero.jpg" alt="The JARVIS dashboard running on a wall display">
+    </figure>
+
+    <dl class="spec rv">
+      <div><dt>Role</dt><dd>Solo — hardware, backend, UI</dd></div>
+      <div><dt>Timeline</dt><dd>Ongoing, 1+ year</dd></div>
+      <div><dt>Runs on</dt><dd>Raspberry Pi, always-on</dd></div>
+      <div><dt>Try it</dt><dd><a href="../demo/" style="color:var(--accent)">Live demo →</a></dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="narrow">
+
+  <div class="block prose">
+    <h2><span class="k">The idea</span>Most "smart rooms" are just remote controls.</h2>
+    <p>You can buy a smart bulb and an app and call it home automation, but nothing about that system <em>knows</em> anything. It waits for you to tell it what to do. The sensing and the acting are connected by a human tapping a phone.</p>
+    <p>JARVIS started as a dashboard and turned into an argument with that. If the room can measure its own conditions, read my calendar, and see the weather, then it should be able to close the loop itself — and the more of that loop I closed, the more obvious it became that one input was missing. The room knew everything about itself and nothing about <em>me</em>.</p>
+    <p class="pullquote">A room that measures the environment is a weather station. A room that measures the environment <em>and its occupant</em> is a control system.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">What it does today</span>Sense, decide, act — on one board.</h2>
+
+    <h3>Sensing</h3>
+    <ul>
+      <li><b>SHT40</b> over I²C — temperature and humidity. (v1 used a DHT11; the SHT40 is the upgrade.)</li>
+      <li><b>PIR</b> — motion. Not just "is someone here" — it drives three separate behaviours: lights come up automatically when I walk in at night, motion while I'm away gets logged as a security event, and <b>forty minutes of stillness is read as "asleep."</b></li>
+      <li><b>Google Calendar API</b> — what's actually on my day.</li>
+      <li><b>Weather API</b> — outside conditions, for context the room can't sense itself.</li>
+    </ul>
+
+    <h3>Acting</h3>
+    <ul>
+      <li><b>WiZ smart lighting</b> — driven over the local network, not through a vendor cloud.</li>
+      <li><b>DDC/CI display control</b> — the Pi speaks the monitor's own protocol to change brightness and power state directly. No smart plug, no HDMI-CEC hack — the actual VESA control channel over the I²C lines in the display cable.</li>
+    </ul>
+
+    <h3>Running</h3>
+    <p>The whole thing runs as a hardened <b>systemd</b> service: it comes up headless on boot, restarts on failure, and survives reboots without me touching it. That sounds like a footnote. It isn't — it's the difference between a demo I run when someone visits and a system that has been quietly running in my room for a year.</p>
+
+    <div class="callout">
+      <strong>The detail I'd defend in an interview:</strong> DDC/CI. Most people reach for a smart plug to control a monitor, which is a blunt instrument — it can only cut power. Talking to the display over its own I²C control channel means I can set brightness as a continuous variable, which is what a dimming curve actually requires. It's a small thing that only works if you go a layer lower than the obvious solution.
+    </div>
+
+    <div class="figpair">
+      <figure class="fig ratio wipe" data-ph="images/jarvis-board.jpg&#10;&#10;Photo: the sensor board / wiring, plain background">
+        <img src="../images/jarvis-board.jpg" alt="Sensor wiring">
+        <figcaption>The sensing hardware. Unchanged since v1 — it was right the first time.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe" data-ph="images/jarvis-enclosure.jpg&#10;&#10;Photo: the box it lives in, in situ">
+        <img src="../images/jarvis-enclosure.jpg" alt="The enclosure in the room">
+        <figcaption>Where it lives.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Evolution</span>Version one worked. It was still a failure.</h2>
+    <p>I finished the first version over spring break and it did everything I'd asked of it. Then I took it back to school and stopped using it within a week.</p>
+    <p>Two reasons, both of which I'd failed to design for:</p>
+    <ul>
+      <li><b>It made me do work to use it.</b> To see the dashboard I had to open a browser and connect to a server on the local network. That's five seconds of friction, and five seconds is enough to never do it. A dashboard you have to summon is not a dashboard.</li>
+      <li><b>The UI was bad.</b> Not ugly — <em>unreadable at distance</em>. I'd designed it for a laptop screen when the actual use case was glancing at it from across the room.</li>
+    </ul>
+    <p>So I rebuilt it as a <b>permanent standalone screen in my room</b>: always on, no browser, no login, legible from bed. Then I added the things that only make sense once it's always visible — suggested bedtimes based on my schedule, and a summary that changes tone through the day.</p>
+
+    <div class="callout">
+      <strong>The lesson, stated plainly:</strong> v1 met every requirement I wrote down and was still useless, because I'd written down the wrong requirements. The failure wasn't technical — the code worked fine. It was that I'd never asked how the thing would actually be used. That's a design failure, and it's the most useful mistake I've made.
+    </div>
+
+    <h3>The hard part was concurrency, not the sensors</h3>
+    <p>Sensor polling, the light automation, calendar sync, weather fetches, sleep detection, and the Flask server all run concurrently — <b>seven threads</b> sharing state. Getting that right meant confronting <b>race conditions</b> head-on: two threads reading and writing the same sensor state, with the last writer silently winning. Nothing crashes when you get this wrong. It just produces answers that are subtly, occasionally incorrect — which is far worse than crashing.</p>
+
+    <div class="figpair">
+      <figure class="fig ratio wipe" data-ph="images/jarvis-v1.png&#10;&#10;Screenshot: the original browser-based UI">
+        <img src="../images/jarvis-v1.png" alt="Dashboard version 1">
+        <figcaption>v1 — browser-based, laptop-sized, abandoned in a week.</figcaption>
+      </figure>
+      <figure class="fig ratio wipe" data-ph="images/jarvis-v-current.png&#10;&#10;Screenshot: current UI (censor the calendar!)">
+        <img src="../images/jarvis-v-current.png" alt="Current dashboard">
+        <figcaption>Current — always-on, glanceable from across the room.</figcaption>
+      </figure>
+    </div>
+
+    <p>The circuit has not changed in a year. The interface has changed constantly. That's where the design problem actually lived.</p>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">In progress</span>Closing the loop with the Oura Ring.</h2>
+    <p>Here is the part that isn't finished, and I'd rather say so than imply otherwise.</p>
+    <p>I wear an <b>Oura Ring</b>, which means there is a continuous, high-quality record of how well I actually slept and how recovered I am — and an API to reach it. Right now JARVIS can pull that data. What it doesn't yet do is <em>act</em> on it.</p>
+    <p>That's the difference between two widgets sharing a screen and an actual feedback system, and it's the next thing I'm building:</p>
+    <ul>
+      <li><b>Environment → body.</b> Log room conditions overnight and correlate them against the sleep score the ring reports the next morning. Does a warm room actually cost me sleep? I have both halves of that dataset and no excuse not to answer it.</li>
+      <li><b>Body → environment.</b> A low readiness score should <em>change what the room does</em> — a gentler wake-up curve, different lighting, a different tone on the dashboard. The room adapting to me, rather than me configuring the room.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>The sensor I'm adding, and the one I'm not.</strong> An <b>SCD40</b> gives true NDIR CO₂ — an actual measurement. The cheaper modules everyone reaches for (CCS811, SGP30) report <em>eCO₂</em>, which is estimated from VOCs. It's a proxy, not a reading, and in a closed bedroom overnight that distinction is the whole experiment. CO₂ is the one sensor worth adding here precisely because it's the one that pays off against the sleep data.
+    </div>
+  </div>
+
+  <div class="block prose">
+    <h2><span class="k">Privacy</span>Why the public version runs on fake data.</h2>
+    <p>This dashboard displays my actual calendar and my actual biometric data. Publishing screenshots of it would publish my schedule and my sleep, which is not a trade I want to make for a portfolio.</p>
+    <p>So the public build runs the same code against a <b>synthetic data layer</b> — invented calendar events, simulated sensor drift, fabricated readiness scores. Credentials are loaded from environment variables and never committed. You get to use the real interface; I don't hand a stranger my week.</p>
+    <p>It's a small thing, but it's the correct thing, and thinking about it before publishing rather than after is most of what data hygiene is.</p>
+
+    <div class="quick" style="display:flex;gap:26px;margin-top:36px;font-family:var(--mono);font-size:12.5px">
+      <a href="../demo/" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Use the live demo →</a>
+      <a href="https://github.com/YOUR_USERNAME/REPO" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px">Source →</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="next">
+  <div class="wrap">
+    <a href="bench-instrument.html">
+      <div>
+        <div class="lbl">Next project</div>
+        <h3>Raspberry Pi Bench Instrument</h3>
+      </div>
+      <span class="ar">→</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Hand-built. No frameworks, no trackers.</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script src="../main.js"></script>
+</body>
+</html>

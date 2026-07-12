@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zack LaPrade — Computer Systems Engineering</title>
+<meta name="description" content="Embedded systems, analog electronics, and PCB design. Computer Systems Engineering at the University of Georgia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="progress"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
+      <a href="#work">Work</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow rv">Athens, GA — Huntsville, AL</div>
+    <h1 class="rv">Embedded systems, analog front ends, and the <span class="u">boards underneath them</span>.</h1>
+    <p class="rv">I'm a third-year Computer Systems Engineering student at the University of Georgia. I design the whole path — sensor to signal conditioning to PCB to firmware to enclosure — and I build the hardware, not just simulate it. Currently an electrical engineering intern at TSC in Huntsville.</p>
+    <div class="quick rv">
+      <a href="demo/">Try the live demo →</a>
+      <a href="resume.pdf">Résumé (PDF)</a>
+      <a href="https://github.com/YOUR_USERNAME">GitHub</a>
+      <a href="mailto:YOUR_EMAIL@uga.edu">Email</a>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sechead rv">
+      <span class="n">01</span>
+      <h2>Selected work</h2>
+      <span class="note">In depth</span>
+    </div>
+
+    <article class="feat">
+      <div class="rv">
+        <div class="fmeta">
+          <span>2025 — ongoing</span><span class="dot"></span><span>Systems Integration</span><span class="dot"></span><span>Solo</span>
+        </div>
+        <h3><a href="projects/jarvis.html">JARVIS — Environmental Feedback System</a></h3>
+        <p>The project I've kept returning to for over a year. A Raspberry Pi node that senses my room — temperature, humidity, presence — and acts on it: driving smart lighting, waking the display over DDC/CI, and surfacing my schedule and the weather on an always-on dashboard. It's now growing into something more interesting: pulling my Oura Ring data so the room adapts to how I actually slept.</p>
+        <div class="tools">Raspberry Pi · Flask · Google Calendar API · Oura API · WiZ · DDC/CI · systemd · GPIO</div>
+        <a class="more" href="projects/jarvis.html">
+          <span>Read the case study</span><span class="arw">→</span>
+        </a>
+      </div>
+      <figure class="fig ratio wipe" data-ph="images/jarvis-hero.jpg&#10;&#10;The dashboard running on the display, in the room, at night">
+        <img src="images/jarvis-hero.jpg" alt="The JARVIS dashboard running on a wall display">
+      </figure>
+    </article>
+
+    <article class="feat">
+      <div class="rv">
+        <div class="fmeta">
+          <span>2026</span><span class="dot"></span><span>Analog &amp; Embedded</span><span class="dot"></span><span>Team of 5 — I led it</span>
+        </div>
+        <h3><a href="projects/bench-instrument.html">Raspberry Pi Bench Instrument</a></h3>
+        <p>Four instruments in one box, built under one hard rule: <b>no instrumentation ICs</b>. A Raspberry Pi has no analog input, so the voltmeter isn't a library call — it's a <b>6-bit successive-approximation ADC I built from an R-2R ladder and a comparator</b>. I was project lead and electrical lead on a team of five, and designed the Class AB push-pull output stage, the voltmeter, and the ohmmeter.</p>
+        <div class="tools">Raspberry Pi · R-2R SAR ADC · TL071CP · IRFZ24N / IRF5210 · MCP4231 · LM311 · SPI · pigpio · Python</div>
+        <a class="more" href="projects/bench-instrument.html">
+          <span>Read the case study</span><span class="arw">→</span>
+        </a>
+      </div>
+      <figure class="fig ratio wipe" data-ph="images/bench-hero.jpg&#10;&#10;Final assembled PCB, or the breadboard wired to a scope showing the SPWM sine">
+        <img src="images/bench-hero.jpg" alt="Raspberry Pi bench instrument">
+      </figure>
+    </article>
+
+    <article class="feat">
+      <div class="rv">
+        <div class="fmeta">
+          <span>2026</span><span class="dot"></span><span>Analog Front End</span><span class="dot"></span><span>Solo · V2 in progress</span>
+        </div>
+        <h3><a href="projects/water-bottle.html">Instrumented Water Bottle</a></h3>
+        <p>I get migraines, and they're linked to dehydration — so I built a bottle that notices when I've stopped drinking. Five sensors, a custom analog front end (Semitec thermistor in a Wheatstone bridge, INA121P at gain 2, Steinhart-Hart linearisation), a custom PCB, and a printed enclosure. <b>Now being rebuilt as a cheap, bottle-agnostic keychain counter</b> — because V1 was a good exercise and a bad product.</p>
+        <div class="tools">ESP32-C3 SuperMini · INA121P · Wheatstone bridge · Steinhart-Hart · SHT40 · LSM6DSO · A02YYUW · EasyEDA / JLCPCB · Fusion 360</div>
+        <a class="more" href="projects/water-bottle.html">
+          <span>Read the case study</span><span class="arw">→</span>
+        </a>
+      </div>
+      <figure class="fig ratio wipe" data-ph="images/bottle-hero.jpg&#10;&#10;Assembled bottle, plain background">
+        <img src="images/bottle-hero.jpg" alt="Instrumented water bottle">
+      </figure>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sechead rv">
+      <span class="n">02</span>
+      <h2>Also built</h2>
+      <span class="note">Shorter writeups</span>
+    </div>
+
+    <div class="list rv">
+      <a class="row" href="projects/sensor-glove.html">
+        <span class="yr">2025</span>
+        <span class="nm">Wearable Sensor Glove <em style="font-style:normal;color:var(--accent);font-family:var(--mono);font-size:11px">— in progress</em></span>
+        <span class="tg">BNO055 · Flex sensors · ESP-NOW</span>
+        <span class="ar">→</span>
+      </a>
+      <a class="row" href="projects/schmitt-pcb.html">
+        <span class="yr">2025</span>
+        <span class="nm">Schmitt Trigger PCB</span>
+        <span class="tg">5 revisions · Self-taught Altium</span>
+        <span class="ar">→</span>
+      </a>
+      <a class="row" href="projects/analog-labs.html">
+        <span class="yr">2025</span>
+        <span class="nm">Analog Design Coursework</span>
+        <span class="tg">LTspice · Diff pairs · Cascode</span>
+        <span class="ar">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="capabilities">
+  <div class="wrap">
+    <div class="sechead rv">
+      <span class="n">03</span>
+      <h2>Capabilities</h2>
+      <span class="note">Tools I've shipped something with</span>
+    </div>
+
+    <div class="cols rv">
+      <div>
+        <h4>Board Design</h4>
+        <ul>
+          <li>Altium Designer</li>
+          <li>EasyEDA / JLCPCB</li>
+          <li>Schematic capture</li>
+          <li>2-layer layout &amp; routing</li>
+          <li>DRC, Gerber export, BOM</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Analog</h4>
+        <ul>
+          <li>Signal conditioning</li>
+          <li>Instrumentation amplifiers</li>
+          <li>Wheatstone bridges</li>
+          <li>Differential pairs, cascode</li>
+          <li>LTspice simulation</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Embedded</h4>
+        <ul>
+          <li>ESP32 / ESP32-C3</li>
+          <li>Raspberry Pi / Linux</li>
+          <li>I²C, SPI, UART</li>
+          <li>PWM, ADC, interrupts</li>
+          <li>ESP-NOW, Wi-Fi, REST</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Software &amp; CAD</h4>
+        <ul>
+          <li>C / C++</li>
+          <li>Python, Flask</li>
+          <li>MATLAB</li>
+          <li>Fusion 360, Inventor</li>
+          <li>Git, Linux, systemd</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="sechead rv">
+      <span class="n">04</span>
+      <h2>Experience &amp; education</h2>
+    </div>
+
+    <div class="job rv">
+      <div class="when">Summer 2026</div>
+      <div>
+        <h4>Electrical Engineering Intern</h4>
+        <div class="org">TSC — Huntsville, AL</div>
+        <p>Defense electronics, supporting radar and sensor product lines. <em>[Replace this with one concrete sentence: a board you touched, a test you ran, a tool you learned.]</em></p>
+      </div>
+    </div>
+
+    <div class="job rv">
+      <div class="when">2025 — Present</div>
+      <div>
+        <h4>Peer Learning Assistant, Physics</h4>
+        <div class="org">University of Georgia</div>
+        <p>Lead weekly problem-solving sessions for 80+ students in introductory mechanics and electromagnetism, working through the reasoning rather than the answer.</p>
+      </div>
+    </div>
+
+    <div class="job rv">
+      <div class="when">2025 — Present</div>
+      <div>
+        <h4>Rush Chair</h4>
+        <div class="org">Theta Tau, Iota Epsilon Chapter</div>
+        <p>Run recruitment for UGA's professional engineering fraternity. Rebuilt the candidate process around a pitch-competition format and set up direct channels between candidates and active brothers.</p>
+      </div>
+    </div>
+
+    <div class="job rv">
+      <div class="when">2023 — 2027</div>
+      <div>
+        <h4>B.S. Computer Systems Engineering, Minor in Computer Science</h4>
+        <div class="org">University of Georgia — Zell Miller Scholar</div>
+        <p>Relevant coursework: Sensors &amp; Transducers, Analog Electronics, Digital Systems, Signals &amp; Systems, Embedded Systems.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2 class="rv">Looking for hardware work in 2027.</h2>
+    <p class="rv">Embedded systems, analog design, board bring-up, test. If you're hiring interns or new grads, I'd like to hear about it — and I'm happy to walk through any of the projects above in detail.</p>
+    <div class="links rv">
+      <a href="mailto:YOUR_EMAIL@uga.edu">YOUR_EMAIL@uga.edu</a>
+      <a href="https://linkedin.com/in/YOUR_HANDLE">LinkedIn</a>
+      <a href="https://github.com/YOUR_USERNAME">GitHub</a>
+      <a href="resume.pdf">Résumé</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Hand-built. No frameworks, no trackers.</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

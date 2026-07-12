@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JARVIS / MonCoeur — Live Demo (synthetic data)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   JARVIS / MonCoeur — public demo build
+   Same layout and logic as the Pi build; synthetic data layer.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#F4F5F7; --card:#FFFFFF; --card2:#F7F8FA;
+  --tx:#1A1D23; --tm:#7A8090;
+  --br:#E6E8ED; --brF:#C3C8D2;
+  --ac:#5B7CFA; --acL:#EEF2FF;
+  --wn:#D97706;
+  --r:14px; --rs:8px;
+  --sh:0 1px 2px rgba(16,24,40,.05);
+  --shH:0 6px 18px rgba(16,24,40,.09);
+  --f:'Outfit',system-ui,sans-serif;
+  --fm:'JetBrains Mono',monospace;
+}
+[data-theme="dark"]{
+  --bg:#0F1116; --card:#171A21; --card2:#1D212A;
+  --tx:#E8EAEF; --tm:#7F8696;
+  --br:#262B35; --brF:#3A4150;
+  --acL:#1B2340;
+  --sh:0 1px 2px rgba(0,0,0,.3);
+  --shH:0 6px 18px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--tx);font-family:var(--f);
+  padding-bottom:env(safe-area-inset-bottom);
+  -webkit-font-smoothing:antialiased;transition:background .3s,color .3s;
+}
+
+/* ── demo banner ─────────────────────────────────────────────── */
+.demo{
+  background:var(--tx);color:var(--bg);padding:9px 20px;
+  font-family:var(--fm);font-size:11.5px;line-height:1.6;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.demo b{color:#F0A868}
+.demo a{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+
+/* ── topbar ──────────────────────────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;background:var(--card);border-bottom:1px solid var(--br);
+  position:sticky;top:0;z-index:20;
+}
+.logo{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.logo-dot{color:var(--ac)}
+.logo-label{font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--tm);margin-left:9px}
+.top-time{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.top-divider{color:var(--tm);margin:0 9px}
+.top-date{font-size:13px;color:var(--tm)}
+.topbar-btn{
+  width:34px;height:34px;border-radius:var(--rs);border:1px solid var(--br);
+  background:var(--card2);color:var(--tx);cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+.topbar-btn:hover{border-color:var(--brF);transform:translateY(-1px)}
+@media(max-width:700px){.topbar-center{display:none}}
+
+/* ── grid ────────────────────────────────────────────────────── */
+.grid{
+  display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:16px;
+  padding:18px 22px 40px;max-width:1600px;margin:0 auto;align-items:start;
+}
+@media(max-width:1150px){.grid{grid-template-columns:1fr 1fr}.col-mid{grid-column:1/-1;order:-1}}
+@media(max-width:800px){.grid{grid-template-columns:1fr;padding:14px}}
+.col{display:flex;flex-direction:column;gap:16px}
+
+.card{
+  background:var(--card);border:1px solid var(--br);border-radius:var(--r);
+  padding:16px 18px;box-shadow:var(--sh);transition:box-shadow .25s;
+  animation:pop .5s both;
+}
+.card:hover{box-shadow:var(--shH)}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;gap:10px}
+.ch h3{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tm)}
+.badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.b-ok{background:#DCFCE7;color:#166534}
+.b-wn{background:#FEF3C7;color:#92400E}
+.b-ac{background:var(--acL);color:var(--ac)}
+[data-theme="dark"] .b-ok{background:#0F3D24;color:#86EFAC}
+[data-theme="dark"] .b-wn{background:#3D2E0A;color:#FCD34D}
+
+/* ── today's schedule (the centrepiece) ──────────────────────── */
+.today-big{padding:22px 24px}
+.today-big .ch h3{font-size:12px}
+.ev{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--br);align-items:flex-start}
+.ev:last-of-type{border-bottom:none}
+.ev-bar{width:3px;align-self:stretch;border-radius:2px;background:var(--ac);flex-shrink:0}
+.ev-t{font-family:var(--fm);font-size:12px;color:var(--tm);width:52px;flex-shrink:0;padding-top:2px}
+.ev-n{font-size:15px;font-weight:500}
+.ev-s{font-size:12px;color:var(--tm);margin-top:2px}
+.ev.past{opacity:.42}
+.ev.now .ev-n{color:var(--ac);font-weight:600}
+.task-dot{width:7px;height:7px;border-radius:50%;background:var(--wn);margin-top:7px;flex-shrink:0}
+
+.jmsg{
+  background:linear-gradient(135deg,var(--acL),var(--card2));
+  border:1px solid var(--br);border-radius:var(--rs);
+  padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6;
+}
+.jmsg b{color:var(--ac);font-weight:600}
+
+/* ── sensors ─────────────────────────────────────────────────── */
+.sens{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.si{background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:10px 12px}
+.sil{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--tm);display:block;margin-bottom:3px}
+.siv{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;display:block}
+.siv small{font-size:11px;color:var(--tm);font-weight:400}
+.siv.hot{color:var(--wn)}
+
+/* ── lights ──────────────────────────────────────────────────── */
+.lrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.lrow span{font-size:14px;font-weight:500}
+.tg{width:42px;height:23px;border-radius:12px;background:var(--brF);position:relative;cursor:pointer;border:none;transition:background .25s;flex-shrink:0}
+.tg.on{background:var(--ac)}
+.tg::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.3,.7,.3,1)}
+.tg.on::after{transform:translateX(19px)}
+.sld{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--br);outline:none;margin:4px 0 2px}
+.sld::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--ac);cursor:pointer}
+.sld::-moz-range-thumb{width:15px;height:15px;border:none;border-radius:50%;background:var(--ac);cursor:pointer}
+.slabel{display:flex;justify-content:space-between;font-family:var(--fm);font-size:10.5px;color:var(--tm);margin-bottom:12px}
+.rec{font-size:12px;color:var(--tm);background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:9px 11px;margin-top:4px;line-height:1.55}
+.rec b{color:var(--tx);font-weight:600}
+
+/* ── calendar ────────────────────────────────────────────────── */
+.cal-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.cal-h .m{font-size:16px;font-weight:600}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-d{font-size:9px;font-weight:700;color:var(--tm);text-align:center;text-transform:uppercase;letter-spacing:.5px;padding-bottom:5px}
+.cd{
+  aspect-ratio:1;border-radius:var(--rs);background:var(--card2);border:1px solid transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:12px;cursor:pointer;transition:.15s;
+}
+.cd:hover{border-color:var(--brF);transform:translateY(-1px)}
+.cd.out{opacity:.28}
+.cd.today{background:var(--ac);color:#fff;font-weight:700}
+.pips{display:flex;gap:2px;height:4px}
+.pip{width:4px;height:4px;border-radius:50%;background:var(--ac)}
+.cd.today .pip{background:rgba(255,255,255,.85)}
+.pip.w{background:var(--wn)}
+
+/* ── weather ─────────────────────────────────────────────────── */
+.wx-now{display:flex;align-items:baseline;gap:12px}
+.wx-t{font-size:38px;font-weight:600;letter-spacing:-.02em}
+.wx-c{font-size:13px;color:var(--tm)}
+.wx-m{font-family:var(--fm);font-size:11px;color:var(--tm);margin-top:8px}
+.hourly{display:flex;gap:8px;overflow-x:auto;margin-top:13px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.hr{flex-shrink:0;background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:8px 10px;text-align:center;min-width:52px}
+.hr .h{font-family:var(--fm);font-size:9.5px;color:var(--tm)}
+.hr .d{font-size:15px;margin:3px 0}
+.hr .t{font-size:12px;font-weight:600}
+
+/* ── sleep ───────────────────────────────────────────────────── */
+.sl-info{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:11px}
+.sq{background:var(--card2);border:1px solid var(--br);border-radius:var(--rs);padding:8px;text-align:center}
+.sql{display:block;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--tm);margin-bottom:2px}
+.sqv{display:block;font-size:13px;font-weight:600}
+.sl-bars{display:flex;gap:4px;height:52px}
+.sbc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.sbt{flex:1;width:100%;background:var(--card2);border:1px solid var(--br);border-radius:3px;display:flex;align-items:flex-end;overflow:hidden}
+.sbf{width:100%;background:var(--ac);border-radius:2px;transition:height 1s cubic-bezier(.2,.7,.2,1);min-height:2px}
+.sbf.low{background:var(--wn)}
+.sbl{font-size:8px;font-weight:600;color:var(--tm);text-transform:uppercase}
+
+/* ── hair wash ───────────────────────────────────────────────── */
+.hw-chips{display:flex;gap:7px;flex-wrap:wrap}
+.hwc{
+  padding:7px 12px;border-radius:var(--rs);background:var(--card2);
+  border:1px solid var(--br);display:flex;flex-direction:column;align-items:center;
+  min-width:56px;position:relative;transition:.15s;
+}
+.hwc:hover{transform:translateY(-2px)}
+.hwc.best{background:linear-gradient(135deg,var(--acL),var(--card2));border-color:var(--ac)}
+.hwcday{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.hwcdt{font-size:11px;color:var(--tm);margin-top:1px}
+.hwck{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:var(--ac);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.hw-why{font-size:11.5px;color:var(--tm);margin-top:11px;line-height:1.6}
+.hw-why b{color:var(--tx);font-weight:600}
+
+/* ── todos ───────────────────────────────────────────────────── */
+.td{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--br);font-size:14px}
+.td:last-child{border-bottom:none}
+.cb{
+  width:17px;height:17px;border-radius:5px;border:1.5px solid var(--brF);
+  cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:transparent;transition:.15s;background:transparent;padding:0;
+}
+.cb.done{background:var(--ac);border-color:var(--ac);color:#fff}
+.td.done .txt{text-decoration:line-through;color:var(--tm)}
+.star{color:var(--wn);font-size:12px;margin-left:auto}
+
+/* ── away ────────────────────────────────────────────────────── */
+.away{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.away .sub{font-size:11.5px;color:var(--tm);margin-top:3px}
+
+footer{text-align:center;padding:26px 20px 44px;font-family:var(--fm);font-size:11px;color:var(--tm);line-height:2}
+footer a{color:var(--tx)}
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <span><b>DEMO BUILD — SYNTHETIC DATA.</b> Same layout and logic as the real system, which runs on a Raspberry Pi in my room against my actual calendar, sensors and lights. Every event and reading here is invented.</span>
+  <a href="../projects/jarvis.html">← Case study</a>
+</div>
+
+<header class="topbar">
+  <div><span class="logo">J<span class="logo-dot">.</span></span><span class="logo-label">MONCOEUR</span></div>
+  <div class="topbar-center">
+    <span class="top-time" id="tTime">--:--</span>
+    <span class="top-divider">·</span>
+    <span class="top-date" id="tDate">—</span>
+  </div>
+  <button class="topbar-btn" id="theme" title="Toggle theme">◐</button>
+</header>
+
+<div class="grid">
+
+  <!-- ══════════ LEFT ══════════ -->
+  <div class="col">
+
+    <div class="card">
+      <div class="ch"><h3>Room</h3><span class="badge b-ok">Occupied</span></div>
+      <div class="sens">
+        <div class="si"><span class="sil">Temp</span><span class="siv" id="rt">73.4<small>°F</small></span></div>
+        <div class="si"><span class="sil">Humidity</span><span class="siv" id="rh">46<small>%</small></span></div>
+        <div class="si"><span class="sil">Motion</span><span class="siv" style="font-size:14px">Active</span></div>
+        <div class="si"><span class="sil">Last seen</span><span class="siv" style="font-size:14px">now</span></div>
+      </div>
+      <div class="rec">SHT40 over I²C, PIR on GPIO. Sensors push to <b>POST /api/update</b>; the browser polls <b>GET /api/status</b>.</div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>Lights — WiZ</h3><span class="badge b-ac">Auto</span></div>
+      <div class="lrow"><span>Shelf</span><button class="tg on" aria-label="Shelf light"></button></div>
+      <input type="range" class="sld" min="0" max="100" value="38" id="s1">
+      <div class="slabel"><span>Brightness</span><span id="s1v">38%</span></div>
+      <div class="lrow"><span>Ladder</span><button class="tg" aria-label="Ladder light"></button></div>
+      <input type="range" class="sld" min="0" max="100" value="0" id="s2">
+      <div class="slabel"><span>Brightness</span><span id="s2v">0%</span></div>
+      <div class="rec">Automation recommends <b>hold at 38%, warm</b> — past dusk, motion quiet for 20 min. Commands go out over <b>UDP</b> to the bulbs.</div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>Away Mode</h3></div>
+      <div class="away">
+        <div>
+          <div style="font-size:14px;font-weight:500">Disabled</div>
+          <div class="sub">Lights and display stay under motion control</div>
+        </div>
+        <button class="tg" aria-label="Away mode"></button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════ MIDDLE — centrepiece ══════════ -->
+  <div class="col col-mid">
+
+    <div class="card today-big">
+      <div class="ch"><h3>Today</h3><span class="badge b-wn">3 tasks open</span></div>
+
+      <div class="ev past">
+        <div class="ev-bar"></div><div class="ev-t">08:00</div>
+        <div><div class="ev-n">Gym — push day</div></div>
+      </div>
+      <div class="ev past">
+        <div class="ev-bar"></div><div class="ev-t">10:10</div>
+        <div><div class="ev-n">ELEE 4270 — Analog Electronics</div><div class="ev-s">Boyd 328</div></div>
+      </div>
+      <div class="ev now">
+        <div class="ev-bar"></div><div class="ev-t">13:30</div>
+        <div><div class="ev-n">Physics PLA session</div><div class="ev-s">In progress</div></div>
+      </div>
+      <div class="ev">
+        <div class="task-dot"></div><div class="ev-t">—</div>
+        <div><div class="ev-n">Finish sensors lab report</div><div class="ev-s">Due today</div></div>
+      </div>
+      <div class="ev">
+        <div class="ev-bar"></div><div class="ev-t">16:00</div>
+        <div><div class="ev-n">Theta Tau — chapter meeting</div></div>
+      </div>
+      <div class="ev">
+        <div class="task-dot"></div><div class="ev-t">—</div>
+        <div><div class="ev-n">Order INA121P samples</div><div class="ev-s">Overdue</div></div>
+      </div>
+
+      <div class="jmsg">
+        Afternoon. <b>3 tasks</b> still open and the chapter meeting at 4. Humidity's low and your evening is clear — <b>good wash day</b>. Room's holding at 73°F; I'll start the bedtime dim around 22:30.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cal-h">
+        <span class="m" id="calM">July 2026</span>
+        <span style="font-family:var(--fm);font-size:10.5px;color:var(--tm)">Google Calendar</span>
+      </div>
+      <div class="cal-g" id="cal"></div>
+    </div>
+
+  </div>
+
+  <!-- ══════════ RIGHT ══════════ -->
+  <div class="col">
+
+    <div class="card">
+      <div class="ch"><h3>Weather</h3><span style="font-family:var(--fm);font-size:10px;color:var(--tm)">Open-Meteo</span></div>
+      <div class="wx-now"><span class="wx-t">88°</span><span class="wx-c">Humid, scattered clouds</span></div>
+      <div class="wx-m">Feels 94° · Humidity 71% · Rain 15%</div>
+      <div class="hourly">
+        <div class="hr"><div class="h">2PM</div><div class="d">☀</div><div class="t">89°</div></div>
+        <div class="hr"><div class="h">3PM</div><div class="d">⛅</div><div class="t">90°</div></div>
+        <div class="hr"><div class="h">4PM</div><div class="d">⛅</div><div class="t">89°</div></div>
+        <div class="hr"><div class="h">5PM</div><div class="d">⛅</div><div class="t">86°</div></div>
+        <div class="hr"><div class="h">6PM</div><div class="d">☁</div><div class="t">83°</div></div>
+        <div class="hr"><div class="h">7PM</div><div class="d">☁</div><div class="t">79°</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>Sleep</h3><span class="badge b-wn">Below average</span></div>
+      <div class="sl-info">
+        <div class="sq"><span class="sql">Asleep</span><span class="sqv">01:14</span></div>
+        <div class="sq"><span class="sql">Woke</span><span class="sqv">07:26</span></div>
+        <div class="sq"><span class="sql">Total</span><span class="sqv">6h 12m</span></div>
+      </div>
+      <div class="sl-bars" id="bars"></div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>Hair Wash</h3><span class="badge b-ac">Today</span></div>
+      <div class="hw-chips">
+        <div class="hwc"><span class="hwcday">Fri</span><span class="hwcdt">Jul 10</span></div>
+        <div class="hwc best"><span class="hwck">★</span><span class="hwcday">Sat</span><span class="hwcdt">Jul 11</span></div>
+        <div class="hwc"><span class="hwcday">Sun</span><span class="hwcdt">Jul 12</span></div>
+        <div class="hwc"><span class="hwcday">Mon</span><span class="hwcdt">Jul 13</span></div>
+      </div>
+      <div class="hw-why">
+        Scored on humidity, rain probability and calendar density. <b>Sunday takes a −3</b> for a 60% rain chance; Monday is loaded with four events. <b>Today wins.</b>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>To-do</h3><span class="badge b-wn">3 open</span></div>
+      <div class="td"><button class="cb" aria-label="Complete"></button><span class="txt">Finish sensors lab report</span><span class="star">★</span></div>
+      <div class="td"><button class="cb" aria-label="Complete"></button><span class="txt">Order INA121P samples</span></div>
+      <div class="td"><button class="cb" aria-label="Complete"></button><span class="txt">Rush chair — update PNM list</span></div>
+      <div class="td done"><button class="cb done" aria-label="Complete">✓</button><span class="txt">Meal prep — chicken bowls</span></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Real build: Flask · SHT40 · PIR · WiZ over UDP · ddcutil / wlopm · systemd · JSON persistence · SHA-256 auth<br>
+  <a href="../projects/jarvis.html">Read the case study →</a>
+</footer>
+
+<script>
+/* ── clock ───────────────────────────────────────────────────── */
+function clock(){
+  const d=new Date();
+  let h=d.getHours(); const m=String(d.getMinutes()).padStart(2,'0');
+  const ap=h>=12?'PM':'AM'; h=h%12||12;
+  document.getElementById('tTime').textContent=h+':'+m+' '+ap;
+  document.getElementById('tDate').textContent=
+    d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+}
+clock(); setInterval(clock,1000);
+
+/* ── synthetic sensor feed ───────────────────────────────────────
+   Real build: SHT40 over I2C pushes to POST /api/update and the
+   browser polls GET /api/status. Here we just drift plausibly.   */
+let t=73.4, h=46;
+setInterval(function(){
+  t=Math.min(77,Math.max(71,t+(Math.random()-0.5)*0.16));
+  h=Math.min(55,Math.max(40,h+(Math.random()-0.5)*0.6));
+  const rt=document.getElementById('rt');
+  rt.innerHTML=t.toFixed(1)+'<small>&deg;F</small>';
+  rt.className='siv'+(t>75.5?' hot':'');
+  document.getElementById('rh').innerHTML=Math.round(h)+'<small>%</small>';
+},2800);
+
+/* ── calendar ────────────────────────────────────────────────── */
+(function(){
+  const now=new Date(), y=now.getFullYear(), mo=now.getMonth();
+  document.getElementById('calM').textContent=
+    now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const cal=document.getElementById('cal');
+  ['S','M','T','W','T','F','S'].forEach(function(d){
+    const e=document.createElement('div'); e.className='cal-d'; e.textContent=d; cal.appendChild(e);
+  });
+  const first=new Date(y,mo,1).getDay();
+  const days=new Date(y,mo+1,0).getDate();
+  const prev=new Date(y,mo,0).getDate();
+  const busy={3:2,7:1,11:3,14:1,18:2,21:1,24:2,28:1};   // synthetic event counts
+  for(let i=0;i<42;i++){
+    const c=document.createElement('div'); c.className='cd';
+    let n, isCur=false;
+    if(i<first){ n=prev-first+i+1; c.classList.add('out'); }
+    else if(i-first+1>days){ n=i-first+1-days; c.classList.add('out'); }
+    else { n=i-first+1; isCur=true; }
+
+    const num=document.createElement('span'); num.textContent=n; c.appendChild(num);
+
+    if(isCur){
+      if(n===now.getDate()) c.classList.add('today');
+      if(busy[n]){
+        const p=document.createElement('div'); p.className='pips';
+        for(let k=0;k<busy[n];k++){
+          const d=document.createElement('div');
+          d.className='pip'+(k===2?' w':'');
+          p.appendChild(d);
+        }
+        c.appendChild(p);
+      }
+    }
+    cal.appendChild(c);
+  }
+})();
+
+/* ── sleep bars — last 7 nights (synthetic) ──────────────────── */
+(function(){
+  const hrs=[7.4,6.9,8.1,5.8,7.2,6.6,6.2];
+  const lbl=['S','M','T','W','T','F','S'];
+  const box=document.getElementById('bars');
+  hrs.forEach(function(v,i){
+    const c=document.createElement('div'); c.className='sbc';
+    const tr=document.createElement('div'); tr.className='sbt';
+    const f=document.createElement('div');
+    f.className='sbf'+(v<6.5?' low':'');
+    f.style.height='0%';
+    tr.appendChild(f);
+    const l=document.createElement('div'); l.className='sbl'; l.textContent=lbl[i];
+    c.appendChild(tr); c.appendChild(l); box.appendChild(c);
+    setTimeout(function(){ f.style.height=(v/9*100)+'%'; }, 220+i*70);
+  });
+})();
+
+/* ── interactions ────────────────────────────────────────────── */
+document.querySelectorAll('.tg').forEach(function(t){
+  t.addEventListener('click',function(){ t.classList.toggle('on'); });
+});
+[['s1','s1v'],['s2','s2v']].forEach(function(pair){
+  document.getElementById(pair[0]).addEventListener('input',function(e){
+    document.getElementById(pair[1]).textContent=e.target.value+'%';
+  });
+});
+document.querySelectorAll('.cb').forEach(function(b){
+  b.addEventListener('click',function(){
+    b.classList.toggle('done');
+    b.textContent = b.classList.contains('done') ? '✓' : '';
+    b.closest('.td').classList.toggle('done');
+  });
+});
+document.getElementById('theme').addEventListener('click',function(){
+  const r=document.documentElement;
+  r.dataset.theme = r.dataset.theme==='dark' ? 'light' : 'dark';
+});
+</script>
+</body>
+</html>
