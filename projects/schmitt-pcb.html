@@ -8,66 +8,66 @@
 <script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <nav>
   <div class="wrap">
-    <a class="brand" href="../index.html">Zack LaPrade<span class="d">.</span></a>
-    <div class="nl">
+    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
       <a class="back" href="../index.html#work">All work</a>
       <a href="../index.html#contact">Contact</a>
     </div>
   </div>
 </nav>
-<header class="phero">
+<header class="p-hero">
   <div class="wrap">
-    <div class="kick rv">004 / 2025</div>
+    <div class="eyebrow rv">004 / 2025</div>
     <h1 class="rv">Schmitt Trigger PCB</h1>
-    <p class="deck rv">Five revisions of the same circuit over one summer, for no class and no credit. The Schmitt trigger was never the point.</p>
-    <div class="shotbig rv"><img src="../images/bench-breadboard.jpg" alt="Bench work"></div>
+    <p class="deck rv">Five Altium revisions of the same circuit over one summer, for no course and no credit. The circuit was chosen precisely because it was not the hard part.</p>
+    <figure class="fig wide wipe rv" style="margin-top:52px"><img src="../images/bench-breadboard.jpg" alt="Bench work"></figure>
     <dl class="spec rv">
       <div><dt>Role</dt><dd>Solo, self-directed</dd></div>
-      <div><dt>Tools</dt><dd>Altium, Fusion 360</dd></div>
+      <div><dt>Tools</dt><dd>Altium Designer, Fusion 360</dd></div>
       <div><dt>Revisions</dt><dd>5</dd></div>
       <div><dt>Assigned by</dt><dd>Nobody</dd></div>
     </dl>
   </div>
 </header>
 <div class="narrow prose">
-  <div class="blk">
-    <h2><span class="k">Why</span>Nobody was going to teach me Altium.</h2>
-    <p>No course required this. I'd done plenty of circuit analysis on paper and in simulation, and none of it ever made me answer the question a fab house asks, which is whether the thing can actually be built.</p>
-    <p>So over a summer I taught myself <b>Altium</b> and <b>Fusion 360</b> from nothing, and picked a circuit simple enough that the circuit wouldn't be the hard part.</p>
+  <div class="block">
+    <h2><span class="k">Motivation</span>Nothing in my coursework was going to teach me Altium.</h2>
+    <p>No course required this. I had done a great deal of circuit analysis on paper and in simulation, and none of it had ever forced me to answer the question a fabrication house asks, which is whether the design can actually be manufactured.</p>
+    <p>Over a summer I taught myself <b>Altium Designer</b> and <b>Fusion 360</b> from nothing, and deliberately selected a circuit simple enough that the circuit would not be where the difficulty lay.</p>
   </div>
 
-  <div class="blk">
-    <h2><span class="k">The circuit</span>Positive feedback, deliberately.</h2>
-    <p>A Schmitt trigger is a comparator with hysteresis, so it has two thresholds instead of one. You build it by feeding the output back to the non-inverting input, which is the opposite of what you spend a whole analog course learning to do.</p>
-    <p>That positive feedback is the trick. Once the output starts moving it drives itself further the same way, which snaps the transition and shifts the threshold away from the input. The result is a comparator that won't chatter on a noisy or slow-moving signal, because the input has to travel a real distance to flip it back.</p>
+  <div class="block">
+    <h2><span class="k">Circuit</span>Positive feedback, used deliberately.</h2>
+    <p>A Schmitt trigger is a comparator with hysteresis: two thresholds rather than one. It is built by feeding the output back to the non-inverting input, which is the opposite of the negative feedback an entire analog course is spent teaching.</p>
+    <p>The positive feedback is the mechanism. Once the output begins moving it drives itself further in the same direction, which snaps the transition and shifts the threshold away from the input. The result is a comparator that does not chatter on a noisy or slow-moving signal, because the input must travel a real distance to flip it back.</p>
   </div>
 
-  <div class="blk">
+  <div class="block">
     <h2><span class="k">Five revisions</span>What actually changed.</h2>
-    <p>The schematic barely moved across the five boards. Nearly everything I learned was in the layout. Footprints that didn't match real parts, routing that passed DRC and would still have been miserable to assemble, and the slow realisation that a board is a mechanical object as much as an electrical one.</p>
-    <div class="note">
-      <b>[Zack: this section needs you.]</b> One line per revision. What was wrong with the last board and what you changed. That list is the project. Five iterations of the same circuit only means something if you can say what each one taught you.
+    <p>The schematic barely moved across the five boards. Nearly everything I learned was in the layout: footprints that did not match real parts, routing that passed DRC and would still have been miserable to assemble, and the gradual realisation that a board is a mechanical object as much as an electrical one.</p>
+    <div class="callout">
+      <strong>[This section needs the revision history.]</strong> One line per revision: what was wrong with the previous board and what changed. That list is the substance of this project. Five iterations of one circuit only carries weight if each iteration has a stated reason.
     </div>
   </div>
 
-  <div class="blk">
-    <h2><span class="k">Outcome</span>The skill, not the board.</h2>
-    <p>The board itself is unremarkable and I'd say so in an interview. What it bought me was fluency: schematic capture, footprint libraries, layout, DRC, Gerber export. The boring pipeline that sits between a working circuit and a physical object.</p>
-    <p>Every board I've designed since started from what those five taught me.</p>
+  <div class="block">
+    <h2><span class="k">Outcome</span>The pipeline, not the board.</h2>
+    <p>The board itself is unremarkable, and I would say so in an interview. What it produced was fluency in the pipeline that sits between a working circuit and a physical object: schematic capture, footprint libraries, layout, DRC, Gerber export.</p>
+    <p>Every board I have designed since, including the Hydration Coach front end and the bench instrument, started from what these five taught me.</p>
   </div>
 
 </div>
 <div class="next">
   <div class="wrap">
     <a href="sensor-glove.html">
-      <div><div class="l">Next</div><h3>Sensor Glove</h3></div>
-      <span class="a">→</span>
+      <div><div class="lbl">Next project</div><h3>Sensor Glove</h3></div>
+      <span class="ar">→</span>
     </a>
   </div>
 </div>

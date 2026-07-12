@@ -4,29 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sensor Glove | Zack LaPrade</title>
-<meta name="description" content="A teleoperation glove. In progress.">
+<meta name="description" content="A wireless teleoperation glove. In progress.">
 <script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <nav>
   <div class="wrap">
-    <a class="brand" href="../index.html">Zack LaPrade<span class="d">.</span></a>
-    <div class="nl">
+    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
       <a class="back" href="../index.html#work">All work</a>
       <a href="../index.html#contact">Contact</a>
     </div>
   </div>
 </nav>
-<header class="phero">
+<header class="p-hero">
   <div class="wrap">
-    <div class="kick rv">005 / 2025, in progress</div>
+    <div class="eyebrow rv">005 / 2025, in progress</div>
     <h1 class="rv">Wearable Sensor Glove</h1>
-    <p class="deck rv">A wireless teleoperation glove for a university robotics lab. My proposal, and I'm building it now. It isn't finished, and it's listed here as unfinished.</p>
-    <div class="shotbig rv"><img src="../images/bottle-breadboard.jpg" alt="Bench prototyping"></div>
+    <p class="deck rv">A wireless teleoperation glove for a university robotics lab. My own proposal, currently in build. It is not finished, and it is listed here as unfinished.</p>
+    <figure class="fig wide wipe rv" style="margin-top:52px"><img src="../images/bottle-breadboard.jpg" alt="Prototyping"></figure>
     <dl class="spec rv">
       <div><dt>Role</dt><dd>Proposed it, building it</dd></div>
       <div><dt>Context</dt><dd>University robotics lab</dd></div>
@@ -36,46 +36,47 @@
   </div>
 </header>
 <div class="narrow prose">
-  <div class="blk">
-    <h2><span class="k">Status</span>This one isn't done.</h2>
-    <p>I'm including it anyway. Only showing the things that worked would give a false picture of how any of this goes.</p>
-    <p>If you want to ask me hard questions about something I haven't solved yet, this is the one.</p>
+  <div class="block">
+    <h2><span class="k">Status</span>Unfinished, and listed anyway.</h2>
+    <p>Showing only the projects that worked would give a false account of how engineering actually proceeds. This is the one I am in the middle of.</p>
+    <p>If you want to ask me hard questions about a problem I have not solved, this is where to start.</p>
   </div>
 
-  <div class="blk">
-    <h2><span class="k">The idea</span>Teleoperation you wear.</h2>
-    <p>The lab needs a way to drive a robotic hand. The usual approach uses a physical linkage the operator moves, which is accurate but bulky and ties you to a rig.</p>
-    <p>I proposed putting the sensors on the operator instead. A glove that reads what your hand is already doing and mirrors it onto the robot in real time. You move freely, the hand follows.</p>
+  <div class="block">
+    <h2><span class="k">Proposal</span>Put the sensors on the operator.</h2>
+    <p>The lab needs a way to drive a robotic hand. The established approach uses a physical linkage the operator manipulates, which is accurate but bulky and tethers the operator to a rig.</p>
+    <p>I proposed the inverse: instrument the operator instead. A glove that reads what the hand is already doing and mirrors it onto the robot in real time.</p>
     <ul>
-      <li><b>BNO055</b> at the wrist. A 9-DOF sensor with fusion on board, so it gives me absolute orientation instead of raw rates to integrate.</li>
-      <li><b>Five flex sensors</b>, one per finger, each in a voltage divider into an ADC channel. Bend changes resistance, resistance changes voltage.</li>
+      <li><b>BNO055</b> at the wrist. A 9-DOF sensor with onboard fusion, so it outputs absolute orientation rather than raw rates requiring integration.</li>
+      <li><b>Five resistive flex sensors</b>, one per finger, each in a voltage divider feeding an ADC channel.</li>
       <li><b>ESP32 to ESP32 over ESP-NOW.</b> Peer to peer, no router, no PC in the loop. The receiving board drives the servos directly.</li>
     </ul>
-    <div class="note">
-      <b>Why flex sensors first, when they're the worse option.</b> Per-finger IMUs would be more accurate, but that means I²C multiplexing and five simultaneous fusion problems before I know whether the concept even works. Flex sensors are a voltage divider and an analogRead. They let me prove the system end to end and then earn the right to make it precise.
+
+    <div class="callout">
+      <strong>Flex sensors are the worse sensor, and I chose them first on purpose.</strong> Per-finger IMUs would be more accurate, but they would mean I²C multiplexing and five simultaneous fusion problems before I know whether the concept works at all. Flex sensors are a voltage divider and an analogRead. They let me prove the system end to end and then earn the right to make it precise.
     </div>
   </div>
 
-  <div class="blk">
-    <h2><span class="k">Open problems</span>What I haven't solved.</h2>
+  <div class="block">
+    <h2><span class="k">Open problems</span>What remains unsolved.</h2>
     <ul>
-      <li><b>Flex sensor calibration.</b> Every sensor has a different flat and bent resistance, and they drift as they wear. A per-sensor calibration routine isn't optional.</li>
-      <li><b>Mapping bend to servo angle.</b> Finger curl isn't linear in resistance, and a human finger's range doesn't match a servo's.</li>
-      <li><i>[Zack: what's actually blocking you right now? Put it here. Being able to describe an unsolved problem precisely makes people trust you more, not less.]</i></li>
+      <li><b>Flex sensor calibration.</b> Each sensor has a different flat and bent resistance, and those values drift with wear. A per-sensor calibration routine is not optional.</li>
+      <li><b>Mapping bend to servo angle.</b> Finger curl is not linear in resistance, and a human finger's range does not correspond to a servo's.</li>
+      <li><i>[Current blocker goes here.]</i></li>
     </ul>
   </div>
 
-  <div class="blk">
-    <h2><span class="k">Next</span>One finger, then five.</h2>
-    <p>Get a single finger tracking cleanly end to end before scaling. Measure latency and tracking fidelity properly instead of eyeballing it. Then decide whether flex sensors are good enough, or whether the accuracy problem forces the upgrade to per-finger IMUs.</p>
+  <div class="block">
+    <h2><span class="k">Next</span>One finger before five.</h2>
+    <p>Get a single finger tracking cleanly end to end before scaling. Measure latency and tracking fidelity properly rather than assessing them by eye. Then determine whether flex sensors are sufficient, or whether the accuracy requirement forces the upgrade to per-finger IMUs.</p>
   </div>
 
 </div>
 <div class="next">
   <div class="wrap">
     <a href="analog-labs.html">
-      <div><div class="l">Next</div><h3>Analog Coursework</h3></div>
-      <span class="a">→</span>
+      <div><div class="lbl">Next project</div><h3>Analog Coursework</h3></div>
+      <span class="ar">→</span>
     </a>
   </div>
 </div>

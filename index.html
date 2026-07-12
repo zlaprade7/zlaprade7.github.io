@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zack LaPrade</title>
-<meta name="description" content="Computer Systems Engineering student at UGA. Embedded systems, analog circuits, PCB design.">
+<title>Zack LaPrade | Computer Systems Engineering</title>
+<meta name="description" content="Embedded systems, analog electronics and PCB design. Computer Systems Engineering, University of Georgia.">
 <script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="index.html">Zack LaPrade<span class="d">.</span></a>
-    <div class="nl">
+    <a class="brand" href="index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
+    <div class="navlinks">
       <a href="#work">Work</a>
-      <a href="#skills">Skills</a>
+      <a href="#capabilities">Capabilities</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
@@ -26,120 +26,113 @@
 
 <header class="hero">
   <div class="wrap">
-    <div class="kick rv">Computer Systems Engineering / University of Georgia</div>
-    <h1 class="rv">I build hardware that senses things and does something about it.</h1>
-    <p class="rv">Third year at UGA. I work across the whole path: sensor, signal conditioning, PCB, firmware, enclosure. Most of what's here I built because I wanted it to exist, not because a class asked for it.</p>
-    <div class="links rv">
-      <a class="solid" href="demo/">Try the live demo</a>
-      <a href="#work">See the projects</a>
+    <div class="eyebrow rv">University of Georgia</div>
+    <h1 class="rv">Embedded systems, analog front ends, and the <span class="u">boards underneath them</span>.</h1>
+    <p class="rv">Third-year Computer Systems Engineering student. I design the full signal path, from the sensor through conditioning and layout to firmware and enclosure, and I build the hardware rather than stopping at simulation.</p>
+    <div class="quick rv">
+      <a href="demo/">Live demo →</a>
+      <a href="#work">Projects</a>
       <a href="resume.pdf">Résumé</a>
       <a href="https://github.com/zlaprade7">GitHub</a>
+      <a href="mailto:zacklaprade@gmail.com">Email</a>
     </div>
   </div>
 </header>
 
 <section id="work">
   <div class="wrap">
-    <div class="sh rv">
-      <h2>Work</h2>
-      <span class="rule"></span>
-      <span class="note">6 projects</span>
+    <div class="sechead rv">
+      <span class="n">01</span>
+      <h2>Selected work</h2>
+      <span class="note">In depth</span>
     </div>
 
-    <div class="grid">
+    <article class="feat">
+      <div class="rv">
+        <div class="fmeta"><span>2025 — ongoing</span><span class="dot"></span><span>Systems integration</span><span class="dot"></span><span>Solo</span></div>
+        <h3><a href="projects/jarvis.html">JARVIS</a></h3>
+        <p>A Raspberry Pi that measures the conditions in my room and acts on them: driving smart lighting, controlling the display over DDC/CI, tracking sleep, and running an always-on dashboard.</p>
+        <p>Every panel on that screen reports a number, except one. The JARVIS panel takes the calendar, the weather, the sensors and the sleep record and reduces them to a single actionable sentence. That panel is what makes it a system rather than a display.</p>
+        <div class="tools">Flask · 7 threads · SHT40 · PIR · WiZ over UDP · DDC/CI · systemd</div>
+        <a class="more" href="projects/jarvis.html"><span>Read the case study</span><span class="arw">→</span></a>
+      </div>
+      <figure class="fig ratio wipe">
+        <div class="embed-tag"><span class="d"></span>Live demo</div>
+        <iframe class="embed" src="demo/" title="MonCoeur dashboard" loading="lazy" scrolling="no"></iframe>
+      </figure>
+    </article>
 
-      <a class="card wide rv" href="projects/jarvis.html">
-        <div class="shot">
-          <div class="embed-tag"><span class="d"></span>Live demo</div>
-          <iframe class="embed" src="demo/" title="MonCoeur dashboard, live" loading="lazy" scrolling="no"></iframe>
-        </div>
-        <div class="body">
-          <div class="num">001</div>
-          <h3>JARVIS</h3>
-          <p>A Raspberry Pi that runs my room. It reads temperature, humidity and motion, then acts on what it finds: turns the lights on when I walk in, sleeps the monitor over DDC/CI, tracks when I fall asleep, and puts my day on a screen I can read from across the room.</p>
-          <p>Every panel on that screen just reports a number, except one. The JARVIS panel takes the calendar, the weather, the sensors and my sleep, and turns them into a single sentence I can actually use. That's the part I care about.</p>
-          <p style="color:var(--mute);font-size:13px">The demo on the left is running right now. Go press the buttons.</p>
-          <div class="tags">
-            <span class="tag">Flask</span><span class="tag">7 threads</span><span class="tag">SHT40</span><span class="tag">PIR</span><span class="tag">WiZ / UDP</span><span class="tag">ddcutil</span><span class="tag">systemd</span>
-          </div>
-          <div class="go">Read the writeup <i>→</i></div>
-        </div>
+    <article class="feat">
+      <div class="rv">
+        <div class="fmeta"><span>2026</span><span class="dot"></span><span>Analog and embedded</span><span class="dot"></span><span>Team of 5, I led it</span></div>
+        <h3><a href="projects/bench-instrument.html">Raspberry Pi Bench Instrument</a></h3>
+        <p>Four instruments in one box, built under a single constraint: no instrumentation ICs. A Raspberry Pi has no analog input, so the voltmeter is a <b>6-bit successive-approximation ADC built from an R-2R ladder and a comparator</b>.</p>
+        <p>I was project lead and electrical lead on a team of five, and designed the Class AB push-pull output stage, the voltmeter and the ohmmeter.</p>
+        <div class="tools">R-2R SAR ADC · TL071CP · IRFZ24N / IRF5210 · MCP4231 · 4-layer board</div>
+        <a class="more" href="projects/bench-instrument.html"><span>Read the case study</span><span class="arw">→</span></a>
+      </div>
+      <figure class="fig ratio wipe"><img src="images/bench-pcb.jpg" alt="The bench instrument board"></figure>
+    </article>
+
+    <article class="feat">
+      <div class="rv">
+        <div class="fmeta"><span>2026</span><span class="dot"></span><span>Analog front end</span><span class="dot"></span><span>Solo</span></div>
+        <h3><a href="projects/water-bottle.html">Hydration Coach</a></h3>
+        <p>A water bottle that measures water level, ambient conditions and activity, then adjusts a daily hydration target accordingly. Five sensors, a Wheatstone bridge into an INA333 instrumentation amplifier, a custom two-layer board and a printed housing, built for $31.70 against a $50 cap.</p>
+        <p>Measured error came in at 0.15% to 0.28% on temperature and under 0.3% on water level.</p>
+        <div class="tools">ESP32-C3-MINI · INA333 · Semitec 103AT-2 · SHT40 · MPU-6050 · A02YYUW · Kalman and median filtering</div>
+        <a class="more" href="projects/water-bottle.html"><span>Read the case study</span><span class="arw">→</span></a>
+      </div>
+      <figure class="fig ratio wipe"><img src="images/bottle-hero.jpg" alt="The Hydration Coach housing on a bottle"></figure>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sechead rv">
+      <span class="n">02</span>
+      <h2>Also built</h2>
+      <span class="note">Shorter writeups</span>
+    </div>
+    <div class="list rv">
+      <a class="row" href="projects/schmitt-pcb.html">
+        <span class="yr">2025</span>
+        <span class="nm">Schmitt Trigger PCB</span>
+        <span class="tg">5 revisions · Self-taught Altium</span>
+        <span class="ar">→</span>
       </a>
-
-      <a class="card rv" href="projects/bench-instrument.html">
-        <div class="shot"><img src="images/bench-pcb.jpg" alt="The bench instrument board"></div>
-        <div class="body">
-          <div class="num">002</div>
-          <h3>Bench Instrument</h3>
-          <p>Four instruments in one box, built under one rule: no instrumentation ICs. A Pi has no analog input, so the voltmeter is a 6-bit SAR ADC I built out of an R-2R ladder and a comparator. I was project lead and electrical lead on a team of five.</p>
-          <div class="tags"><span class="tag">R-2R SAR ADC</span><span class="tag">Class AB</span><span class="tag">MCP4231</span><span class="tag">4-layer</span></div>
-          <div class="go">Read the writeup <i>→</i></div>
-        </div>
+      <a class="row" href="projects/sensor-glove.html">
+        <span class="yr">2025</span>
+        <span class="nm">Wearable Sensor Glove</span>
+        <span class="tg">BNO055 · ESP-NOW · In progress</span>
+        <span class="ar">→</span>
       </a>
-
-      <a class="card rv" href="projects/water-bottle.html">
-        <div class="shot"><img src="images/bottle-hero.jpg" alt="The water bottle housing"></div>
-        <div class="body">
-          <div class="num">003</div>
-          <h3>Water Bottle</h3>
-          <p>I get migraines and they're tied to dehydration, so I built a bottle that notices when I've stopped drinking. Five sensors, a custom analog front end, and a full USB-C charge and protection chain. Now being rebuilt smaller and cheaper.</p>
-          <div class="tags"><span class="tag">ESP32-C3</span><span class="tag">INA333</span><span class="tag">Steinhart-Hart</span><span class="tag">Kalman</span></div>
-          <div class="go">Read the writeup <i>→</i></div>
-        </div>
+      <a class="row" href="projects/analog-labs.html">
+        <span class="yr">2025</span>
+        <span class="nm">Analog Coursework</span>
+        <span class="tg">LTspice · 555 encoder · Uncertainty</span>
+        <span class="ar">→</span>
       </a>
-
-      <a class="card rv" href="projects/schmitt-pcb.html">
-        <div class="shot"><img src="images/bench-breadboard.jpg" alt="Breadboard work"></div>
-        <div class="body">
-          <div class="num">004</div>
-          <h3>Schmitt Trigger PCB</h3>
-          <p>Five Altium revisions of the same circuit over one summer. No class, no credit. I picked a circuit simple enough that the circuit wouldn't be the hard part, because the point was learning to make a board a fab house would actually accept.</p>
-          <div class="tags"><span class="tag">Altium</span><span class="tag">5 revisions</span><span class="tag">Self-taught</span></div>
-          <div class="go">Read the writeup <i>→</i></div>
-        </div>
-      </a>
-
-      <a class="card rv" href="projects/sensor-glove.html">
-        <div class="shot"><img src="images/bottle-breadboard.jpg" alt="Prototype work"></div>
-        <div class="body">
-          <div class="num">005</div>
-          <h3>Sensor Glove</h3>
-          <p>A glove that mirrors your hand onto a robotic one. I pitched it to my lab and I'm building it now. It doesn't work yet, and I'm listing it anyway, because only showing finished things gives a false picture of how any of this actually goes.</p>
-          <div class="tags"><span class="tag">BNO055</span><span class="tag">Flex sensors</span><span class="tag">ESP-NOW</span><span class="tag">In progress</span></div>
-          <div class="go">Read the writeup <i>→</i></div>
-        </div>
-      </a>
-
-      <a class="card rv" href="projects/analog-labs.html">
-        <div class="shot"><img src="images/bottle-pcb.jpg" alt="PCB layout"></div>
-        <div class="body">
-          <div class="num">006</div>
-          <h3>Analog Coursework</h3>
-          <p>Differential pairs, cascodes, and a 555 that encodes a shaft angle as a frequency. The lab that stuck with me was the one where the error analysis mattered more than the answer.</p>
-          <div class="tags"><span class="tag">LTspice</span><span class="tag">555</span><span class="tag">Uncertainty</span></div>
-          <div class="go">Read the writeup <i>→</i></div>
-        </div>
-      </a>
-
     </div>
   </div>
 </section>
 
-<section id="skills">
+<section id="capabilities">
   <div class="wrap">
-    <div class="sh rv">
-      <h2>Skills</h2>
-      <span class="rule"></span>
-      <span class="note">Things I've actually shipped with</span>
+    <div class="sechead rv">
+      <span class="n">03</span>
+      <h2>Capabilities</h2>
+      <span class="note">Tools I have shipped something with</span>
     </div>
-    <div class="skills rv">
+    <div class="cols rv">
       <div>
         <h4>Board design</h4>
         <ul>
           <li>Altium Designer</li>
           <li>EasyEDA / JLCPCB</li>
           <li>Schematic capture</li>
-          <li>Layout and routing</li>
+          <li>Multi-layer layout</li>
           <li>DRC, Gerbers, BOM</li>
         </ul>
       </div>
@@ -147,10 +140,10 @@
         <h4>Analog</h4>
         <ul>
           <li>Signal conditioning</li>
-          <li>Instrumentation amps</li>
+          <li>Instrumentation amplifiers</li>
           <li>Wheatstone bridges</li>
           <li>Class AB output stages</li>
-          <li>LTspice</li>
+          <li>LTspice, Multisim</li>
         </ul>
       </div>
       <div>
@@ -160,16 +153,16 @@
           <li>Raspberry Pi, Linux</li>
           <li>I²C, SPI, UART</li>
           <li>PWM, ADC, interrupts</li>
-          <li>ESP-NOW</li>
+          <li>Kalman and median filtering</li>
         </ul>
       </div>
       <div>
-        <h4>Software</h4>
+        <h4>Software and CAD</h4>
         <ul>
           <li>C / C++</li>
           <li>Python, Flask</li>
           <li>MATLAB</li>
-          <li>Fusion 360</li>
+          <li>Fusion 360, Inventor</li>
           <li>Git, systemd</li>
         </ul>
       </div>
@@ -177,17 +170,15 @@
   </div>
 </section>
 
-<section id="contact">
+<section class="contact" id="contact">
   <div class="wrap">
-    <div class="contact rv">
-      <h2>I'm looking for hardware work in 2027.</h2>
-      <p>Embedded, analog, board bring-up, test. If you're hiring, I'd like to hear from you. Happy to walk through any of this in as much detail as you want.</p>
-      <div class="links">
-        <a href="mailto:zacklaprade@gmail.com">zacklaprade@gmail.com</a>
-        <a href="https://linkedin.com/in/zack-laprade">LinkedIn</a>
-        <a href="https://github.com/zlaprade7">GitHub</a>
-        <a href="resume.pdf">Résumé</a>
-      </div>
+    <h2 class="rv">Looking for hardware work in 2027.</h2>
+    <p class="rv">Embedded systems, analog design, board bring-up and test. If you are hiring, I would like to hear from you, and I am happy to walk through any of this in as much detail as you want.</p>
+    <div class="links rv">
+      <a href="mailto:zacklaprade@gmail.com">zacklaprade@gmail.com</a>
+      <a href="https://linkedin.com/in/zack-laprade">LinkedIn</a>
+      <a href="https://github.com/zlaprade7">GitHub</a>
+      <a href="resume.pdf">Résumé</a>
     </div>
   </div>
 </section>
