@@ -1,63 +1,33 @@
-/* ---------- scroll reveal (staggered, capped) ---------- */
-const io = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) return;
-    const group = entry.target.parentElement;
-    const sibs  = group ? [...group.children].filter(c => c.classList.contains('rv') || c.classList.contains('wipe')) : [];
-    const i     = Math.min(sibs.indexOf(entry.target), 3); // cap the stagger so it never feels slow
-    entry.target.style.transitionDelay = (i > 0 ? i * 90 : 0) + 'ms';
-    entry.target.classList.add('in');
-    io.unobserve(entry.target);
+/* reveal on scroll, staggered by position within a group */
+const io = new IntersectionObserver((es) => {
+  es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const sibs = [...(e.target.parentElement?.children || [])].filter(c => c.classList.contains('rv'));
+    const i = Math.max(0, Math.min(sibs.indexOf(e.target), 4));
+    e.target.style.transitionDelay = (i * 60) + 'ms';
+    e.target.classList.add('in');
+    io.unobserve(e.target);
   });
-}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.rv, .wipe').forEach(el => io.observe(el));
+document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
-/* ---------- nav: hide on scroll down, show on scroll up ---------- */
+/* hairline under nav once you scroll */
 const nav = document.querySelector('nav');
-let lastY = window.scrollY;
 let ticking = false;
-
-function onScroll() {
-  const y = window.scrollY;
-
-  if (nav) {
-    nav.classList.toggle('stuck', y > 12);
-    if (y > 140 && y > lastY) nav.classList.add('hidden');
-    else nav.classList.remove('hidden');
-  }
-
-  const bar = document.querySelector('.progress');
-  if (bar) {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
-  }
-
-  lastY = y;
-  ticking = false;
-}
-
-window.addEventListener('scroll', () => {
-  if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+addEventListener('scroll', () => {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    nav?.classList.toggle('stuck', scrollY > 8);
+    ticking = false;
+  });
 }, { passive: true });
 
-/* ---------- graceful image placeholders ----------
-   Any .fig whose <img> fails to load shows its data-ph note instead,
-   so the site looks intentional before every photo is in place.       */
-document.querySelectorAll('.fig img').forEach(img => {
-  const mark = () => img.closest('.fig')?.classList.add('missing');
-  img.addEventListener('error', mark);
-  if (img.complete && img.naturalWidth === 0) mark();
-});
-
-
-/* ---------- safety net ----------
-   If the observer never fires for an element (odd viewport, browser quirk,
-   restored scroll position), reveal it anyway. Content must never be
-   permanently invisible because an animation didn't run.                */
+/* safety net: nothing stays invisible because an animation didn't fire */
 setTimeout(() => {
-  document.querySelectorAll('.rv:not(.in), .wipe:not(.in)').forEach(el => {
+  document.querySelectorAll('.rv:not(.in)').forEach(el => {
     el.style.transitionDelay = '0ms';
     el.classList.add('in');
   });
-}, 2500);
+}, 2200);

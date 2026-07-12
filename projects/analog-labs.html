@@ -2,87 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Analog &amp; Sensors Coursework — Zack LaPrade</title>
-<meta name="description" content="Differential pairs, cascode stages, and a 555-based angle-to-frequency encoder with full uncertainty analysis.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analog Coursework | Zack LaPrade</title>
+<meta name="description" content="Differential pairs, cascodes, and a 555 that encodes angle as frequency.">
+<script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
-<script>document.documentElement.classList.add("js")</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
-<div class="progress"></div>
-
 <nav>
   <div class="wrap">
-    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
-    <div class="navlinks">
+    <a class="brand" href="../index.html">Zack LaPrade<span class="d">.</span></a>
+    <div class="nl">
       <a class="back" href="../index.html#work">All work</a>
       <a href="../index.html#contact">Contact</a>
     </div>
   </div>
 </nav>
-
-<header class="p-hero">
+<header class="phero">
   <div class="wrap">
-    <div class="eyebrow rv">2025 — 2026</div>
-    <h1 class="rv">Analog &amp; Sensors Coursework</h1>
-    <p class="deck rv">The foundation everything else on this site is built on — differential pairs, cascodes, and the kind of measurement work where the uncertainty analysis matters as much as the number.</p>
-
+    <div class="kick rv">006 / 2025-26</div>
+    <h1 class="rv">Analog and Sensors Coursework</h1>
+    <p class="deck rv">The foundation everything else here is built on. Differential pairs, cascodes, and the kind of measurement work where the error bar matters as much as the number.</p>
+    <div class="shotbig rv"><img src="../images/bottle-pcb.jpg" alt="Board layout"></div>
     <dl class="spec rv">
       <div><dt>Courses</dt><dd>ELEE 4270, ELEE 4230</dd></div>
-      <div><dt>Tools</dt><dd>LTspice, Multisim, Keysight bench</dd></div>
-      <div><dt>Focus</dt><dd>Analog design, transduction</dd></div>
+      <div><dt>Tools</dt><dd>LTspice, Multisim, bench</dd></div>
+      <div><dt>Focus</dt><dd>Analog, transduction</dd></div>
     </dl>
   </div>
 </header>
-
-<div class="narrow">
-
-  <div class="block prose">
-    <h2><span class="k">ELEE 4270</span>Analog electronics.</h2>
-    <p>Differential pairs and CMRR, cascode stages, MOSFET and op-amp behaviour, push-pull output stages — simulated in LTspice, then built and measured.</p>
-    <p>The useful part wasn't the topologies. It was the habit of asking, every time, <em>where does the noise come in, and what rejects it?</em> That question is the reason the water bottle has an instrumentation amplifier instead of a bare ADC read, and it's why the bench instrument's MOSFETs sit inside the feedback loop.</p>
+<div class="narrow prose">
+  <div class="blk">
+    <h2><span class="k">Analog electronics</span>Where does the noise come in.</h2>
+    <p>Differential pairs and CMRR, cascodes, MOSFET and op-amp behaviour, push-pull output stages. Simulated in LTspice, then built and measured.</p>
+    <p>The useful part wasn't the topologies. It was getting into the habit of asking, every time: where does the noise come in, and what rejects it? That question is why the water bottle has an instrumentation amp instead of a bare ADC read, and why the bench instrument's MOSFETs sit inside the feedback loop.</p>
   </div>
 
-  <div class="block prose">
-    <h2><span class="k">ELEE 4230</span>Sensors and transducers.</h2>
-    <p>The course that taught me that a sensor reading is a claim, and a claim needs an error bar.</p>
-
-    <h3>Encoding angle as frequency</h3>
-    <p>One lab: measure a potentiometer's shaft angle by making it set the frequency of a <b>555 astable oscillator</b>, then reading that frequency on an ESP32 via interrupt-based period averaging. Resistance becomes frequency; frequency becomes a timestamp difference; a timestamp difference becomes an angle.</p>
-    <p>The transfer function falls out of the 555's internals — the capacitor always charges and discharges through exactly <b>ln(2)</b> time constants, because the internal comparators trip at ⅓ and ⅔ of V<sub>CC</sub>. That's where the famous 1.44 comes from. It isn't a magic number; it's 1/ln(2).</p>
-
-    <div class="callout">
-      <strong>The part that actually taught me something:</strong> the uncertainty analysis. Propagating component tolerances through with RSS partial derivatives showed that the <b>capacitor dominates</b> the error budget — and that the total uncertainty isn't constant across the range. It runs from roughly <b>1.7% at one end to 4% at the other</b>, because sensitivity goes as 1/f². The measurement is meaningfully worse at one end of the sweep than the other, and you'd never know it from the schematic.
+  <div class="blk">
+    <h2><span class="k">Sensors and transducers</span>A number without an error bar is a guess.</h2>
+    <p>One lab: measure a potentiometer's shaft angle by making it set the frequency of a <b>555 astable</b>, then read that frequency on an ESP32 with interrupt-based period averaging. Resistance becomes frequency, frequency becomes a timestamp difference, and that becomes an angle.</p>
+    <p>The transfer function falls out of the 555's internals. The capacitor always charges and discharges through exactly <b>ln(2)</b> time constants, because the internal comparators trip at a third and two thirds of Vcc. That's where the famous 1.44 comes from. It isn't magic, it's 1/ln(2).</p>
+    <div class="note">
+      <b>The part that actually taught me something was the uncertainty analysis.</b> Propagating component tolerances through with RSS partial derivatives showed that the capacitor dominates the error budget, and that total uncertainty isn't constant across the range. It runs from about <b>1.7% at one end to 4% at the other</b>, because sensitivity goes as 1/f². The measurement is meaningfully worse at one end of the sweep, and you'd never know that from the schematic.
     </div>
-
-    <p>That's the lesson I took out of the whole course: a number without an error bar isn't a measurement, it's a guess with a decimal point.</p>
+    <p>That's the thing I took out of the whole course. A number without an error bar isn't a measurement, it's a guess with a decimal point.</p>
   </div>
 
 </div>
-
 <div class="next">
   <div class="wrap">
-    <a href="bench-instrument.html">
-      <div>
-        <div class="lbl">Next project</div>
-        <h3>Raspberry Pi Bench Instrument</h3>
-      </div>
-      <span class="ar">→</span>
+    <a href="jarvis.html">
+      <div><div class="l">Next</div><h3>JARVIS</h3></div>
+      <span class="a">→</span>
     </a>
   </div>
 </div>
-
-<footer>
-  <div class="wrap">
-    <span>Hand-built. No frameworks, no trackers.</span>
-    <span>© 2026</span>
-  </div>
-</footer>
-
+<footer><div class="wrap"><span>Built by hand. No frameworks.</span><span>2026</span></div></footer>
 <script src="../main.js"></script>
 </body>
 </html>
