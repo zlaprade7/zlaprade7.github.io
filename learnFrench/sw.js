@@ -1,7 +1,7 @@
 /* Français Familier — offline service worker.
    Cache-first so the app (and its embedded audio) runs with no signal.
    Bump CACHE after any redeploy to force clients to pick up the new files. */
-const CACHE = 'ff-v9';
+const CACHE = 'ff-v11';
 
 /* Files worth pre-caching on install. The big app HTML is cached on first
    fetch by the handler below, so it doesn't need to be listed by name —
