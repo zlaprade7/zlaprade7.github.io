@@ -2,117 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>JARVIS | Zack LaPrade</title>
-<meta name="description" content="A Raspberry Pi environmental system that senses a room and acts on it.">
-<script>document.documentElement.classList.add("js")</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../style.css">
+<meta name="robots" content="noindex">
+<!-- The project was renamed from JARVIS to MonCoeur. This stub only exists so
+     that links published under the old URL keep working. Safe to delete once
+     nothing points here. -->
+<link rel="canonical" href="moncoeur.html">
+<meta http-equiv="refresh" content="0; url=moncoeur.html">
+<title>Moved to MonCoeur | Zack LaPrade</title>
 </head>
 <body>
-<nav>
-  <div class="wrap">
-    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
-    <div class="navlinks">
-      <a class="back" href="../index.html#work">All work</a>
-      <a href="../index.html#contact">Contact</a>
-    </div>
-  </div>
-</nav>
-<header class="p-hero">
-  <div class="wrap">
-    <div class="eyebrow rv">001 / 2025 to present</div>
-    <h1 class="rv">JARVIS</h1>
-    <p class="deck rv">A Raspberry Pi node that measures the conditions in my room and acts on them: lighting, display power, sleep tracking, and an always-on dashboard. Over a year of iteration, and the only project I keep returning to.</p>
-    <figure class="fig wide wipe rv" style="margin-top:52px">
-      <div class="embed-tag"><span class="d"></span>Live demo, synthetic data</div>
-      <iframe class="embed" src="../demo/" title="MonCoeur dashboard" loading="lazy" scrolling="no"></iframe>
-    </figure>
-    <figcaption style="font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:10px">The real interface, running on invented data. Click into it.</figcaption>
-    <dl class="spec rv">
-      <div><dt>Role</dt><dd>Solo. Hardware, backend, interface.</dd></div>
-      <div><dt>Running since</dt><dd>Early 2025</dd></div>
-      <div><dt>Concurrency</dt><dd>7 threads</dd></div>
-      <div><dt>Try it</dt><dd><a href="../demo/" style="color:var(--accent)">Live demo →</a></dd></div>
-    </dl>
-  </div>
-</header>
-<div class="narrow prose">
-  <div class="block">
-    <h2><span class="k">Premise</span>Most home automation is a remote control with extra steps.</h2>
-    <p>A smart bulb and an app do not constitute a system. Nothing in that arrangement knows anything; it waits to be told. The sensing and the acting are connected only by a person tapping a phone.</p>
-    <p>The question I wanted to answer was whether the room could close that loop on its own. If it can measure its own conditions, read my calendar, and check the weather, it should be able to decide something without me in the loop.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Architecture</span>Sensing, acting, and staying up.</h2>
-    <h3>Sensing</h3>
-    <p>An <b>SHT40</b> reads temperature and humidity over I²C. A <b>PIR</b> reads motion, and that single sensor drives three separate behaviours: lights come up automatically on entry at night, motion logged while I'm away is treated as a security event, and forty minutes without motion is interpreted as sleep onset. The system also pulls the Google Calendar API and a weather API for context the room cannot sense itself.</p>
-
-    <h3>Acting</h3>
-    <p>Lighting is driven over <b>UDP to WiZ bulbs</b> on the local network, with no vendor cloud in the path. The monitor is controlled over <b>DDC/CI</b>, which is the display's own I²C control channel.</p>
-
-    <div class="callout">
-      <strong>DDC/CI is the detail I would defend in an interview.</strong> The common approach to controlling a monitor is a smart plug, which is a blunt instrument: it can only cut power. Talking to the display over its own control channel makes brightness a continuous variable, which is what a dimming curve actually requires. It only works if you go a layer below the obvious solution.
-    </div>
-
-    <h3>Staying up</h3>
-    <p>The whole system runs as a hardened <b>systemd</b> service. It comes up headless on boot and restarts on failure. That reads like a footnote, but it is the difference between something I demonstrate when someone visits and something that has been running unattended in my room for a year.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Synthesis</span>One panel does the work. The rest report numbers.</h2>
-    <p>The calendar shows events. The sensors show readings. The weather shows weather. All of it is useful, and all of it leaves the interpretation to the user.</p>
-    <p>The panel on the right does the interpretation. It takes the calendar, the weather, the room conditions and the sleep record, and reduces them to one actionable sentence: what tomorrow looks like, and what bedtime that implies. On a clear night it reads roughly as nothing scheduled tomorrow, target 12:30, get some rest.</p>
-
-    <div class="callout">
-      <strong>That panel is the project.</strong> Displaying sensor values is not difficult. Whether a system synthesises them is what separates a dashboard from a control system, and that panel is the only part of mine that does. It is also where the Oura Ring data lands once that integration is finished, since readiness and sleep quality are simply two more inputs to the same sentence.
-    </div>
-
-    <h3>Colour as a channel</h3>
-    <p>Events are blue, tasks amber, wash days purple, completed items green. From across the room you can tell what kind of item is on the day without reading it. At that distance colour is the only channel still carrying information.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Iteration</span>Version one worked and was still a failure.</h2>
-    <p>I finished the first build over spring break. It met every requirement I had written down. I brought it back to school and stopped using it within a week.</p>
-    <p>Two reasons, neither of which I had designed for:</p>
-    <ul>
-      <li><b>It required effort to use.</b> Viewing the dashboard meant opening a browser and connecting to a server on the local network. That is roughly five seconds of friction, and five seconds proved sufficient to stop me from ever doing it.</li>
-      <li><b>The interface was illegible at distance.</b> I had designed it on a laptop, for a laptop, when the actual use case was reading it from across a room.</li>
-    </ul>
-    <p>The rebuild is a permanent, always-on display: no browser, no login, legible from ten feet. Once it was always visible, features that had not previously made sense became worth adding, including suggested bedtimes and a summary that changes tone through the day.</p>
-
-    <div class="callout">
-      <strong>Version one satisfied every requirement I wrote and was still useless.</strong> The code was correct. The requirements were wrong, because I never asked how the system would actually be used. That is the most useful mistake I have made on any project.
-    </div>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Concurrency</span>The hard problem was not the sensors.</h2>
-    <p>Sensor polling, lighting automation, calendar sync, weather fetches, sleep detection and the Flask server all run concurrently across <b>seven threads</b> sharing state.</p>
-    <p>Getting that right meant dealing with genuine race conditions, where two threads read and write the same value and the last writer silently wins. Nothing crashes when this is wrong. The system simply produces answers that are occasionally and quietly incorrect, which is a worse failure mode than crashing.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Privacy</span>The public build runs on synthetic data.</h2>
-    <p>The live dashboard displays my calendar and my biometrics. Publishing screenshots of it would publish my schedule, which is not a trade I am willing to make for a portfolio.</p>
-    <p>The public version therefore runs the same code against a synthetic data layer: invented events, simulated sensor drift, fabricated readings. Credentials are loaded from environment variables and are never committed. The interface is real; the data is not.</p>
-    <p><a href="../demo/" style="color:var(--accent);font-weight:600">Use the demo</a> &nbsp;·&nbsp; <a href="https://github.com/zlaprade7" style="color:var(--accent);font-weight:600">Source</a></p>
-  </div>
-
-</div>
-<div class="next">
-  <div class="wrap">
-    <a href="water-bottle.html">
-      <div><div class="lbl">Next project</div><h3>Hydration Coach</h3></div>
-      <span class="ar">→</span>
-    </a>
-  </div>
-</div>
-<footer><div class="wrap"><span>Built by hand. No frameworks.</span><span>2026</span></div></footer>
-<script src="../main.js"></script>
+<p>This project is now called MonCoeur. <a href="moncoeur.html">Continue to the case study</a>.</p>
 </body>
 </html>

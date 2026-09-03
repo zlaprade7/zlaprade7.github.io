@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A Raspberry Pi that runs my room: lighting, display power over DDC/CI, sleep tracking and an always-on dashboard. Running for over a year.">
+<link rel="icon" type="image/png" sizes="512x512" href="../images/icon-512.png">
+<link rel="apple-touch-icon" href="../images/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zack LaPrade">
+<meta property="og:title" content="MonCoeur | Zack LaPrade">
+<meta property="og:description" content="A Raspberry Pi that runs my room: lighting, display power over DDC/CI, sleep tracking and an always-on dashboard. Running for over a year.">
+<meta property="og:url" content="https://zlaprade7.github.io/projects/moncoeur.html">
+<meta property="og:image" content="https://zlaprade7.github.io/images/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<title>MonCoeur | Zack LaPrade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="bar"></div>
+<nav id="nav" data-solid-after="0.05">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Zack LaPrade</a>
+    <div class="links">
+      <a href="../index.html#work">WORK</a>
+      <a href="../index.html#experience">EXPERIENCE</a>
+      <a href="../index.html#about">ABOUT</a>
+      <a href="../index.html#contact">CONTACT</a>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main">
+<header class="phero">
+  <div class="wrap">
+    <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 001</span><span>2025 to present</span></div>
+    <h1><span class="row"><span>MonCoeur</span></span></h1>
+    <p class="deck">A Raspberry Pi that runs my room: lighting, display power, sleep tracking, and an always-on dashboard. I called it JARVIS when I started it in 2025 and renamed it MonCoeur in the rebuild. It's been running for over a year and it's the project I keep coming back to.</p>
+    <div class="chips"><div class="chip"><div class="v">1+ yr</div><div class="l">running unattended</div></div><div class="chip"><div class="v">20</div><div class="l">concurrent threads</div></div><div class="chip"><div class="v">0</div><div class="l">vendor cloud services</div></div></div>
+  </div>
+</header><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Problem</h2></div>
+    <p class="slede rv">I wanted my room to react on its own instead of waiting for me to open an app.</p>
+    <p class="rv">A smart bulb with an app still needs a person tapping a phone. I wanted to see if the room could handle some of that itself: if it can read its own temperature, my calendar, and the weather, it should be able to make small decisions without me.</p>
+<p class="rv">There was a second reason. I get migraines, and I could never tell what set them off. Logging sleep, hydration, exercise and room temperature in one place was the only way I was going to find the pattern.</p>
+  </div>
+</section><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Plan</h2></div>
+    <p class="slede rv">Three parts: sensing the room, acting on it, and keeping it all running.</p>
+    <h3 class="rv">Sensing</h3>
+<p class="rv">A temperature and humidity sensor reads the room over I²C. One motion sensor ended up doing three jobs: turning lights on when I walk in at night, logging motion while I'm away, and treating forty minutes of stillness as me falling asleep. Calendar and weather APIs fill in what the room can't sense.</p>
+<h3 class="rv">Knowing if the room is empty</h3>
+<p class="rv">Motion on its own can't tell me apart from anyone else, so I needed a way for the room to know whether I'm actually home. My first thought was to read my Oura ring, but the ring only pairs with one phone and doesn't broadcast anything the Pi can pick up, so that doesn't work. The approach that does is presence over Bluetooth: the Pi scans for my phone, so in range means I'm home and gone for a while means the room is empty and should arm itself. Motion while it's armed is someone who isn't me, and that's worth a notification. It turns the motion sensor I already have into a quiet security system without adding any hardware. The demo below shows the home, away, and entry states; the phone alerts over ntfy are the part I'm wiring up now.</p>
+<h3 class="rv">Acting</h3>
+<p class="rv">Lighting runs over the local network directly to the bulbs, no vendor cloud involved. For the monitor I used DDC/CI, the display's own control channel, instead of the usual smart plug. A plug can only cut power; talking to the display directly let me actually dim it gradually, which is what I wanted for mornings.</p>
+<h3 class="rv">Talking to it</h3>
+<p class="rv">There are four ways in: the wall display, a Bluetooth button on the desk, an iPhone shortcut, and speech. The speech side runs entirely on the Pi, the wake word and the recognition and the voice that answers, so asking what the room is at never leaves the house. Nothing here needs someone else's cloud to keep working.</p>
+<h3 class="rv">Staying up</h3>
+<p class="rv">Everything runs as a systemd service that starts on boot and restarts if it crashes. Getting that right is a big part of why it's still running a year later.</p>
+  </div>
+</section><div class="giant"><div class="rv"><div class="n">1 week</div><div class="c">How long I used version one before abandoning it</div></div></div><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
+    <p class="slede rv">The first version worked, and I still stopped using it within a week.</p>
+    <p class="rv">I built the first version over a spring break as a web page on the local network. It worked fine, but opening a browser to check my own room was annoying, and I couldn't read the layout from across the room. Nothing was broken. I had just built the wrong thing.</p>
+<p class="rv">The rebuild became an always-on display with one rule: I should be able to read everything from my bed. That rule shaped the whole interface, and it's also why I needed control over the display's brightness, which led me to DDC/CI.</p>
+<div class="note rv"><p><b>My favorite part</b> is the summary panel. The calendar shows events, the sensors show readings, the weather shows weather, but one panel pulls it all together into a short summary of what I actually need to know. That's the part that makes it feel like a system instead of a wall of numbers.</p></div>
+  </div>
+</section><section class="doc" style="border-bottom:none">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Result</h2></div>
+    <p class="slede rv">It's been running since early 2025, and you can try the interface below.</p>
+    <p class="rv">This is the real interface running on made-up data. Feel free to click around.</p>
+<figure class="rv wide" style="max-width:820px"><div class="frame" style="aspect-ratio:16/10"><iframe src="../demo/index.html" style="width:100%;height:100%;border:0" title="MonCoeur dashboard, live demo" loading="lazy"></iframe></div><figcaption><b>DEMO</b> — The real interface, running on invented data.</figcaption></figure>
+<figure class="rv" style="max-width:680px"><div class="frame"><img src="../images/moncoeur-wall.jpg" alt="The wall display running in the room at night"></div><figcaption><b>FIG. 1</b> &mdash; The display on the wall, late. It is the only light on in the room, which is most of why the type is that big.</figcaption></figure><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>Raspberry Pi</span><span>SHT40</span><span>PIR motion</span><span>WiZ over UDP</span><span>DDC/CI via ddcutil</span><span>BLE presence scan</span><span>Google Calendar API</span><span>Open-Meteo</span><span>Flask</span><span>ntfy</span><span>systemd</span><span>openWakeWord</span><span>Vosk</span><span>Piper TTS</span></div></div>
+  </div>
+</section><div class="next"><div class="wrap"><a href="bench-instrument.html"><div><div class="lbl">Next project</div><h3>Multitool Bench</h3></div><span class="ar">→</span></a></div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <span>Zack LaPrade · University of Georgia</span>
+  </div>
+</footer>
+<script src="../main.js"></script>
+</body>
+</html>

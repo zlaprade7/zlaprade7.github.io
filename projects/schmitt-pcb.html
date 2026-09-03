@@ -3,75 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Schmitt Trigger PCB | Zack LaPrade</title>
-<meta name="description" content="Five Altium revisions, self-taught over a summer.">
-<script>document.documentElement.classList.add("js")</script>
+<meta name="description" content="One circuit taken from breadboard to fabricated board over a summer, to learn the whole board design process.">
+<link rel="icon" type="image/png" sizes="512x512" href="../images/icon-512.png">
+<link rel="apple-touch-icon" href="../images/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zack LaPrade">
+<meta property="og:title" content="Light-Activated Switch | Zack LaPrade">
+<meta property="og:description" content="One circuit taken from breadboard to fabricated board over a summer, to learn the whole board design process.">
+<meta property="og:url" content="https://zlaprade7.github.io/projects/schmitt-pcb.html">
+<meta property="og:image" content="https://zlaprade7.github.io/images/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<title>Light-Activated Switch | Zack LaPrade</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<nav>
+<a class="skip" href="#main">Skip to content</a>
+<div id="bar"></div>
+<nav id="nav" data-solid-after="0.05">
   <div class="wrap">
-    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
-    <div class="navlinks">
-      <a class="back" href="../index.html#work">All work</a>
-      <a href="../index.html#contact">Contact</a>
+    <a class="brand" href="../index.html">Zack LaPrade</a>
+    <div class="links">
+      <a href="../index.html#work">WORK</a>
+      <a href="../index.html#experience">EXPERIENCE</a>
+      <a href="../index.html#about">ABOUT</a>
+      <a href="../index.html#contact">CONTACT</a>
     </div>
   </div>
 </nav>
-<header class="p-hero">
+<main id="main" role="main">
+<header class="phero">
   <div class="wrap">
-    <div class="eyebrow rv">004 / 2025</div>
-    <h1 class="rv">Schmitt Trigger PCB</h1>
-    <p class="deck rv">Five Altium revisions of the same circuit over one summer, for no course and no credit. The circuit was chosen precisely because it was not the hard part.</p>
-    <figure class="fig wide wipe rv" style="margin-top:52px"><img src="../images/bench-breadboard.jpg" alt="Bench work"></figure>
-    <dl class="spec rv">
-      <div><dt>Role</dt><dd>Solo, self-directed</dd></div>
-      <div><dt>Tools</dt><dd>Altium Designer, Fusion 360</dd></div>
-      <div><dt>Revisions</dt><dd>5</dd></div>
-      <div><dt>Assigned by</dt><dd>Nobody</dd></div>
-    </dl>
+    <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 004</span><span>2025</span></div>
+    <h1><span class="row"><span>Light-Activated</span></span><span class="row"><span>Switch PCB</span></span></h1>
+    <p class="deck">One circuit taken from breadboard to fabricated board over a summer, outside of any class. I picked a simple circuit on purpose so I could focus on learning the board design process.</p>
+    <div class="chips"><div class="chip"><div class="v">4</div><div class="l">breadboard revisions</div></div><div class="chip"><div class="v">2</div><div class="l">PCB revisions</div></div></div>
   </div>
-</header>
-<div class="narrow prose">
-  <div class="block">
-    <h2><span class="k">Motivation</span>Nothing in my coursework was going to teach me Altium.</h2>
-    <p>No course required this. I had done a great deal of circuit analysis on paper and in simulation, and none of it had ever forced me to answer the question a fabrication house asks, which is whether the design can actually be manufactured.</p>
-    <p>Over a summer I taught myself <b>Altium Designer</b> and <b>Fusion 360</b> from nothing, and deliberately selected a circuit simple enough that the circuit would not be where the difficulty lay.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Circuit</span>Positive feedback, used deliberately.</h2>
-    <p>A Schmitt trigger is a comparator with hysteresis: two thresholds rather than one. It is built by feeding the output back to the non-inverting input, which is the opposite of the negative feedback an entire analog course is spent teaching.</p>
-    <p>The positive feedback is the mechanism. Once the output begins moving it drives itself further in the same direction, which snaps the transition and shifts the threshold away from the input. The result is a comparator that does not chatter on a noisy or slow-moving signal, because the input must travel a real distance to flip it back.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Five revisions</span>What actually changed.</h2>
-    <p>The schematic barely moved across the five boards. Nearly everything I learned was in the layout: footprints that did not match real parts, routing that passed DRC and would still have been miserable to assemble, and the gradual realisation that a board is a mechanical object as much as an electrical one.</p>
-    <div class="callout">
-      <strong>[This section needs the revision history.]</strong> One line per revision: what was wrong with the previous board and what changed. That list is the substance of this project. Five iterations of one circuit only carries weight if each iteration has a stated reason.
-    </div>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Outcome</span>The pipeline, not the board.</h2>
-    <p>The board itself is unremarkable, and I would say so in an interview. What it produced was fluency in the pipeline that sits between a working circuit and a physical object: schematic capture, footprint libraries, layout, DRC, Gerber export.</p>
-    <p>Every board I have designed since, including the Hydration Coach front end and the bench instrument, started from what these five taught me.</p>
-  </div>
-
-</div>
-<div class="next">
+</header><section class="doc">
   <div class="wrap">
-    <a href="sensor-glove.html">
-      <div><div class="lbl">Next project</div><h3>Sensor Glove</h3></div>
-      <span class="ar">→</span>
-    </a>
+    <div class="shead rv"><h2 class="big">Problem</h2></div>
+    <p class="slede rv">None of my classes were going to teach me how to actually get a board made.</p>
+    <p class="rv">I'd done plenty of circuit analysis on paper and in simulation, but none of it ever asked whether a design could actually be manufactured. Over a summer I taught myself the schematic-to-board process from scratch, using a circuit simple enough that it wouldn't get in the way of learning the tools.</p>
   </div>
-</div>
-<footer><div class="wrap"><span>Built by hand. No frameworks.</span><span>2026</span></div></footer>
+</section><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Plan</h2></div>
+    <p class="slede rv">A photoresistor and a Schmitt trigger.</p>
+    <p class="rv">The circuit switches a load when ambient light crosses a threshold. A photoresistor senses the light, and a Schmitt trigger makes the decision. A Schmitt trigger is a comparator with hysteresis, meaning two thresholds instead of one, made by feeding the output back to the non-inverting input. That's useful for a slow, noisy signal like fading daylight: the output can't rapidly flip back and forth, because the input has to travel a real distance to switch it back.</p>
+  </div>
+</section><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
+    <p class="slede rv">Six versions of one circuit, and almost everything I learned was on the physical side.</p>
+    <p class="rv">Four breadboard revisions to get the thresholds and switching behavior right, then two board revisions. The schematic barely changed. What changed was everything around it: footprints that didn't match real parts, routing that passed the design rule check but would have been miserable to assemble, and slowly realizing that a board is a mechanical object as much as an electrical one.</p>
+<figure class="rv" style="max-width:620px"><div class="frame"><img src="../images/lightswitch-proto.jpg" alt="The light-activated switch on a breadboard"></div><figcaption><b>FIG. 1</b> &mdash; The circuit on a breadboard, before any of the revisions.</figcaption></figure>
+  </div>
+</section><section class="doc" style="border-bottom:none">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Result</h2></div>
+    <p class="slede rv">The board itself is simple. What I got out of it was the process.</p>
+    <p class="rv">This project taught me the path between a working circuit and a physical object: schematic capture, footprints, layout, design rules, fabrication files. Every board I've designed since, including the water bottle front end and the multitool bench, built on what I learned here.</p>
+<div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>Photoresistor</span><span>Schmitt trigger</span><span>Fusion 360 Electronics</span><span>Breadboard ×4</span><span>PCB ×2</span></div></div>
+  </div>
+</section><div class="next"><div class="wrap"><a href="sensor-glove.html"><div><div class="lbl">Next project</div><h3>Wearable Sensor Glove</h3></div><span class="ar">→</span></a></div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <span>Zack LaPrade · University of Georgia</span>
+  </div>
+</footer>
 <script src="../main.js"></script>
 </body>
 </html>

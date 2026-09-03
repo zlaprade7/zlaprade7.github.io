@@ -1,601 +1,2253 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<title>MonCoeur — Live Demo (synthetic data)</title>
+<title>MonCoeur, live demo (synthetic data)</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<!-- Add to Home Screen, from Safari. Without apple-mobile-web-app-capable it
+     installs as a bookmark that opens in Safari with the address bar still
+     there; with it, it launches standalone and looks like an app. The title is
+     what appears under the icon, so it is the product name and not the <title>,
+     which says "Live Demo (synthetic data)".
+     The icon is served from the Pi at /static/. On the portfolio demo that path
+     does not exist and Safari just falls back to a screenshot, which is fine —
+     nobody installs the demo. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MonCoeur">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a1220">
+<link rel="apple-touch-icon" href="/static/moncoeur-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/static/moncoeur-512.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap" rel="stylesheet">
 <style>
-
-    :root,[data-theme="light"]{
-      --bg:#f2f4f7;--card:#fff;--card2:#f8f9fb;--hover:#eef1f5;--inp:#fff;
-      --br:#dde2ea;--brF:#3b82f6;--tx:#1a1d26;--t2:#4b5563;
-      --tm:#6b7280;
-      --ac:#3b82f6;--acL:#dbeafe;--acD:#1d4ed8;
-      --dot-ev:#3b82f6;--dot-td:#f59e0b;--dot-hw:#8b5cf6;--dot-hd:#10b981;
-      --sh:0 1px 4px rgba(0,0,0,.05);--shH:0 4px 16px rgba(0,0,0,.08);
-      --r:14px;--rs:8px;
-      --topBg:rgba(255,255,255,.82);--topBlur:saturate(180%) blur(18px);
-      --f:'Outfit',sans-serif; --fm:'JetBrains Mono',monospace;
-    }
-    [data-theme="dark"]{
-      --bg:#0d0f14;--card:#161921;--card2:#1c1f2a;--hover:#22263a;--inp:#1c1f2a;
-      --br:#282d3e;--brF:#60a5fa;--tx:#f3f4f6;--t2:#9ca3af;--tm:#6b7280;
-      --ac:#60a5fa;--acL:#1a2e4a;--acD:#93bbfc;
-      --dot-ev:#60a5fa;--dot-td:#fbbf24;--dot-hw:#a78bfa;--dot-hd:#34d399;
-      --sh:0 1px 4px rgba(0,0,0,.2);--shH:0 4px 16px rgba(0,0,0,.35);
-      --topBg:rgba(13,15,20,.82);
-    }
-
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body {
-    font-family: var(--f);
-    background: var(--bg);
-    color: var(--tx);
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden; /* This stops the 'scroll form' */
-    display: flex;
-    flex-direction: column;
-    }
-    .mono{font-family:var(--fm);}
-
-    .moncoeur-top{
-      position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
-      padding:10px 20px;background:var(--topBg);backdrop-filter:var(--topBlur);-webkit-backdrop-filter:var(--topBlur);
-      border-bottom:1px solid var(--br);flex-shrink:0;gap:12px;
-    }
-    .brand{font-size:28px;font-weight:800;letter-spacing:-.5px;white-space:nowrap;text-transform:none;}
-    .brand-ac{color:var(--ac);}
-
-    .top-mid {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 64px;
-    }
-    .clock{
-      font-size:32px;
-      font-weight:800;
-      color:var(--tx);
-      letter-spacing:.5px;
-      font-family:var(--f);
-    }
-    .top-btn:hover{border-color:var(--ac);background:var(--hover);}
-
-    .grid-two {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 6fr 4fr;
-    gap: 16px;
-    padding: 16px 20px;
-    height: calc(100vh - 60px); /* Adjust based on your header height */
-    overflow: hidden; /* Prevents the grid from expanding past the screen */
-    }
-    .col {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: 100%;
-    min-height: 0; /* Important for grid alignment */
-    overflow: hidden;
-    }
-    .side-col{min-width:0;}
-
-    .card{
-      background:var(--card);border:1px solid var(--br);border-radius:var(--r);
-      box-shadow:var(--sh);display:flex;flex-direction:column;min-height:0;
-    }
-    .card-h{
-      display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
-      border-bottom:1px solid var(--br);flex-shrink:0;gap:8px;
-    }
-    .card-h h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;}
-    .card-b{padding:12px 16px;overflow-y:auto;flex:1;scrollbar-width:none;}
-    .timeline-card{height:100%;}
-
-    .badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:16px;text-transform:uppercase;letter-spacing:.5px;}
-    .btn{padding:8px 14px;border-radius:var(--rs);border:none;background:var(--ac);color:#fff;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;transition:.15s;}
-    .btn:hover{background:var(--acD);}
-    .btn-ghost{padding:6px 12px;border-radius:var(--rs);border:1px solid var(--br);background:transparent;color:var(--t2);font-size:13px;font-weight:600;font-family:var(--f);cursor:pointer;}
-    .btn-ghost:hover{border-color:var(--ac);color:var(--ac);}
-    .empty{color:var(--t2);font-size:16px;font-weight:600;text-align:center;padding:20px 0;}
-
-    .tl-body{padding-top:12px;padding-bottom:0;}
-    .tl-list{display:flex;flex-direction:column;}
-
-    .tl-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--br);position:relative; align-items:center;}
-    .tl-item:last-child{border:none;}
-    .tl-item:hover .tl-x{opacity:1;}
-
-    .tl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-    .tl-content{flex:1;display:flex;flex-direction:column;min-width:0;}
-    .tl-title{font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
-    .tl-sub{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
-
-    .tl-x {
-          margin-left:auto; width:32px; height:32px; border-radius:6px; background:var(--card2);
-          border:1px solid var(--br);color:var(--tm);display:flex;align-items:center;justify-content:center;
-          cursor:pointer; opacity:0; transition:.15s;font-size:18px;font-weight:bold; flex-shrink:0;
-          position:relative; z-index:100;
-        }
-    .tl-x:hover{color:#ef4444;border-color:#ef4444;background:#fee2e2;}
-    .static-x{opacity:1;}
-
-    .tl-check{
-      width:20px;height:20px;border-radius:4px;border:2px solid var(--br);cursor:pointer;
-      display:flex;align-items:center;justify-content:center;color:transparent;transition:.15s;flex-shrink:0;
-    }
-    .tl-check:hover{border-color:var(--ac);}
-    .tl-item.done .tl-check{background:var(--dot-hd);border-color:var(--dot-hd);color:#fff;}
-    .tl-item.done .tl-title{text-decoration:line-through;opacity:.5;}
-
-    .today-footer{
-      display:flex;justify-content:space-between;padding:18px 24px;border-top:1px solid var(--br);
-      background:var(--card2);font-size:16px;font-weight:700;color:var(--t2);flex-shrink:0;
-      text-transform:uppercase;letter-spacing:.5px;
-    }
-
-    .wh{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-    .wb{font-size:32px;font-weight:700;line-height:1;letter-spacing:-1px;}
-    .wu{font-size:12px;color:var(--tm);}
-    .wm{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;flex:1;}
-    .wsl{font-size:9px;color:var(--tm);text-transform:uppercase;}
-    .wsv{font-size:12px;font-weight:600;}
-    .hourly{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
-    .hc{min-width:48px;text-align:center;padding:6px 4px;background:var(--card2);border-radius:6px;}
-    .ht{font-size:9px;color:var(--tm);}
-    .htp{font-size:12px;font-weight:600;display:block;}
-    .hb{width:16px;background:var(--ac);border-radius:2px;margin:2px auto;opacity:.4;}
-
-    .shi{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--br);}
-    .shn{font-size:12px;flex:1;min-width:0;}
-    .shqv{font-size:11px;color:var(--t2);}
-    .shi.shd{opacity:.5;text-decoration:line-through;}
-
-    .away-hero{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:14px;
-      gap:10px;
-    }
-    .away-main{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .away-mode{
-      font-size:24px;
-      font-weight:800;
-      letter-spacing:.5px;
-      line-height:1;
-    }
-    .away-dur{
-      font-size:16px;
-      font-weight:700;
-      color:var(--t2);
-      margin-top:0;
-    }
-    .away-list-wrap{border-top:1px solid var(--br);padding-top:12px;}
-    .away-list-title{font-size:12px;text-transform:uppercase;color:var(--tm);font-weight:800;letter-spacing:1px;margin-bottom:10px;}
-    .away-trip{
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:10px;
-      font-size:14px;
-      font-weight:500;
-      padding:6px 0;
-      border-bottom:1px solid var(--br);
-      color:var(--tx);
-    }
-    .away-min{margin-left:auto;color:var(--t2);font-weight:700;}
-
-    #jarvis-output {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--ac);
-      line-height: 1.5;
-      text-align: left;
-      width: 100%;
-    }
-    .away-trip .mono{font-size:16px;font-weight:700;color:var(--tx);}
-    .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.2);backdrop-filter:blur(2px);}
-    .drawer{
-      position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;background:var(--card);
-      border-left:1px solid var(--br);padding:18px;z-index:201;overflow-y:auto;
-      transform:translateX(100%);transition:transform .22s ease;
-    }
-    .drawer.open{transform:translateX(0);}
-    .dr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-    .dr-head h2{font-size:18px;font-weight:700;}
-    .dr-s{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--br);}
-    .dr-s h3{font-size:13px;margin-bottom:10px;}
-    .dr-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
-    .dr-cal-title{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px;}
-    .sr{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;}
-
-    .vit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-    .vit{background:var(--card2);border:1px solid var(--br);border-radius:8px;padding:10px;}
-    .vit-k{display:block;font-size:9px;color:var(--tm);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
-    .vit-v{display:block;font-size:12px;font-weight:600;}
-
-    .add-box{display:flex;flex-direction:column;gap:8px;}
-    .add-row{display:flex;gap:6px;}
-    .inp{padding:6px 8px;border-radius:6px;border:1px solid var(--br);background:var(--inp);color:var(--tx);font-family:var(--f);font-size:12px;outline:none;flex:1;}
-    .inp:focus{border-color:var(--brF);}
-    .tg-btn{padding:4px 8px;border-radius:6px;border:1px solid var(--br);background:var(--card);font-size:11px;font-weight:600;cursor:pointer;color:var(--tm);}
-    .tg-btn.act{background:var(--acL);color:var(--ac);border-color:var(--ac);}
-    .rep-days{display:flex;gap:2px;margin-top:4px;flex-wrap:wrap;}
-    .r-day{width:22px;height:22px;border-radius:4px;border:1px solid var(--br);background:var(--card);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-    .r-day.on{background:var(--ac);color:#fff;border-color:var(--ac);}
-
-    .room-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-    .room-c{background:var(--card2);border:1px solid var(--br);border-radius:6px;padding:8px;text-align:center;}
-    .room-v{font-size:16px;font-weight:700;display:block;}
-    .room-l{font-size:9px;color:var(--tm);text-transform:uppercase;}
-    .hwc{display:flex;align-items:center;justify-content:space-between;padding:8px;background:var(--card2);border:1px solid var(--br);border-radius:6px;margin-bottom:6px;}
-    .hwc.done{opacity:.5;}
-    .hw-x{cursor:pointer;color:var(--tm);font-weight:bold;padding:0 4px;}
-    .hw-x:hover{color:#ef4444;}
-
-    .cal-nav{display:flex;gap:4px;align-items:center;}
-    .nb{width:24px;height:24px;border-radius:6px;border:1px solid var(--br);background:var(--card2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .ns{padding:2px 8px;border-radius:6px;border:1px solid var(--br);background:var(--card2);font-size:10px;cursor:pointer;}
-    .cal-wd{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:9px;font-weight:600;text-transform:uppercase;color:var(--tm);margin-bottom:4px;}
-    .cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
-    .cc{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;}
-    .cc:hover{background:var(--hover);}
-    .cc.act{border:1px solid var(--ac);background:var(--acL);}
-    .cc.blank{cursor:default;}
-    .cc.blank:hover{background:transparent;}
-    .cn{font-size:12px;font-weight:500;}
-    .today{background:var(--ac);color:#fff;}
-    .today .cn{font-weight:700;}
-    .cd{display:flex;gap:2px;height:4px;}
-    .dot{width:4px;height:4px;border-radius:50%;}
-    /* 1. Hide the mouse everywhere by default (for the clean dashboard look) */
-    body {
-      cursor: default;
-    }
-
-    /* 2. Reveal the standard mouse cursor when hovering over the top bar or inside the settings drawer */
-    .moncoeur-top, .drawer {
-      cursor: default;
-    }
-
-    /* 3. Bring back the pointing "hand" cursor for buttons inside those allowed areas */
-    .moncoeur-top button, .drawer button, .drawer .vit, .drawer .cc, .drawer .r-day, .drawer .hw-x {
-      cursor: pointer;
-    }
-
-    /* 4. Show the typing cursor (and the blinking caret) so you can type in the add item boxes */
-    .drawer input, .drawer select {
-      cursor: text;
-      caret-color: auto;
-    }
-    @media(max-width:900px){
-      body{overflow:auto;}
-      .grid-two{display:flex;flex-direction:column;overflow:visible;padding-bottom:max(20px, env(safe-area-inset-bottom));}
-      .col{overflow:visible;height:auto;}
-      .card{min-height:auto;}
-      .card-b{overflow-y:visible;}
-      .drawer{width:100%;max-width:none;}
-      .top-mid{display:none;}
-    }
-  
-
-/* ── demo banner (not part of the real build) ─────────────────────── */
-.demo-banner{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
-  padding:8px 20px;background:var(--tx);color:var(--bg);
-  font-family:var(--fm);font-size:11px;line-height:1.6;flex-shrink:0;
+:root,[data-theme="dark"]{
+  --bg:#0a1220;--card:#101b30;--card2:#16233a;--hover:#1c2b46;
+  --br:rgba(255,255,255,.1);--tx:#eef1f6;--t2:#aeb9cc;--tm:#828fa5;
+  --accent:#c3cbd6;--accentL:rgba(195,203,214,.12);--accentD:#e2e7ee;
+  --blue:#7da0ff;--blueL:rgba(125,160,255,.14);
+  --alert:#e0796b;--alertL:rgba(224,121,107,.12);
+  --f:'Outfit',sans-serif;--fm:'JetBrains Mono',monospace;--fs:'Literata',Georgia,serif;
 }
-.demo-banner b{color:#f59e0b}
-.demo-banner a{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
-#jarvis-output{
-  font-size:15px;line-height:1.65;text-align:center;color:var(--t2);max-width:42ch;
+[data-theme="light"]{
+  --bg:#f4f2ec;--card:#fdfdfb;--card2:#f3f0e8;--hover:#ece8dc;
+  --br:#e0dbcd;--tx:#191c22;--t2:#4b5563;--tm:#686c77;
+  --accent:#7e8896;--accentL:#e8ebef;--accentD:#5a6472;
+  --blue:#3b6fd6;--blueL:#e3ebfb;
+  --alert:#c1503f;--alertL:#f6e3df;
 }
-body{height:100vh;overflow:hidden;display:flex;flex-direction:column}
-@media(max-width:900px){ body{height:auto;overflow:auto} }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--f);color:var(--tx);background:
+ radial-gradient(900px 500px at 15% -10%,#12203a,transparent 60%),
+ radial-gradient(700px 500px at 110% 110%,rgba(16,32,58,.4),transparent 60%),var(--bg);}
+[data-theme="light"] body{background:var(--bg)}
+.mono{font-family:var(--fm)}
+button{font-family:var(--f);cursor:pointer}
+.hd{font-family:var(--fm);font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);margin-bottom:4px}
+.card{background:var(--card);border:1px solid var(--br);border-radius:16px;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.pad{padding:14px 16px}
+.demo-banner{font-family:var(--fm);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;background:var(--accentL);color:var(--accentD);text-align:center;padding:5px;border-bottom:1px solid var(--br)}
 
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid var(--br)}
+.top>:last-child{justify-self:end}
+.clockwrap{justify-self:center}
+.brand{font-family:var(--fs);font-size:22px;font-weight:600}
+.brand em{color:var(--accent);font-style:normal}
+.clockwrap{display:flex;align-items:baseline;gap:14px}
+#clock{font-family:var(--fm);font-size:34px;font-weight:700;letter-spacing:.02em}
+.tbtn{border:1px solid var(--br);background:transparent;color:var(--t2);border-radius:100px;padding:7px 14px;font-size:13px;transition:.2s}
+.tbtn:hover{border-color:var(--accent);color:var(--tx)}
+/* the bar mirrors the columns under it: controls sit over MonCoeur on the left,
+   the room reading sits over the agenda on the right */
+.topleft{display:flex;align-items:center;gap:9px}
+.topright{justify-self:end;display:flex;align-items:center;gap:9px}
+.tpill{height:38px;min-width:38px;border-radius:100px;border:1px solid var(--br);background:transparent;color:var(--t2);font-family:var(--fm);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 13px;transition:.2s}
+/* 72° indoors next to a briefing about 84 outside needs saying which is which */
+.tpill i{font-style:normal;font-size:.63em;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);margin-right:8px}
+/* ── photo mode ────────────────────────────────────────────────────────────
+   Full bleed, no clock, no chrome. Two slides that cross-fade, so a photo is
+   never replaced by a gap.
+
+   The blurred copy behind is what stops a portrait photo sitting in black bars
+   on a landscape wall: same image, scaled to cover, blurred past recognition
+   and darkened, with the real one centred on top. */
+#photoLayer{position:fixed;inset:0;z-index:60;background:#000;
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s .45s}
+#photoLayer.on{opacity:1;visibility:visible;transition:opacity .45s ease}
+.pslide{position:absolute;inset:0;opacity:0;transition:opacity 1.5s ease}
+.pslide.show{opacity:1}
+/* the backdrop. A CSS blur this wide is a convolution over a full-screen
+   surface every composited frame, and it runs at the same time as the drift and
+   the cross-fade below it. On the Pi that is where the panel would stutter, so
+   when the Pi has Pillow the backdrop arrives already blurred and dimmed at
+   64px (/photo/<id>/blur) and .pre turns the filter off entirely. Without
+   Pillow there is no such variant and the browser does the work, correctly and
+   more slowly. */
+.pslide::before{content:'';position:absolute;inset:-8%;
+  background-image:var(--blur,var(--img));background-size:cover;
+  background-position:center;
+  filter:blur(38px) brightness(.42) saturate(.85);transform:scale(1.1)}
+#photoLayer.pre .pslide::before{filter:none}
+/* THE PHOTO ITSELF, or two of them.
+
+   Neither cover nor contain makes a phone photo look right on an 800x480 wall.
+   contain leaves a portrait shot at 360 of 800 pixels, marooned. cover fills the
+   glass by cropping a portrait down to a horizontal band, which takes the top of
+   someone's head off. Both are wrong, and no threshold between them is right.
+
+   So: portraits go up in PAIRS, side by side, each one whole. Two upright photos
+   fill a landscape screen exactly the way one of them cannot. A landscape photo
+   still goes up alone, filling the screen on its own.
+
+   Each photo is `contain` inside its own half or whole, so nothing is ever
+   stretched, squashed or cropped. That was the actual complaint: the picture no
+   longer looked like itself. */
+.pgrid{position:absolute;inset:0;display:flex;gap:10px;padding:10px;
+  align-items:stretch;justify-content:center}
+.pimg{flex:1 1 0;min-width:0;background-repeat:no-repeat;background-position:center;
+  background-size:contain;border-radius:4px;
+  transform:scale(1);transition:transform 30s linear}
+.pslide.show .pimg{transform:scale(1.03)}
+/* One landscape photo has no gutters to justify; it takes the whole glass. */
+.pgrid.solo{gap:0;padding:0}
+.pgrid.solo .pimg{border-radius:0}
+
+#photoLayer .pempty{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;color:var(--tm);font-family:var(--fm);font-size:13px;
+  letter-spacing:.1em;text-transform:uppercase}
+
+/* Presence is a symbol, not a control: no pill, no border, no word. It should
+   read the way a standby light on a stereo does — you only notice it when you
+   go looking. Same footprint as the lamp's bulb so the two read as a pair. */
+.pdot{width:15px;height:15px;border-radius:50%;flex:0 0 auto;margin:0 5px 0 3px;
+  background:color-mix(in srgb,var(--t2) 55%,transparent);transition:.4s}
+.pdot.away{background:color-mix(in srgb,var(--tm) 30%,transparent)}
+.lampbtn{cursor:pointer;padding:0 12px}
+.lampbtn .bulb{width:15px;height:15px;border-radius:50%;background:var(--br);transition:background .3s,box-shadow .3s}
+.lampbtn.on{border-color:color-mix(in srgb,var(--lamp) 50%,var(--br))}
+.lampbtn.on .bulb{background:var(--lamp);box-shadow:0 0 10px 2px color-mix(in srgb,var(--lamp) 50%,transparent)}
+.lampbtn:active{transform:scale(.94)}
+.gearbtn{width:38px;height:38px;border-radius:100px;border:1px solid var(--br);background:transparent;color:var(--t2);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.2s}
+.gearbtn:hover{border-color:var(--accent);color:var(--tx);transform:rotate(45deg)}
+
+/* JARVIS sits at the top of the right column: tag above the line, not beside it,
+   so a long sentence doesn't get squeezed into a narrow gutter */
+.jband{border:1px solid var(--br);border-left:3px solid var(--accent);border-radius:14px;background:linear-gradient(120deg,var(--accentL),var(--card) 60%);padding:12px 15px;display:flex;flex-direction:column;gap:10px;min-height:0;transition:padding .2s}
+.jhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+/* a briefing reads as separate thoughts, not one run-on blob */
+/* Sits under the name rather than floating in the middle of the card. It used
+   to be five lines and centring filled the box; at two or three it left a hole. */
+#jarvis-output{flex:1;display:flex;flex-direction:column;justify-content:flex-start;gap:.55em;overflow:hidden}
+.jl{line-height:1.4}
+.jl.lead{color:var(--tx)}
+/* ★ the big stuff coming up — tests, quizzes, interviews — always in view */
+.jbullets{border-top:1px solid var(--br);padding-top:10px;display:flex;flex-direction:column;gap:7px;flex-shrink:0;margin-top:auto}
+.jb{display:flex;gap:9px;align-items:baseline;font-size:14px;color:var(--t2)}
+.jb .st{color:var(--accentD);flex-shrink:0}
+.jb b{color:var(--tx);font-weight:600}
+.jb .when{font-family:var(--fm);font-size:12px;color:var(--tm);margin-left:auto;flex-shrink:0}
+.jband.collapsed .jbullets,.jband.collapsed #jarvis-output{display:none}
+.jname{font-family:var(--fs);font-size:21px;font-weight:600;color:var(--tx);line-height:1}
+.jname em{color:var(--accent);font-style:normal}
+.jtoggle{grid-column:2;grid-row:1}
+#jarvis-output{grid-column:1/-1;font-family:var(--fs);font-size:15px;line-height:1.45}
+.jtoggle{flex-shrink:0;width:24px;height:24px;border-radius:100px;border:1px solid var(--br);background:transparent;color:var(--tm);font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.2s}
+.jtoggle:hover{border-color:var(--accent);color:var(--tx)}
+.jband.collapsed{padding-top:8px;padding-bottom:8px}
+.jband.collapsed #jarvis-output{display:none}
+
+/* MonCoeur reads first, so it takes the left column and the agenda sits right.
+   Order, not DOM order: the phone lays these out with its own order values. */
+.deck{display:grid;grid-template-columns:1fr 1.08fr;gap:14px;padding:14px 20px 18px;min-height:0}
+.main,.side{display:flex;flex-direction:column;gap:14px;min-height:0}
+.side{order:1}
+.main{order:2}
+
+/* unified agenda */
+#agenda{flex:1}
+#agList{overflow:auto;min-height:0;flex:1;margin-top:13px}
+.dayh{font-family:var(--fm);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accentD);padding:15px 4px 5px;border-bottom:1px solid var(--br)}
+.dayh:first-child{padding-top:2px}
+.dayh:first-child{padding-top:2px}
+.dayh small{color:var(--t2);letter-spacing:.06em;margin-left:8px;font-size:.92em}
+/* tight rows: no checkbox column, the whole task row is the target.
+   Sub-line only takes space when there is one, which is most of the savings. */
+.row{display:grid;grid-template-columns:58px 3px 1fr;gap:11px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--br)}
+.row.task{cursor:pointer}
+.row .t{font-family:var(--fm);font-size:12.5px;color:var(--tm);text-align:right}
+.row .rail{height:100%;min-height:20px;border-radius:2px;background:var(--blue)}
+.row.task .rail{background:var(--accent)}
+.row.now-ev{background:var(--blueL);border-radius:10px;border-bottom-color:transparent}
+
+.row .n{font-size:15.5px;font-weight:600;line-height:1.25}
+.row .n .imp{color:var(--accentD);margin-right:4px}
+.row .s{font-size:12px;color:var(--tm);line-height:1.25}
+
+
+/* settings drawer */
+#ovl{position:fixed;inset:0;background:rgba(4,8,16,.55);backdrop-filter:blur(2px);z-index:90;display:none}
+#drawer{position:fixed;top:0;right:-380px;width:min(380px,92vw);height:100%;background:var(--card);border-left:1px solid var(--br);z-index:95;transition:right .3s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column;overflow:auto;
+  /* The page sets viewport-fit=cover, so on an iPhone the top of the viewport is
+     UNDER the status bar and the Dynamic Island. A flat 18px put Settings and the
+     Close button up there, where iOS owns the pixels and the tap. The insets are
+     0 on everything without a notch, so this costs the wall and the laptop
+     nothing. Bottom too, for the home indicator. */
+  padding:calc(18px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right))
+          calc(18px + env(safe-area-inset-bottom)) 18px}
+#drawer.open{right:0}
+#ovl.open{display:block}
+/* Sections, so the drawer reads as a list of things rather than one long
+   column of controls. A rule above each heading does the separating; the
+   heading itself stays small and quiet. */
+#drawer .drawtop{display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:16px;border-bottom:1px solid var(--br)}
+#drawer .sec{padding:18px 0 4px;border-top:1px solid var(--br)}
+#drawer .sec:first-of-type{border-top:0;padding-top:16px}
+#drawer .sech{display:flex;align-items:baseline;justify-content:space-between;
+  font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+#drawer .subh{font-size:12px;color:var(--tm);line-height:1.45;margin-bottom:11px}
+/* Explanation. Lowercase, because it is a sentence and not a readout. */
+#drawer .hint{font-size:11.5px;color:var(--tm);line-height:1.5;margin:8px 0 2px}
+#drawer .sec .rowset{margin-bottom:2px}
+/* The panel talking back: dynamic status only, written by JS. It used to carry
+   static prose as well, which is why the drawer read as though everything in it
+   were shouting. Empty is the resting state and collapses to nothing, so a
+   section is only as tall as it needs to be. */
+#drawer .note{font-family:var(--fm);font-size:10px;line-height:1.5;color:var(--accent);
+  letter-spacing:.06em;margin:7px 0 2px;min-height:0}
+#drawer .note:empty{display:none;margin:0}
+#drawer h4{font-family:var(--fm);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tm);margin:18px 0 8px}
+#drawer .rowset{display:flex;gap:8px;margin-bottom:8px}
+#drawer input,#drawer select{padding:8px 10px;border-radius:9px;border:1px solid var(--br);background:var(--card2);color:var(--tx);font-family:var(--f);font-size:13.5px}
+#drawer input:focus{border-color:var(--accent)}
+/* One row of ten. It used to wrap 9 + 1 and orphan Pink on a line of its own,
+   which read as a bug; a two-row grid fixed that and looked like a colour
+   picker rather than a strip of presets. Sized so ten fit the drawer width. */
+.swatches{display:flex;gap:7px;flex-wrap:nowrap}
+.sw{flex:0 0 auto}
+.sw{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.15s}
+.sw:hover{transform:scale(1.12)}
+.sw.sel{border-color:var(--tx);box-shadow:0 0 0 2px var(--card)}
+#drawer input[type=range]{accent-color:var(--accent);background:transparent;border:none}
+.chiplist{display:flex;flex-wrap:wrap;gap:7px}
+.chip.on{border-color:var(--accent);color:var(--tx)}
+.chip{font-size:13px;background:var(--card2);border:1px solid var(--br);border-radius:100px;padding:5px 12px;color:var(--t2);cursor:pointer}
+.chip:hover{border-color:#c46;color:#e88}
+.replist .cd{margin-bottom:7px;cursor:pointer}
+.replist .cd:hover{border-color:#c46}
+
+/* word of the day: one sense, shown in both languages side by side.
+   The two columns are also what keeps the card from leaving dead space on the right. */
+#motcard .sense{font-size:14.5px;color:var(--t2);margin-top:12px}
+#motcard .pair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,30px);margin-top:17px;padding-top:17px;border-top:1px solid var(--br)}
+#motcard .lang{min-width:0}
+/* a rule between the two languages, so they read as a pair rather than a run-on */
+#motcard .lang+.lang{border-left:1px solid var(--br);padding-left:clamp(16px,2.4vw,30px)}
+#motcard .lang .tag{font-family:var(--fm);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+#motcard .w{font-family:var(--fs);font-size:24px;margin-top:6px;line-height:1.15}
+#motcard .p{font-family:var(--fm);font-size:12px;color:var(--tm);margin-top:3px;letter-spacing:.04em}
+#motcard .ex{font-family:var(--fm);font-size:12px;color:var(--t2);margin-top:10px;line-height:1.55}
+
+/* water: logging happens on the phone, so on the wall this card only reports.
+   Ticks on the rail are one glass each — a glance gives you a count, not a
+   percentage. Buttons are phone-side; the wall shows, the phone edits. */
+#water{flex:0 0 auto}
+#water .wrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:13px}
+#water .wnum{font-family:var(--fm);font-size:27px;font-weight:700;letter-spacing:.01em;line-height:1}
+#water .wnum u{font-style:normal;text-decoration:none;font-size:13px;font-weight:500;color:var(--tm);margin-left:6px}
+#water .wsub{font-size:12.5px;color:var(--tm);text-align:right;line-height:1.3}
+/* Two layers, nothing else: solid is what he's drunk, the ghost behind it is where
+   even drinking would have him by now. Solid past ghost = ahead. Ghost showing
+   past solid = that gap is the shortfall. */
+#water .wtrack{position:relative;height:9px;border-radius:99px;background:var(--card2);overflow:hidden;margin-top:16px;min-width:0}
+#water .wtrack span{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--accent);transition:width .45s ease}
+/* The pace marker on the bar is also called "ghost" and is nothing to do with
+   the add rows that were just removed. It is the faint layer showing where
+   even drinking would have you by now. */
+#water .ghost{opacity:.24}
+/* the light track is close to the ghost's tone, so it needs more to read */
+[data-theme="light"] #water .ghost{opacity:.36}
+#water .fill{opacity:1}
+#water .wacts{display:flex;gap:8px;margin-top:12px}
+#water .wacts .tbtn{flex:1;padding:8px 10px}
+#water .wacts .tbtn.undo{flex:0 0 auto;padding:8px 13px}
+
+/* room: only the two things worth a permanent slot — how warm it is, and the light */
+
+
+/* HORIZONTAL room display: one screen */
+@media (min-aspect-ratio:5/4){
+  body{overflow:hidden;display:flex;flex-direction:column}
+  .deck{flex:1}
+}
+/* VERTICAL phone: top bar, then JARVIS (minimizable), then the schedule does most of the work */
+@media (max-aspect-ratio:5/4){
+  body{overflow:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+  /* Installed to the home screen the page runs full-bleed under the status bar,
+     so the top bar has to hold its own clear of the notch. Zero everywhere else,
+     including the wall, where the kiosk has no insets at all. */
+  .top{padding-top:calc(10px + env(safe-area-inset-top,0px))}
+  .deck{display:flex;flex-direction:column;gap:14px;height:auto;padding:14px 16px 20px}
+  .main,.side{display:contents}
+  #clock{font-size:26px}
+  .brand{font-size:19px}
+  .jband{padding:11px 14px}
+  #jarvis-output{font-size:15.5px}
+  /* the bar is tight at 375px: the room label and the date are wall aids, and the
+     agenda's day headers already carry the date on the phone */
+  .tpill i{display:none}
+  /* Water before the agenda on the phone. It used to sit fourth, which put the
+     buttons at y=999 under an 814px agenda on an 844px screen: logging a Bottle
+     meant scrolling past the whole week, and Bottle is the one serving with no
+     Flic gesture. The phone exists to log and edit; the agenda is what the wall
+     is for. */
+  #jband{order:1}
+  #water{order:2}
+  #agenda{order:3}
+  #motcard{order:4}
+}
+/* "show nothing if it failed" — when the collector has gone quiet the room
+   numbers are stale, so they are removed rather than shown with confidence.
+   Water and the agenda have their own stores and stay put.
+   The lamp button is a CONTROL, not a reading: hiding it because a temperature
+   sensor went quiet takes away the light switch for no reason. */
+[data-stale="1"] .tpill:not(.lampbtn){visibility:hidden}
+/* Presence is NOT blanked with them: it comes from presence_ble.py, a separate
+   process on a separate radio. The collector going quiet says nothing about
+   whether the Bluetooth scan can still see his phone. */
+[data-stale="1"] .jl.wx{display:none}
+/* one quiet line: something it noticed that he wouldn't have */
+.jnote{border-top:1px solid var(--br);margin-top:10px;padding-top:9px;
+  font-family:var(--fs);font-size:13.5px;color:var(--tm);line-height:1.45}
+.jband.collapsed .jnote{display:none}
+#hwform .rowset{margin-top:6px}
+#hwform input,#hwform select{min-width:0}
+::selection{background:var(--accent);color:#0a1220}
+/* visible keyboard focus (was missing / removed on inputs) — WCAG 2.4.7 */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:var(--br);border-radius:8px}
+
+/* landscape wall-display proportions: read from across the room, so the clock
+   anchors the bar and the cards get print-sized margins instead of phone ones */
+@media (min-aspect-ratio:5/4){
+  .top{padding:13px 26px}
+  #clock{font-size:64px}
+  .deck{gap:17px;padding:15px 26px 20px}
+  .card{border-radius:18px}
+  .pad{padding:16px 20px}
+  .tpill{height:46px;font-size:22px}
+  .gearbtn{width:46px;height:46px;font-size:22px}
+  #jarvis-output{font-size:23px}
+  .jband{padding:15px 18px}
+  .jname{font-size:29px}
+  .jb{font-size:20.5px}
+  .jb .when{font-size:17.5px}
+  .jbullets{gap:9px;padding-top:12px}
+  .jnote{font-size:19px}
+
+  /* loud agenda: this is the thing the display exists for.
+     Everything in this block went up 4px on 2026-08-14 — readable up close is
+     not the same as readable from the bed, which is where it is actually read
+     from. Row padding stayed put: the type grew into the space it had. */
+  /* The time column is fixed, so it has to grow with the type or "11:00am"
+     runs into the event's rail. Seven mono characters at this size. */
+  .row{padding:10px 4px;grid-template-columns:84px 3px 1fr}
+  .row .n{font-size:24px}
+  .row .s{font-size:18.5px}
+  .row .t{font-size:19.5px}
+  .dayh{font-size:19px;padding:18px 4px 6px}
+  .hd{font-size:18px}
+  /* The water buttons stay in landscape generally — landscape is also a laptop
+     and a phone turned sideways, and hiding them there left no way to log a
+     drink at all. They come off only on the panel itself, further down. */
+    /* the list runs past the bottom of the screen; fade the last row out instead of
+     slicing it in half, so the wall reads as "more below" rather than broken */
+  #agList{-webkit-mask-image:linear-gradient(#000 calc(100% - 34px),transparent);
+          mask-image:linear-gradient(#000 calc(100% - 34px),transparent)}
+  #water .wnum{font-size:38px}
+  #water .wnum u{font-size:19px}
+  #water .wsub{font-size:18px}
+  #water .wtrack{height:11px}
+  /* JARVIS takes the slack in the column; the word card stays exactly content-sized */
+  .jband{flex:1;overflow:hidden}   /* clip inside the card, never over the one below */
+  #motcard{flex:0 0 auto}
+  #motcard .sense{font-size:21px}
+  #motcard .w{font-size:32px}
+  #motcard .p{font-size:18px}
+  #motcard .ex{font-size:18px}
+  #motcard .lang .tag{font-size:16px}
+}
+
+/* Big walls (a 1080p TV, which is what the Pi will most likely drive). The base
+   wall sizes are laptop-sized there: readable up close, small from the doorway.
+   One notch up, same layout. */
+@media (min-aspect-ratio:5/4) and (min-height:1000px){
+  .top{padding:16px 32px}
+  #clock{font-size:76px}
+  .tpill{height:54px;font-size:25px}
+  .gearbtn{width:54px;height:54px;font-size:25px}
+  .deck{gap:20px;padding:18px 32px 24px}
+  .pad{padding:19px 24px}
+  .card{border-radius:20px}
+
+  .jband{padding:19px 23px;gap:12px}
+  .jname{font-size:34px}
+  #jarvis-output{font-size:27px}
+  .jbullets{gap:11px;padding-top:14px}
+  .jb{font-size:23.5px}
+  .jb .when{font-size:19px}
+
+  .row{padding:12px 5px;grid-template-columns:94px 3px 1fr}
+  .row .n{font-size:28px}
+  .row .s{font-size:21px}
+  .row .t{font-size:22px}
+  .dayh{font-size:22px;padding:22px 5px 7px}
+  .hd{font-size:20px}
+
+  #water .wnum{font-size:46px}
+  #water .wnum u{font-size:22px}
+  #water .wsub{font-size:20.5px}
+  #water .wtrack{height:14px;margin-top:16px}
+  #motcard .sense{font-size:24px}
+  #motcard .w{font-size:38px}
+  #motcard .p{font-size:20px}
+  #motcard .ex{font-size:20.5px}
+  #motcard .lang .tag{font-size:18px}
+}
+
+/* Below this the left column can't hold three cards: the word card wins the space
+   and the briefing gets squeezed to nothing. A wall exists to show the briefing and
+   the agenda, so the word is what goes. Zack's panel is well above this. */
+@media (min-aspect-ratio:5/4) and (max-height:680px){
+  #motcard{display:none}
+}
+
+/* ── the panel itself, and only it ───────────────────────────────────────────
+   The 800x480 LCD in Zack's room has no touchscreen, so a button on it is a
+   control nothing can reach. Everything else in landscape — a laptop, a phone
+   held sideways — can press one, and hiding them everywhere in landscape is
+   what left him with no way to log water at all.
+
+   Two tests, because either alone is wrong. `pointer:none` is the honest one:
+   no pointing device of any kind, which is exactly the kiosk. But a mouse left
+   plugged into the Pi would defeat it, so the size test backs it up — 800x480
+   matches, a laptop (1280x800) does not, and a phone in landscape is wider than
+   820 on anything current. */
+/* THE RELIABLE ONE. Both tests below infer "this is the wall" from what the
+   browser reports, and on Zack's actual panel both were wrong: the cursor stayed
+   and the water buttons stayed. `pointer:none` is defeated by anything X counts
+   as a pointing device, and the size test only matches if the panel really
+   reports 800x480 in CSS pixels, which his evidently does not.
+   So the kiosk says so itself. start_jarvis.sh and the watchdog both launch
+   Chromium at /?wall=1, the script below stamps html.is-wall, and that cannot be
+   defeated by a resolution or a stray mouse. */
+html.is-wall #water .wacts{display:none}
+html.is-wall,html.is-wall body,html.is-wall *{cursor:none}
+/* The two inferences stay as a fallback, for a panel reached without the flag. */
+@media (pointer:none){
+  #water .wacts{display:none}
+  /* No pointing device means the arrow X parks on the screen is just a mark on
+     the wall. Nothing can move it and nothing can click, so it is litter. */
+  html,body,*{cursor:none}
+}
+@media (min-aspect-ratio:5/4) and (max-width:820px) and (max-height:520px){
+  #water .wacts{display:none}
+  html,body,*{cursor:none}
+}
+
+/* Short walls (a 720p panel, a laptop screen). The full-size type doesn't fit the
+   left column there: the briefing runs past the card and the ★ bullets end up
+   hidden behind the water card. Same layout, one notch down, so everything that
+   matters is still on the glass. */
+@media (min-aspect-ratio:5/4) and (max-height:830px){
+  .top{padding:9px 22px}
+  #clock{font-size:50px}
+  .tpill{height:40px;font-size:20px}
+  .gearbtn{width:40px;height:40px;font-size:20px}
+  .deck{gap:12px;padding:12px 22px 15px}
+  .pad{padding:12px 16px}
+
+  .jband{padding:12px 15px;gap:8px}
+  .jname{font-size:25px}
+  #jarvis-output{font-size:20px}
+  .jbullets{gap:6px;padding-top:9px}
+  .jb{font-size:18.5px}
+  .jb .when{font-size:16.5px}
+
+  .row{padding:5px 4px;grid-template-columns:76px 3px 1fr}
+  .row .n{font-size:21px}
+  .row .s{font-size:17px}
+  .row .t{font-size:17.5px}
+  .dayh{font-size:17.5px;padding:9px 4px 4px}
+  .hd{font-size:16.5px}
+
+  #water .wnum{font-size:31px}
+  #water .wnum u{font-size:17px}
+  #water .wsub{font-size:16.5px}
+  #water .wtrack{height:9px;margin-top:11px}
+  #motcard .sense{font-size:18.5px;margin-top:7px}
+  #motcard .pair{margin-top:11px;padding-top:11px}
+  #motcard .w{font-size:27px}
+  #motcard .p{font-size:16.5px}
+  #motcard .ex{font-size:16.5px;margin-top:8px}
+  #motcard .lang .tag{font-size:15px}
+}
+
+/* ── drawn, not typed ────────────────────────────────────────────────────
+   These were the characters U+2699 GEAR and U+2605 BLACK STAR. This file used
+   to note that they are "text-default codepoints that render in the UI font,
+   not as colour emoji". That is true in the Pi's Chromium and FALSE on iOS,
+   where U+2699 comes back as a full colour emoji. Zack asked for no emoji
+   anywhere, so they are paths now and look the same on every screen. */
+.ico{width:1em;height:1em;display:inline-block;vertical-align:-0.125em}
+.st .ico.star,.imp .ico.star{width:.78em;height:.78em}
 </style>
 </head>
 <body>
-
-<div class="demo-banner">
-  <span><b>DEMO — SYNTHETIC DATA.</b> This is the real MonCoeur interface. The live system runs on a Raspberry&nbsp;Pi in my room against my actual calendar, sensors and lights. Every event and reading below is invented.</span>
-  <a href="../projects/jarvis.html">← Case study</a>
+<div class="demo-banner" id="demoBanner">MonCoeur · live demo · synthetic data</div>
+<div class="top">
+  <div class="topleft">
+    <span class="pdot" id="presDot" title="Presence, from your phone's Bluetooth"></span>
+    <span class="tpill" id="tempPill"><i>room</i>72.4°</span>
+  </div>
+  <div class="clockwrap"><span id="clock">7:42</span></div>
+  <div class="topright">
+    <button class="tpill lampbtn on" id="lightsTile" aria-pressed="true" aria-label="Lights"><span class="bulb"></span></button>
+    <button class="gearbtn" id="setBtn" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h9M17.5 7H20M4 12h3.5M12 12h8M4 17h9M17.5 17H20"/></g><g fill="currentColor"><circle cx="15" cy="7" r="2"/><circle cx="9.5" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></g></svg></button>
+  </div>
 </div>
 
-<header class="top moncoeur-top">
-  <span class="brand">Mon<span class="brand-ac">Coeur</span></span>
-  <div class="top-mid">
-    <span class="clock mono" id="tlDateLabel" style="text-transform:uppercase;">--</span>
-    <span class="clock mono" id="clock">--:--</span>
-  </div>
-  <div class="top-r">
-    <button class="top-btn" id="themeBtn" title="Toggle theme">
-      <svg id="icSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="5"/>
-        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-      </svg>
-      <svg id="icMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
-        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
-      </svg>
-    </button>
-    <button class="top-btn" onclick="toggleDrawer()" title="Settings">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-      </svg>
-    </button>
-  </div>
-</header>
-
-<div class="overlay" id="overlay" style="display:none" onclick="toggleDrawer()"></div>
-
-<aside class="drawer" id="drawer">
-  <div class="dr-head">
-    <h2>Settings</h2>
-    <button class="btn-ghost" onclick="toggleDrawer()">Close</button>
+<div class="deck" role="main">
+  <div class="main">
+    <div class="card" id="agenda">
+      <div class="hd pad" style="display:flex;justify-content:space-between;padding-bottom:0"><span>Agenda</span><span class="mono" id="agCount"></span></div>
+      <div id="agList" class="pad" style="padding-top:4px"></div>
+    </div>
   </div>
 
-  <section class="dr-s">
-    <h3>Vitals</h3>
-    <div class="vit-grid">
-      <div class="vit"><span class="vit-k">Room Temp</span><span class="vit-v mono" id="setTemp">73.4&deg;F</span></div>
-      <div class="vit"><span class="vit-k">Humidity</span><span class="vit-v mono" id="setHum">46%</span></div>
-      <div class="vit" onclick="toggleLights()" style="cursor:pointer;border-color:var(--brF);">
-        <span class="vit-k">Lights</span><span class="vit-v" id="setLight">On</span>
+  <div class="side">
+    <div class="jband" id="jband">
+      <div class="jhead"><span class="jname">Mon<em>Coeur</em></span><button class="jtoggle" id="jToggle" aria-label="Minimize message">&minus;</button></div>
+      <div id="jarvis-output"></div>
+      <div class="jbullets" id="jarvis-bullets"></div>
+      <div class="jnote" id="jarvis-note" hidden></div>
+    </div>
+    <div class="card pad" id="motcard">
+      <div class="hd" style="display:flex;justify-content:space-between"><span>Mot du jour · Palabra del día</span><button class="tbtn" id="motBtn" aria-label="New word" style="padding:3px 10px;font-size:11px">↻</button></div>
+      <div class="sense" id="motSense"></div>
+      <div class="pair">
+        <div class="lang">
+          <div class="tag">Français</div>
+          <div class="w" id="frW"></div>
+          <div class="p" id="frP"></div>
+          <div class="ex" id="frE"></div>
+        </div>
+        <div class="lang">
+          <div class="tag">Español</div>
+          <div class="w" id="esW"></div>
+          <div class="p" id="esP"></div>
+          <div class="ex" id="esE"></div>
+        </div>
       </div>
-      <div class="vit"><span class="vit-k">Sleep</span><span class="vit-v mono" id="setSleep">6h 12m</span></div>
-      <div class="vit"><span class="vit-k">Away</span><span class="vit-v" id="setAway">Home</span></div>
-      <div class="vit"><span class="vit-k">Motion</span><span class="vit-v mono" id="setMotion">now</span></div>
+    </div>
+    <div class="card pad" id="water">
+      <div class="hd" style="display:flex;justify-content:space-between"><span>Water</span><span class="mono" id="wLeft"></span></div>
+      <div class="wrow">
+        <span class="wnum" id="wNum">0<u>of 96 oz</u></span>
+        <span class="wsub" id="wSub"></span>
+      </div>
+      <div class="wtrack" id="wTrack" role="progressbar" aria-valuemin="0" aria-valuemax="96" aria-valuenow="0">
+        <span class="ghost" id="wPace"></span><span class="fill" id="wFill"></span>
+      </div>
+      <div class="wacts">
+        <button class="tbtn" id="wSmall">+ 8 oz</button>
+        <button class="tbtn" id="wGlass">+ Glass</button>
+        <button class="tbtn" id="wBottle">+ Bottle</button>
+        <button class="tbtn undo" id="wUndo" aria-label="Undo last entry">↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Photo mode. A layer over the dashboard rather than a separate page, so the
+     wall never goes blank between the two and the Flic's hold is instant. -->
+<div id="photoLayer" aria-hidden="true">
+  <div class="pslide" data-i="0"><div class="pgrid"></div></div>
+  <div class="pslide" data-i="1"><div class="pgrid"></div></div>
+</div>
+
+<div id="ovl"></div>
+<div id="drawer">
+  <div class="drawtop">
+    <span class="brand" style="font-size:18px">Settings</span>
+    <span style="display:flex;gap:8px">
+      <button class="tbtn" id="themeBtn2" title="Toggle dark and light">Theme</button>
+      <button class="tbtn" id="setClose">Close</button>
+    </span>
+  </div>
+
+  <!-- Homework is first because it is the reason the drawer gets opened. Adding
+       an assignment was six sections down, past appearance and lights, which is
+       a long way to scroll on a phone to type one line. Everything below here is
+       set once and forgotten; this is the part used weekly. -->
+  <section class="sec">
+    <div class="sech"><span>Homework</span></div>
+    <div class="chiplist" id="hwCourseChips"></div>
+    <div class="rowset"><input id="hwName" placeholder="What's due…" style="flex:1"></div>
+    <div class="rowset">
+      <input id="hwCourse" placeholder="Course" list="hwCourses" style="flex:1">
+      <datalist id="hwCourses"></datalist>
+      <select id="hwType">
+        <option value="assignment">Assignment</option>
+        <option value="homework">Homework</option>
+        <option value="quiz">Quiz</option>
+        <option value="exam">Exam</option>
+        <option value="project">Project</option>
+      </select>
+    </div>
+    <div class="rowset"><input id="hwDue" type="date" style="flex:1"><button class="tbtn" id="hwAdd">Add</button></div>
+    <div class="note" id="hwHint"></div>
+  </section>
+
+  <!-- Water lives here as well as on the card. The card's buttons are portrait
+       only, which is right for the wall — it has no touchscreen — but it also
+       meant a laptop in landscape got the wall layout and had no way at all to
+       log a drink. The drawer is the one surface that exists in every mode. -->
+  <section class="sec">
+    <div class="sech"><span>Water</span><span class="mono" id="wDrawTot">·</span></div>
+    <div class="rowset">
+      <button class="tbtn" id="wSmall2">+ 8 oz</button>
+      <button class="tbtn" id="wGlass2">+ Glass</button>
+      <button class="tbtn" id="wBottle2">+ Bottle</button>
+      <button class="tbtn undo" id="wUndo2" aria-label="Undo last entry">↺</button>
+    </div>
+    <div class="note" id="wDrawHint"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sech"><span>Lights</span></div>
+    <div class="rowset" style="align-items:center">
+      <input type="range" id="briRange" min="5" max="100" value="72" style="flex:1;padding:0">
+      <span class="mono" id="briVal" style="font-size:12px;color:var(--t2);min-width:42px;text-align:right">72%</span>
+    </div>
+    <div class="swatches" id="swatches"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sech"><span>Repeating</span></div>
+    <div class="rowset">
+      <input id="repName" placeholder="Name…" style="flex:1">
+      <select id="repKind"><option value="task">Task</option><option value="ev">Event</option></select>
+    </div>
+    <div class="rowset">
+      <select id="repFreq"><option value="daily">Daily</option><option value="1">Weekly · Mon</option><option value="2">Weekly · Tue</option><option value="3">Weekly · Wed</option><option value="4">Weekly · Thu</option><option value="5">Weekly · Fri</option><option value="6">Weekly · Sat</option><option value="0">Weekly · Sun</option></select>
+      <input id="repTime" type="time" value="18:00">
+      <button class="tbtn" id="repAdd">Add</button>
+    </div>
+    <div class="replist" id="repList" title="Tap a rule to remove it"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sech"><span>Today</span></div>
+    <div class="rowset">
+      <select id="mkDay" style="flex:1"></select>
+      <button class="tbtn" id="mkMigraine">Mark migraine</button>
+    </div>
+    <div class="note" id="mkHint"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sech"><span>Shopping list</span></div>
+    <div class="rowset"><input id="shopIn" placeholder="Add item…" style="flex:1"><button class="tbtn" id="shopAdd">Add</button></div>
+    <div class="chiplist" id="shopChips" title="Tap an item to remove it"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sech"><span>Wall</span></div>
+    <div class="rowset"><button class="tbtn" id="photoBtn">Show photos</button></div>
+    <div id="waSec">
+      <div class="rowset">
+        <select id="waAfter" style="flex:1">
+          <option value="0">Only when I ask</option>
+          <option value="10">After 10 minutes still</option>
+          <option value="20">After 20 minutes still</option>
+          <option value="30">After 30 minutes still</option>
+          <option value="60">After an hour still</option>
+        </select>
+      </div>
+      <div class="rowset">
+        <select id="waReturn" style="flex:1">
+          <option value="1">Movement brings the dashboard back</option>
+          <option value="0">Photos stay until I say otherwise</option>
+        </select>
+      </div>
     </div>
   </section>
 
-  <section class="dr-s">
-    <div class="dr-row">
-      <h3>Calendar</h3>
-      <div class="cal-nav">
-        <button onclick="chMo(-1)" class="nb">&lsaquo;</button>
-        <button onclick="chMo(0)" class="ns">Today</button>
-        <button onclick="chMo(1)" class="nb">&rsaquo;</button>
-      </div>
+  <section class="sec" id="pwSec">
+    <div class="sech"><span>Password</span></div>
+    <div class="rowset"><input id="pwCur" type="password" placeholder="Current password" style="flex:1"></div>
+    <div class="rowset">
+      <input id="pwNew" type="password" placeholder="New password" style="flex:1">
+      <button class="tbtn" id="pwSave">Change</button>
     </div>
-    <div class="dr-cal-title" id="calLabel">--</div>
-    <div class="cal-wd"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
-    <div class="cal-g" id="calG"></div>
+    <div class="note" id="pwHint"></div>
   </section>
 
-  <section class="dr-s">
-    <h3>Room &amp; Hair</h3>
-    <div class="room-g" style="margin-bottom:12px">
-      <div class="room-c"><span class="room-v mono" id="rTempDrawer">73.4&deg;</span><span class="room-l">Temp</span></div>
-      <div class="room-c"><span class="room-v mono" id="rHumDrawer">46%</span><span class="room-l">Humidity</span></div>
+  <section class="sec" id="demoOnly">
+    <div class="sech"><span>Demo only</span></div>
+    <div class="rowset">
+      <button class="tbtn" id="awayBtn">Away: off</button>
+      <button class="tbtn" id="motionBtn">Trip motion sensor</button>
+      <button class="tbtn" id="staleBtn">Data: fresh</button>
     </div>
-    <div id="hwList"></div>
   </section>
-
-  <section class="dr-s">
-    <h3>Weather</h3>
-    <div class="wh">
-      <span class="wb">88&deg;</span>
-      <div class="wm">
-        <span class="wsl">High</span><span class="wsv mono">91&deg;</span>
-        <span class="wsl">Low</span><span class="wsv mono">72&deg;</span>
-        <span class="wsl">Humidity</span><span class="wsv mono">71%</span>
-        <span class="wsl">Rain</span><span class="wsv mono">15%</span>
-      </div>
-    </div>
-    <div class="hourly" id="hourly"></div>
-  </section>
-
-  <section class="dr-s">
-    <h3>Shopping</h3>
-    <div id="shL"></div>
-  </section>
-</aside>
-
-<main class="grid grid-two">
-  <div class="col">
-    <section class="card timeline-card">
-      <div class="today-head" style="display:flex;justify-content:center;align-items:center;width:100%;border-bottom:1px solid var(--br);padding:20px;">
-        <div class="th-stats-row" style="display:flex;justify-content:space-between;align-items:center;width:100%;font-size:clamp(14px,1.7vw,18px);font-weight:800;color:var(--tx);text-transform:uppercase;white-space:nowrap;gap:10px;">
-          <span>HIGH: <span id="wHigh" class="mono">91</span>&deg;F</span>
-          <span>LOW: <span id="wLow" class="mono">72</span>&deg;F</span>
-          <span>RAIN: <span id="wRain" class="mono">15%</span></span>
-        </div>
-      </div>
-      <div class="card-b tl-body">
-        <div class="tl-list" id="tlList"></div>
-      </div>
-    </section>
-  </div>
-
-  <div class="col side-col">
-    <section class="card" style="flex:1.2;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:24px 20px;">
-      <h3 style="font-size:22px;font-weight:900;color:var(--tx);letter-spacing:4px;margin-bottom:16px;">JARVIS</h3>
-      <div id="jarvis-output">
-        Afternoon. Three tasks still open and a lab at 4. Nothing scheduled before 10 tomorrow, so a 22:30 wind-down puts you at a full night. Room's holding at 73&deg;F &mdash; I'll start dimming the lights at 22:00.
-      </div>
-    </section>
-
-    <section class="card" style="flex:1;">
-      <div class="card-b" style="padding-top:16px;display:flex;flex-direction:column;height:100%;">
-        <div class="away-hero">
-          <div class="away-main">
-            <div class="away-mode" id="awMode">HOME</div>
-            <div class="away-dur mono" id="awDur">4h 20m</div>
-          </div>
-          <button class="btn-ghost" onclick="manualAway()">Toggle</button>
-        </div>
-        <div class="away-list-wrap">
-          <div class="away-list-title">Recent trips</div>
-          <div id="awTrips">
-            <div class="away-trip"><span>Gym</span><span class="away-min mono">82 min</span></div>
-            <div class="away-trip"><span>Class</span><span class="away-min mono">55 min</span></div>
-            <div class="away-trip"><span>Errands</span><span class="away-min mono">31 min</span></div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;align-items:center;text-align:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--br);color:var(--tx);font-size:16px;font-weight:700;column-gap:12px;">
-          <span>ROOM: <span class="mono" id="rTempAway" style="font-size:16px;font-weight:700;">73.4&deg;</span></span>
-          <span>MOTION: <span class="mono" id="motLastAway" style="font-size:16px;font-weight:700;">now</span></span>
-        </div>
-      </div>
-    </section>
-  </div>
-</main>
+</div>
 
 <script>
+/* Stamped from the URL the kiosk was launched with, before anything renders, so
+   the wall never flashes a cursor or a button it cannot use. Also honours a
+   saved flag, so opening the dashboard on the panel without the query string
+   still behaves as the wall once it has been told once. */
+(function(){
+  try{
+    const q = new URLSearchParams(location.search);
+    if(q.get('wall') === '1') localStorage.setItem('moncoeurWall','1');
+    if(q.get('wall') === '0') localStorage.removeItem('moncoeurWall');
+    if(localStorage.getItem('moncoeurWall') === '1')
+      document.documentElement.classList.add('is-wall');
+  }catch(e){}
+})();
 
-/* ── Demo data layer.  In the real build these come from GET /api/status,
-   /api/todos, /api/hair-washes and the Google Calendar sync thread. ───── */
-const EVENTS = [
-  {t:'08:00', title:'Gym',                       type:'ev', done:true},
-  {t:'10:10', title:'Electromagnetism',          sub:'Lecture', type:'ev', done:true},
-  {t:'',      title:'Finish lab report',         sub:'Due today', type:'td'},
-  {t:'13:30', title:'Capstone — team sync',      sub:'In progress', type:'ev'},
-  {t:'',      title:'Problem set 4',             sub:'Due Friday', type:'td'},
-  {t:'16:00', title:'Signals & Systems',         sub:'Lab', type:'ev'},
-  {t:'',      title:'Review circuits notes',     type:'td'},
-  {t:'22:30', title:'Suggested bedtime',         sub:'Based on an 8am start tomorrow', type:'ev'},
+function tick(){
+  const d=new Date();
+  // just the digits: no am/pm. A wall clock you glance at doesn't need telling
+  // which half of the day it is.
+  const s=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  const m=s.match(/\s*([AP]\.?M\.?)$/i);   // 24-hour locales have none, and that's fine
+  document.getElementById('clock').textContent=m?s.slice(0,m.index):s;
+}
+tick();setInterval(tick,10000);
+
+/* ── unified agenda: events + tasks, grouped by day, skip empty days ── */
+const DAY=86400000;
+function d(offset,h,m){const x=new Date();x.setHours(h??23,m??59,0,0);return new Date(x.getTime()+offset*DAY)}
+let ITEMS=[
+ {when:d(0,9,0),   n:'ELEE 4230 lecture', s:'Driftmier 1240', kind:'ev'},
+ {when:d(0,14,0),  n:'Robotics lab',      s:'Glove: single-finger test', kind:'ev', now:true},
+ {when:d(0,17,40), n:'Leave for campus',  s:'MonCoeur reminder', kind:'task', done:false},
+ {when:d(0,18,0),  n:'Physics PLA session', s:'Physics 203', kind:'ev'},
+ {when:d(0,20,30), n:'HIST reading response', s:'Due 11:59 pm', kind:'task'},
+ {when:d(2,17,0),  n:'ELEE lab report',   s:'Submit on eLC', kind:'task'},
+ {when:d(3,9,30),  n:'ELEE 4230 quiz',    s:'Chapters 5 and 6', kind:'task', imp:true},
+ {when:d(6,14,0),  n:'Co-op interview',   s:'Zoom', kind:'ev', imp:true},
+ {when:d(2,19,0),  n:'French audio regen pass', s:'francais-familier', kind:'task'},
+ {when:d(5,10,0),  n:'Theta Tau rush planning', s:'Fall PNM events', kind:'task'},
+ // Computed on the Pi by compute_hair_wash_days() and folded into /api/agenda.
+ // A line on a day, which is what the agenda is for — not a card of its own.
+ {when:d(3,20,0),  n:'Wash hair',        s:'', kind:'task', chore:true}
 ];
-const DOT = {ev:'var(--dot-ev)', td:'var(--dot-td)', hw:'var(--dot-hw)', hd:'var(--dot-hd)'};
+const agL=document.getElementById('agList');
+function dayLabel(dt){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const that=new Date(dt); that.setHours(0,0,0,0);
+  const diff=Math.round((that-now)/DAY);
+  if(diff===0)return 'Today';
+  if(diff===1)return 'Tomorrow';
+  return dt.toLocaleDateString([],{weekday:'long'});
+}
+/* drawer */
+const drw=document.getElementById('drawer'),ovl=document.getElementById('ovl');
+document.getElementById('setBtn').onclick=()=>{drw.classList.add('open');ovl.classList.add('open');
+  // Courses are read fresh on open. Loading them once at startup meant the
+  // demo list stuck around even after the Pi answered, because the first
+  // call ran before LIVE.on was ever true.
+  if(typeof loadCourses==='function')loadCourses();
+  if(typeof loadShop==='function')loadShop();
+  if(typeof loadReps==='function')loadReps();};
+document.getElementById('setClose').onclick=ovl.onclick=()=>{drw.classList.remove('open');ovl.classList.remove('open')};
+document.getElementById('themeBtn2').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark'};
 
-function renderTimeline(){
-  const L = document.getElementById('tlList');
-  L.innerHTML = '';
-  EVENTS.forEach((e,i)=>{
-    const d = document.createElement('div');
-    d.className = 'tl-item' + (e.done ? ' done' : '');
-    const check = e.type==='td'
-      ? `<div class="tl-check" onclick="tick(${i})">✓</div>`
-      : `<div class="tl-dot" style="background:${DOT[e.type]}"></div>`;
-    d.innerHTML = `
-      <div class="tl-time mono">${e.t || '—'}</div>
-      ${check}
-      <div class="tl-content">
-        <div class="tl-title">${e.title}</div>
-        ${e.sub ? `<div class="tl-sub">${e.sub}</div>` : ''}
-      </div>`;
-    L.appendChild(d);
+/* JARVIS band: minimize out of the way once you've read it */
+const jband=document.getElementById('jband'),jToggle=document.getElementById('jToggle');
+jToggle.onclick=()=>{
+  const collapsed=jband.classList.toggle('collapsed');
+  jToggle.textContent=collapsed?'+':'−';
+  jToggle.setAttribute('aria-label',collapsed?'Expand message':'Minimize message');
+};
+
+/* lights ────────────────────────────────────────────────────────────
+   On/off lives on the dashboard; brightness and colour live in Settings so
+   the wall stays a one-tap control. The tile carries the actual colour, so
+   the panel itself reads as the lamp. In the build the POST goes to the Pi,
+   which drives the bulbs over the LAN (no vendor cloud). */
+const LAMPS=[
+  ['Silver', '#c3cbd6'],
+  ['Warm',   '#ffb765'],
+  ['Neutral','#ffe4c2'],
+  ['Cool',   '#cfe0ff'],
+  ['Red',    '#f2685f'],
+  ['Amber',  '#ffa23a'],
+  ['Green',  '#5fc78f'],
+  ['Blue',   '#6f9bff'],
+  ['Violet', '#a684f0'],
+  ['Pink',   '#ff7fb6']
+];
+/* bright starts at 72 and MUST be corrected by syncLights() the moment a Pi
+   answers. It was a made-up number that nothing ever moved: the slider read
+   72 on every page load however dim the room was, and toggling the lamp tile
+   POSTed brightness:72, which the server obeys because an explicit brightness
+   is a decision. That is why the lights kept coming back bright. */
+let lightsOn=true, lampColor=LAMPS[0][1], bright=72;
+/* When he last touched the slider, so a poll does not fight his thumb. */
+let briTouched=0;
+const lightsTile=document.getElementById('lightsTile');
+function applyLamp(){
+  // brightness dims the dot the pill glows with, so 20% actually looks like 20%
+  const a=(0.35+0.65*(bright/100)).toFixed(2);
+  lightsTile.style.setProperty('--lamp',lampColor);
+  lightsTile.querySelector('.bulb').style.opacity=lightsOn?a:'1';
+  lightsTile.classList.toggle('on',lightsOn);
+  lightsTile.setAttribute('aria-pressed',lightsOn);
+  lightsTile.title=lightsOn?'Lights: '+bright+'%':'Lights: off';
+}
+
+/* Actually switch the bulbs. This was a commented-out fetch to a /lights route
+   that never existed, so the tile flipped its own icon and did nothing to the
+   room — the Flic worked and the screen did not, which is the confusing way
+   round. The real endpoint is /api/lights/control, and temperature.py's
+   manualLightCommandThread acts on a CHANGED timestamp, so re-sending the state
+   it is already in is harmless.
+
+   Colour is deliberately not sent: lightCommand carries target, state and
+   brightness only, and the collector's lightControl() takes no colour. The
+   swatches stay a local preference until there is a channel for them. */
+async function sendLights(){
+  if(!LIVE.on)return;
+  try{
+    await api('/api/lights/control',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({target:'all',state:lightsOn,brightness:bright,
+                           color:lampColor})});
+  }catch(e){}
+}
+
+/* lightStatus is a sentence, not a flag: temperature.py writes "shelf on 70%",
+   "Auto Dim 30%", "Off.", "Sunrise: lights off". flic_listener.py substring
+   matches for exactly this reason, and this has to agree with it or the screen
+   and the button disagree about what the room is doing. */
+/* The room pill was hardcoded at 72.4 in the markup and nothing ever wrote to
+   it, so the wall reported a made-up temperature no matter what the sensor
+   said. /api/brief already carries facts.roomTemp, which app.py fills from the
+   collector's sensorTemp, so the value was there the whole time and simply
+   never reached the element. Returns null off the Pi so the demo keeps its own
+   synthetic number. */
+function roomTempLive(){
+  const f=(LIVE.on&&LIVE.brief&&LIVE.brief.facts)||null;
+  if(!f)return null;
+  const v=Number(f.roomTemp);
+  return isFinite(v)?v:null;
+}
+function syncRoomTemp(){
+  const el=document.getElementById('tempPill'); if(!el)return;
+  const v=roomTempLive(); if(v===null)return;
+  el.innerHTML='<i>room</i>'+v.toFixed(1)+'\u00B0';
+}
+
+function syncLights(){
+  if(!LIVE.on)return;
+  const f=(LIVE.brief&&LIVE.brief.facts)||{};
+  const s=String(f.lightStatus||'').toLowerCase();
+  if(!s||s==='--')return;
+  const on=s.indexOf('on')>=0||s.indexOf('dim')>=0;
+  let dirty=false;
+  if(on!==lightsOn){lightsOn=on;dirty=true}
+
+  /* THE LEVEL, not just on or off. `bright` was initialised to 72 and nothing
+     ever moved it, so the slider read 72 on every load however dim the room
+     was, and toggling the lamp tile POSTed brightness:72 explicitly. That is
+     why the lights came back bright even after the server learned to restore
+     the real level: the dashboard was overriding it with a number it had made
+     up at page load.
+
+     Held off for a few seconds after he last touched the slider. A poll landing
+     mid-adjustment would otherwise yank the handle back to where the room still
+     is, and the room is behind by design: the command has to reach the bulbs
+     and be reported back before the status agrees with him. */
+  if(typeof f.lightLevel==='number' && (Date.now()-briTouched)>4000 && f.lightLevel!==bright){
+    bright=f.lightLevel;
+    briRange.value=bright;
+    briVal.textContent=bright+'%';
+    dirty=true;
+  }
+  /* Colour comes from the server's own record, because the collector reports
+     none. It is still the room: nothing but this app ever sets it. */
+  if(f.lightColor && f.lightColor!==lampColor){
+    lampColor=f.lightColor;
+    markSwatch();
+    dirty=true;
+  }
+  if(dirty)applyLamp();
+}
+function bindToggle(el,fn){
+  el.addEventListener('click',fn);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn()}});
+}
+bindToggle(lightsTile,()=>{lightsOn=!lightsOn;applyLamp();sendLights()});
+
+const sw=document.getElementById('swatches');
+/* Which swatch is selected, from lampColor. Needed because the colour can now
+   change from the server as well as from a tap here, and a selection that only
+   ever moved on tap would show the wrong one after a sync. */
+function markSwatch(){
+  [...sw.children].forEach(c=>
+    c.classList.toggle('sel', c.dataset.hex===lampColor));
+}
+LAMPS.forEach(([name,hex])=>{
+  const b=document.createElement('span');
+  b.className='sw'+(hex===lampColor?' sel':'');
+  b.style.background=hex;b.title=name;b.dataset.hex=hex;
+  // sendLights() is the part that was missing: picking a swatch changed the
+  // pill's glow and nothing in the room, because nothing was ever sent.
+  b.onclick=()=>{lampColor=hex;lightsOn=true;markSwatch();applyLamp();sendLights()};
+  sw.appendChild(b);
+});
+const briRange=document.getElementById('briRange'),briVal=document.getElementById('briVal');
+briRange.addEventListener('input',()=>{briTouched=Date.now();bright=+briRange.value;
+  briVal.textContent=bright+'%';lightsOn=true;applyLamp()});
+// On 'change', not 'input': dragging the slider fires input for every pixel,
+// and each one would be a POST and a bulb command. This sends once, on release.
+briRange.addEventListener('change',()=>{briTouched=Date.now();sendLights()});
+applyLamp();
+
+/* presence + security ───────────────────────────────────────────────
+   Presence comes from Bluetooth: the Pi scans for your phone, so in range =
+   home, gone a while = away and the room arms itself. Motion while armed is
+   someone who isn't you. There's no tile for any of this — it stays invisible
+   until it matters, then JARVIS takes the top line and ntfy pushes your phone.
+   The two buttons in Settings > Demo stand in for the sensors here. */
+let away=false, entry=null;
+function paintSecurity(){
+  const ab=document.getElementById('awayBtn');
+  if(ab)ab.textContent='Away: '+(away?'on':'off');
+  jarvisRender();
+}
+/* Presence comes from presence_ble.py on the Pi — your phone's Bluetooth, with
+   the pairing key resolving the address iOS rotates every ~15 minutes. Here the
+   Demo toggle stands in for it. */
+function paintPresence(){
+  const p=document.getElementById('presDot');
+  if(p)p.classList.toggle('away',away);
+}
+/* Freshness. The backend already knows (is_fresh) and already pushes when the
+   collector goes quiet; this is the half that was missing — saying so on the
+   screen, so a number you can see is a number you can trust. */
+let stale=false;
+function paintStale(){
+  // The "hide the readings" half already existed via [data-stale="1"]; the
+  // marker is the half that was missing. Hiding alone leaves a gap you might
+  // read as "nothing to report" rather than "I have lost the sensor".
+  // Stale is a push, not a panel. On screen it only removes the readings —
+  // saying nothing beats saying yesterday's number with confidence — and the
+  // explanation arrives on his phone from nudge_dead_sensor.
+  document.documentElement.dataset.stale = stale ? '1' : '0';
+}
+function setStale(v){stale=v;paintStale();const b=document.getElementById('staleBtn');
+  if(b)b.textContent='Data: '+(stale?'stale':'fresh')}
+
+function setAway(a){away=a;if(!away)entry=null;paintSecurity();paintPresence()}
+document.getElementById('awayBtn').onclick=()=>setAway(!away);
+document.getElementById('motionBtn').onclick=()=>{if(away)entry='just now';paintSecurity()};
+document.getElementById('staleBtn').onclick=()=>setStale(!stale);
+
+/* Changing the password. The endpoint asks for the current one even though the
+   caller already holds a session, so this form has to as well. */
+document.getElementById('pwSave').onclick=async()=>{
+  const cur=document.getElementById('pwCur'),nw=document.getElementById('pwNew'),
+        hint=document.getElementById('pwHint');
+  if(!LIVE.on){hint.textContent='NEEDS THE PI';return}
+  if(nw.value.length<8){hint.textContent='AT LEAST 8 CHARACTERS';return}
+  hint.textContent='SAVING…';
+  try{
+    const r=await fetch('/api/password',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({current:cur.value,new:nw.value})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok){cur.value='';nw.value='';hint.textContent='CHANGED. OTHER DEVICES STAY SIGNED IN.'}
+    else hint.textContent=(j.error||'COULD NOT CHANGE').toUpperCase();
+  }catch(e){hint.textContent='COULD NOT REACH THE PI'}
+};
+/* Preview. On the Pi the Flic's hold does this through /api/wall; here it is a
+   button so the mode can be seen without a button in your hand. */
+document.getElementById('photoBtn').onclick=async()=>{
+  /* What "currently on" means depends on where you are pressing it. On the wall
+     and in the demo it is this page's own state. On a phone it is the WALL's
+     state, which is what the button is actually controlling; reading PHOTOS.on
+     there meant the phone believed photos were off no matter what the wall was
+     doing, so the button only ever sent 'photos' and could never turn it back. */
+  const showing = photoSurface() ? PHOTOS.on : (LIVE.wallMode === 'photos');
+  const next = showing ? 'dashboard' : 'photos';
+  LIVE.wallMode = next;
+  applyWallMode(next);
+  if(LIVE.on){try{await api('/api/wall',{method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({mode:next})})}catch(e){}}
+  drw.classList.remove('open');ovl.classList.remove('open');
+};
+/* Tapping the photo layer returns to the dashboard, for a screen that does have
+   a touch surface. The wall has none, which is what the Flic is for. */
+document.getElementById('photoLayer').onclick=async()=>{
+  photoStop();
+  if(LIVE.on){try{await api('/api/wall',{method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({mode:'dashboard'})})}catch(e){}}
+};
+paintPresence();paintStale();
+
+/* A task typed into a ghost row, sent to the Pi. Optimistic: it shows up at
+   once and the next pull replaces it with the server's copy. */
+async function saveTask(it){
+  const iso=new Date(it.when.getTime()-it.when.getTimezoneOffset()*6e4)
+    .toISOString();
+  ITEMS.push(it);                     // show it immediately
+  try{
+    await api('/api/todos',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:it.n,type:'task',
+        due_date:iso.slice(0,10),
+        due_time:it.when.getHours()===23&&it.when.getMinutes()===59?null:iso.slice(11,16)})});
+    clearTimeout(LIVE.timer);pull();
+  }catch(e){/* keep the local copy; the next pull will correct it */}
+}
+
+/* ── photo mode ───────────────────────────────────────────────────────────
+   The album comes from /api/photos on the Pi. Order is a no-repeat bag rather
+   than Math.random: true random repeats, and a wall that shows the same photo
+   twice in a row looks broken even though it is behaving.
+
+   Only the next image is preloaded and only two are ever in the DOM. A Pi
+   decoding more than that stutters, and a stutter on a wall is the whole
+   feature failing. */
+const PHOTO_DWELL_MS=30000;
+const PHOTOS={list:[],bag:[],i:0,slide:0,timer:null,on:false,pre:false};
+
+function photoBag(){
+  const b=PHOTOS.list.slice();
+  for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}
+  return b;
+}
+function photoNext(){
+  if(!PHOTOS.list.length)return null;
+  if(!PHOTOS.bag.length)PHOTOS.bag=photoBag();
+  return PHOTOS.bag.pop();
+}
+/* The blurred backdrop is a separate, tiny file the Pi renders once per photo.
+   It only exists when Pillow is installed; PHOTOS.pre says whether to ask for
+   it, and the .pre class on the layer is what switches the CSS filter off. */
+function photoBackdrop(u){return PHOTOS.pre&&/^\/photo\//.test(u)?u+'/blur':u}
+
+/* cover or contain, decided per photo.
+
+   The wall is 800x480, so almost nothing matches it exactly and `contain` alone
+   left every picture floating in bars — a 4:3 shot filled 640 of 800 px, a
+   portrait one 360. `cover` alone is worse: it would crop a portrait photo down
+   to a horizontal slice and take someone's head off.
+
+   So: how far is this photo's shape from the screen's? Within about a third,
+   cover it — the crop is small and the picture fills the glass. Beyond that,
+   contain it and let the blurred backdrop hold the bars, which is what the
+   backdrop was built for. On a 5:3 wall that means landscape photos fill and
+   portrait photos letterbox, which is the right answer for both. */
+/* Aspect ratios, learned once per photo and kept, so pairing does not have to
+   download an image twice to find out which way up it is. */
+const PHOTO_RATIO = {};
+const PORTRAIT_MAX = 0.92;          // w/h below this is "upright"
+
+function loadPhoto(url){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      if(img.naturalHeight)PHOTO_RATIO[url]=img.naturalWidth/img.naturalHeight;
+      resolve(true);
+    };
+    img.onerror=()=>resolve(false);
+    img.src=url;
   });
 }
-function tick(i){ EVENTS[i].done = !EVENTS[i].done; renderTimeline(); }
-renderTimeline();
+const isPortrait=u=>PHOTO_RATIO[u]!==undefined&&PHOTO_RATIO[u]<PORTRAIT_MAX;
 
-/* ── clock ───────────────────────────────────────────────────────────── */
-function clock(){
-  const d = new Date();
-  let h = d.getHours(); const m = String(d.getMinutes()).padStart(2,'0');
-  const ap = h>=12 ? 'PM':'AM'; h = h%12 || 12;
-  document.getElementById('clock').textContent = `${h}:${m} ${ap}`;
-  document.getElementById('tlDateLabel').textContent =
-    d.toLocaleDateString('en-US',{weekday:'long', month:'short', day:'numeric'});
-}
-clock(); setInterval(clock, 1000);
+/* Pull the next photo, and a second one when the first turns out to be upright
+   and there is another upright waiting. Returns the urls to put on screen.
 
-/* ── synthetic SHT40 feed (real build: I2C → POST /api/update) ───────── */
-let T = 73.4, H = 46;
-setInterval(()=>{
-  T = Math.min(77, Math.max(71, T + (Math.random()-.5)*0.16));
-  H = Math.min(55, Math.max(40, H + (Math.random()-.5)*0.6));
-  const t1 = T.toFixed(1)+'°F', t2 = T.toFixed(1)+'°', h1 = Math.round(H)+'%';
-  setTxt('setTemp',t1); setTxt('rTempDrawer',t2); setTxt('rTempAway',t2);
-  setTxt('setHum',h1);  setTxt('rHumDrawer',h1);
-}, 2800);
-function setTxt(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+   Pairing only happens when the partner is ALREADY known to be a portrait, from
+   having been shown before. A cold album shows them one at a time for the first
+   pass and pairs from then on, which is the right trade: guessing would mean
+   downloading photos just to measure them, on a Pi, over wifi. */
+async function photoNextSet(){
+  const first=photoNext();
+  if(!first)return [];
+  if(!await loadPhoto(first))return null;          // gone; caller retries
+  if(!isPortrait(first))return [first];
 
-/* ── drawer / theme / lights / away ──────────────────────────────────── */
-function toggleDrawer(){
-  const dr = document.getElementById('drawer'), ov = document.getElementById('overlay');
-  const open = dr.classList.toggle('open');
-  ov.style.display = open ? 'block' : 'none';
-}
-document.getElementById('themeBtn').addEventListener('click', ()=>{
-  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
-  document.getElementById('icSun').style.display  = dark ? '' : 'none';
-  document.getElementById('icMoon').style.display = dark ? 'none' : '';
-});
-function toggleLights(){                       // real build: POST /api/lights/control
-  const e = document.getElementById('setLight');
-  e.textContent = e.textContent === 'On' ? 'Off' : 'On';
-}
-function manualAway(){                         // real build: POST /api/away/manual
-  const m = document.getElementById('awMode');
-  const home = m.textContent === 'HOME';
-  m.textContent = home ? 'AWAY' : 'HOME';
-  setTxt('setAway', home ? 'Away' : 'Home');
+  const idx=PHOTOS.bag.findIndex(u=>isPortrait(u));
+  if(idx<0)return [first];
+  const second=PHOTOS.bag.splice(idx,1)[0];
+  if(!await loadPhoto(second))return [first];
+  return [first, second];
 }
 
-/* ── settings-drawer calendar ────────────────────────────────────────── */
-let mOff = 0;
-function chMo(d){ mOff = (d===0) ? 0 : mOff + d; drawCal(); }
-function drawCal(){
-  const now = new Date();
-  const D = new Date(now.getFullYear(), now.getMonth()+mOff, 1);
-  const y = D.getFullYear(), mo = D.getMonth();
-  document.getElementById('calLabel').textContent =
-    D.toLocaleDateString('en-US',{month:'long', year:'numeric'});
-  const G = document.getElementById('calG'); G.innerHTML = '';
-  const first = new Date(y,mo,1).getDay(), days = new Date(y,mo+1,0).getDate();
-  const busy = {3:['ev','td'], 7:['ev'], 11:['ev','td','hw'], 14:['hw'], 18:['ev','ev'], 21:['td'], 24:['ev','hw'], 28:['ev']};
-  for(let i=0;i<first;i++){
-    const c=document.createElement('div'); c.className='cc blank'; G.appendChild(c);
+async function photoShow(tries){
+  const layer=document.getElementById('photoLayer');
+  const set=await photoNextSet();
+
+  if(set===null){                       // the photo 404'd; drop it and move on
+    if((tries||0)<4)return photoShow((tries||0)+1);
+    return;
   }
-  for(let n=1;n<=days;n++){
-    const c = document.createElement('div');
-    const isToday = (mOff===0 && n===now.getDate());
-    c.className = 'cc' + (isToday ? ' today' : '');
-    c.innerHTML = `<span class="cn">${n}</span>`;
-    if(busy[n] && mOff===0){
-      const row = document.createElement('div'); row.className='cd';
-      busy[n].forEach(t=>{
-        const dot = document.createElement('div');
-        dot.className='dot'; dot.style.background = DOT[t];
-        row.appendChild(dot);
-      });
-      c.appendChild(row);
+  if(!set.length){
+    layer.querySelectorAll('.pslide').forEach(e=>e.classList.remove('show'));
+    if(!layer.querySelector('.pempty')){
+      const e=document.createElement('div');e.className='pempty';
+      e.textContent='no photos yet';layer.appendChild(e);
     }
-    G.appendChild(c);
+    layer.classList.add('on');
+    return;
+  }
+
+  const gone=layer.querySelector('.pempty');if(gone)gone.remove();
+  const slides=layer.querySelectorAll('.pslide');
+  const next=slides[PHOTOS.slide%2], prev=slides[(PHOTOS.slide+1)%2];
+  const grid=next.querySelector('.pgrid');
+
+  // The backdrop takes the first photo. With two portraits it is barely visible
+  // behind them anyway, and picking one keeps it to a single decode.
+  next.style.setProperty('--blur','url("'+photoBackdrop(set[0])+'")');
+  layer.classList.toggle('pre',!!PHOTOS.pre);
+
+  grid.classList.toggle('solo',set.length===1&&!isPortrait(set[0]));
+  grid.innerHTML='';
+  set.forEach(u=>{
+    const d=document.createElement('div');
+    d.className='pimg';
+    d.style.backgroundImage='url("'+u+'")';
+    grid.appendChild(d);
+  });
+
+  // restart the drift from scratch for the incoming slide
+  next.classList.remove('show');void next.offsetWidth;
+  next.classList.add('show');
+  prev.classList.remove('show');
+  PHOTOS.slide++;
+  // Only reveal the layer once there is something on it. Fading in first meant a
+  // black screen for however long the first photo took to decode, which on a Pi
+  // is long enough to look like a fault.
+  layer.classList.add('on');
+}
+function photoStart(){
+  if(PHOTOS.on)return;
+  PHOTOS.on=true;
+  photoShow();          // the layer reveals itself once the first image lands
+  clearInterval(PHOTOS.timer);
+  PHOTOS.timer=setInterval(photoShow,PHOTO_DWELL_MS);
+}
+function photoStop(){
+  PHOTOS.on=false;
+  clearInterval(PHOTOS.timer);PHOTOS.timer=null;
+  const l=document.getElementById('photoLayer');
+  l.classList.remove('on');
+  l.querySelectorAll('.pslide').forEach(e=>e.classList.remove('show'));
+}
+async function loadPhotos(){
+  if(LIVE.on){
+    try{
+      const r=await api('/api/photos');
+      PHOTOS.pre=!!r.pillow;
+      const next=(r.photos||[]).map(p=>'/photo/'+p.id);
+      /* Only disturb the bag when the album actually changed. applyLive() calls
+         through to here on every poll and every SSE change, and this used to
+         empty the bag unconditionally — every 20s, faster than the 30s dwell.
+         So the bag was always freshly shuffled when photoNext() ran, every pick
+         was an independent draw, and the no-repeat guarantee this was all built
+         for never once held on a real Pi. It held on the demo, where nothing
+         polls. Surviving entries are kept on a change so no-repeat also
+         survives an add or a delete. */
+      if(next.join('\n')!==PHOTOS.list.join('\n')){
+        PHOTOS.list=next;
+        PHOTOS.bag=PHOTOS.bag.filter(u=>next.indexOf(u)>=0);
+      }
+      return;
+    }catch(e){}
+  }
+  // No Pi: stand-ins so the mode can be looked at on the portfolio demo.
+  if(!PHOTOS.list.length){
+    const g=[['#25405e','#7d93b4'],['#4a3550','#b39ac0'],['#2b4a44','#8fb8ac'],
+             ['#5a4430','#c4a882'],['#33405e','#9aa8cc']];
+    PHOTOS.list=g.map(([a,b])=>
+      'data:image/svg+xml;utf8,'+encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800">
+         <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+         <stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/>
+         </linearGradient></defs><rect width="1200" height="800" fill="url(#g)"/>
+         <circle cx="600" cy="400" r="180" fill="${b}" opacity=".45"/></svg>`));
+    PHOTOS.bag=[];
   }
 }
-drawCal();
 
-/* ── hair-wash scoring (real build: humidity + rain% + calendar density) ── */
-const HW = [
-  {d:'Fri 10', why:'Humid — 68%',      done:false},
-  {d:'Sat 11', why:'Best score today', done:false, best:true},
-  {d:'Sun 12', why:'60% rain',         done:false},
-  {d:'Mon 13', why:'4 events booked',  done:false},
+/* The wall's mode lives on the server so the Flic can change it. Nothing read
+   it before, which is why the hold press had no visible effect. */
+/* Photo mode belongs to the WALL, and only the wall.
+
+   Wall mode is one global sticky value on purpose: the Flic's hold sets it and
+   the phone is the fallback control, so any device may TOGGLE it. What was
+   wrong is that any device also OBEYED it, so holding the button turned Zack's
+   phone into a photo frame as well. The 800x480 panel is the thing in the room
+   showing photos; a phone in your hand is what you toggle it with.
+
+   The size and pointer inferences are not consulted here. This is the same
+   html.is-wall flag the kiosk stamps from /?wall=1, because both inferences
+   were wrong on his actual panel. A laptop held sideways is not the wall. */
+function isWallScreen(){
+  return document.documentElement.classList.contains('is-wall');
+}
+
+/* Is THIS device the thing that shows the photos?
+
+   The wall, obviously. And also the portfolio demo, where there is no Pi and no
+   wall, so the page in front of you has to stand in for one or the demo loses
+   the feature entirely. What is excluded is the case that was wrong: a phone
+   talking to a real Pi, where the wall is a different screen in the room. */
+function photoSurface(){
+  return isWallScreen() || !LIVE.on;
+}
+
+function applyWallMode(mode){
+  const onPhotos = (mode === 'photos');
+  if(onPhotos && photoSurface()){loadPhotos().then(photoStart)}
+  else photoStop();
+  /* Feedback, so the toggle is not silent on the device doing the toggling.
+     Without this, pressing "Show photos" on the phone looks like nothing
+     happened, which reads as broken rather than as remote. */
+  const b = document.getElementById('photoBtn');
+  if(b && !photoSurface()) b.textContent = onPhotos ? 'Wall is showing photos' : 'Show photos';
+}
+
+/* shopping (lives in settings) */
+// The demo seed. On the Pi the list comes from /api/shopping and persists;
+// this array was the whole store, so every item was lost on reload.
+let SHOP=[{id:1,name:'Chicken thighs'},{id:2,name:'Rice'},{id:3,name:'Greek yogurt'}];
+const shopChips=document.getElementById('shopChips');
+
+function rShop(){
+  shopChips.innerHTML='';
+  SHOP.forEach((x,i)=>{
+    const c=document.createElement('span');
+    c.className='chip';c.textContent=x.name;
+    c.onclick=()=>removeShop(x,i);
+    shopChips.appendChild(c);
+  });
+}
+async function loadShop(){
+  if(!LIVE.on)return;
+  try{
+    const r=await api('/api/shopping');
+    SHOP=(r.list||[]).map(i=>({id:i.id,name:i.name}));
+    rShop();
+  }catch(e){}
+}
+async function addShop(name){
+  if(LIVE.on){
+    try{
+      const r=await api('/api/shopping',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name})});
+      SHOP=(r.list||[]).map(i=>({id:i.id,name:i.name}));
+    }catch(e){SHOP.push({id:Date.now(),name})}
+  }else SHOP.push({id:Date.now(),name});
+  rShop();
+}
+async function removeShop(x,i){
+  SHOP.splice(i,1);rShop();
+  if(LIVE.on&&x.id!=null){
+    try{await api('/api/shopping/'+x.id,{method:'DELETE'})}catch(e){}
+  }
+}
+document.getElementById('shopAdd').onclick=()=>{
+  const i=document.getElementById('shopIn');
+  if(i.value.trim()){addShop(i.value.trim());i.value=''}
+};
+rShop();
+
+/* repeating rules -> materialize into agenda days */
+let REPS=[{n:'Gym',kind:'ev',freq:'daily',time:'11:30'},{n:'Water the plant',kind:'task',freq:'3',time:'20:00'}];
+function repItems(){
+  if(LIVE.on)return [];   // server-side expansion owns this when the Pi answers
+  const out=[];const base=new Date();base.setHours(0,0,0,0);
+  for(let o=0;o<14;o++){
+    const day=new Date(base.getTime()+o*DAY);
+    REPS.forEach(r=>{
+      if(r.freq==='daily'||+r.freq===day.getDay()){
+        const [H,M]=r.time.split(':');const w=new Date(day);w.setHours(+H,+M,0,0);
+        if(w>new Date()-3600000)out.push({when:w,n:r.n,s:r.freq==='daily'?'daily':'weekly',kind:r.kind,done:false,rep:true});
+      }
+    });
+  }
+  return out;
+}
+const repList=document.getElementById('repList');
+const DAYNAME=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const repLabel=r=>r.freq==='daily'?'daily':'every '+(DAYNAME[+r.freq]||'week');
+
+function rReps(){
+  repList.innerHTML='';
+  REPS.forEach((r,i)=>{
+    const d=document.createElement('div');d.className='cd';
+    d.innerHTML=`<span class="n">${r.n}</span><span class="d" style="font-size:12px">${repLabel(r)} · ${r.time}</span>`;
+    d.onclick=()=>removeRep(r,i);
+    repList.appendChild(d);
+  });
+}
+
+/* Rules were a local array, so every one was lost on reload and the Pi never
+   saw them. On the server a rule is just a todo with a repeat field, which
+   build_agenda expands — "daily", "weekdays", or "weekly:N" for a named day. */
+async function loadReps(){
+  if(!LIVE.on)return;
+  try{
+    const todos=await api('/api/todos');
+    REPS=todos.filter(t=>t.repeat).map(t=>({
+      id:t.id,n:t.name,kind:t.type==='ev'?'ev':'task',
+      freq:t.repeat==='daily'?'daily':String((t.repeat.split(':')[1]??'')||'daily'),
+      time:t.due_time||'18:00'}));
+    rReps();
+  }catch(e){}
+}
+/* Auto photos. The server owns this so the wall and the phone can never
+   disagree about it, and so it survives a restart. "Only when I ask" is off,
+   which is the shipped default: a screen you cannot touch should not start
+   changing itself until he has said he wants that. */
+async function loadWallAuto(){
+  if(!LIVE.on)return;
+  try{
+    const c=await api('/api/wall/auto');
+    document.getElementById('waAfter').value=c.enabled?String(c.afterMin):'0';
+    document.getElementById('waReturn').value=c.returnOnMotion?'1':'0';
+  }catch(e){}
+}
+async function saveWallAuto(){
+  if(!LIVE.on)return;
+  const after=parseInt(document.getElementById('waAfter').value,10)||0;
+  try{
+    await api('/api/wall/auto',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      // afterMin is only sent when it is a real delay: 0 means off, and the
+      // server clamps to at least 1, so posting 0 would silently become 1 and
+      // the drawer would come back saying "after 1 minute still".
+      body:JSON.stringify(Object.assign({enabled:after>0,
+        returnOnMotion:document.getElementById('waReturn').value==='1'},
+        after>0?{afterMin:after}:{}))});
+    clearTimeout(LIVE.timer);pull();
+  }catch(e){}
+}
+async function addRep(rule){
+  if(LIVE.on){
+    try{
+      await api('/api/todos',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:rule.n,type:rule.kind==='ev'?'ev':'task',
+          due_time:rule.time,
+          repeat:rule.freq==='daily'?'daily':'weekly:'+rule.freq})});
+      await loadReps();clearTimeout(LIVE.timer);pull();
+      return;
+    }catch(e){}
+  }
+  REPS.push(rule);rReps();render();
+}
+async function removeRep(r,i){
+  REPS.splice(i,1);rReps();render();
+  if(LIVE.on&&r.id!=null){
+    try{await api('/api/todos/'+r.id,{method:'DELETE'});clearTimeout(LIVE.timer);pull()}catch(e){}
+  }
+}
+document.getElementById('repAdd').onclick=()=>{
+  const n=document.getElementById('repName'),k=document.getElementById('repKind'),
+        f=document.getElementById('repFreq'),t=document.getElementById('repTime');
+  if(!n.value.trim())return;
+  addRep({n:n.value.trim(),kind:k.value,freq:f.value,time:t.value||'18:00'});
+  n.value='';
+};
+rReps();
+
+
+const isWall=()=>matchMedia('(min-aspect-ratio:5/4)').matches;
+// Midnight today. Nothing is ever ticked off: an item stands all day and then
+// stops being listed once the day is over, so this is the only thing that
+// retires anything.
+const startOfToday=()=>{const n=new Date();n.setHours(0,0,0,0);return n};
+
+function render(){
+  agL.innerHTML='';
+  const floor=+startOfToday();
+  const sorted=[...ITEMS,...repItems()]
+    .filter(it=>+it.when>=floor)
+    .sort((a,b)=>a.when-b.when);
+  // group by calendar day, skipping empty days automatically (only days with items exist)
+  const groups={};
+  sorted.forEach(it=>{
+    const k=new Date(it.when); k.setHours(0,0,0,0);
+    (groups[k.getTime()]=groups[k.getTime()]||[]).push(it);
+  });
+  let keys=Object.keys(groups).sort((a,b)=>a-b);
+  /* Everything the server sent, on every screen. No day-count clip.
+
+     There were two earlier versions of this and both were wrong. The first cut
+     every screen at today+6, which is what made Google look like it stopped on
+     Thursday. The second kept that cut for the wall on the theory that a panel
+     which cannot scroll should only be shown what fits — but "what fits" is the
+     agenda box's job, not this function's. The box already fades at its bottom
+     edge, so a longer list simply runs under the fade and the wall fills.
+
+     365 rather than a real horizon: build_agenda() decides how far ahead to
+     send, and duplicating that number here is how the two drift apart. */
+  const horizon=(()=>{const n=startOfToday();n.setDate(n.getDate()+365);return +n})();
+  keys=keys.filter(k=>+k<=horizon);
+  keys.forEach(k=>{
+    const dt=new Date(+k);
+    const h=document.createElement('div');h.className='dayh';
+    h.innerHTML=dayLabel(dt)+`<small>${dt.toLocaleDateString([],{month:'short',day:'numeric'})}</small>`;
+    agL.appendChild(h);
+    const dayOffset=Math.round((+k-(+startOfToday()))/DAY);
+    groups[k].forEach(it=>{
+      const r=document.createElement('div');
+      r.className='row'+(it.kind==='task'?' task':'')+(it.now?' now-ev':'');
+      // 23:59 is the "no particular time" sentinel. The placeholder used to be
+      // an em dash, which broke the house rule in the single most-read element
+      // on the wall: every homework row and every hair wash carries it. It is a
+      // middle dot now. test_agenda.py never caught it because that suite only
+      // scans app_jarvis.py, and this string lives here.
+      const time=it.when.getHours()===23&&it.when.getMinutes()===59?'·':it.when.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}).toLowerCase().replace(' ','');
+      // Nothing is ticked off here. An item stands until its day is over and
+      // then stops being listed, so there is no done state and no tap target —
+      // a wall you cannot touch had no way to use one anyway.
+      const sub=it.s?`<div class="s">${it.s}</div>`:'';
+      r.innerHTML=`<span class="t">${time}</span><span class="rail"></span><span><div class="n">${it.imp?'<span class="imp"><svg class="ico star" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.6l2.7 5.9 6.3.7-4.7 4.3 1.3 6.3L12 16.7 6.4 19.8l1.3-6.3L3 9.2l6.3-.7z"/></svg></span>':''}${it.n}</div>${sub}</span>`;
+      agL.appendChild(r);
+    });
+  });
+  // No add rows and no trailing empty day. A day only appears if something is
+  // actually on it, so the list is what is happening rather than a calendar
+  // grid with gaps in it. Adding happens in Settings > Homework.
+  const tasks=ITEMS.filter(i=>i.kind==='task'&&+i.when>=+startOfToday()).length;
+  document.getElementById('agCount').textContent=tasks+(tasks===1?' task':' tasks');
+  jarvisRender();
+}
+
+function parseAdd(str){
+  let txt=str.trim(), when=new Date(), hasTime=false;
+  // "!" anywhere marks important; quiz/test words are always important
+  let imp=false;
+  if(txt.includes('!')){imp=true;txt=txt.replace(/!/g,'').trim()}
+  if(/\b(quiz|test|exam|midterm|final)\b/i.test(txt))imp=true;
+  // time: 5pm / 5:30pm / 17:00
+  const tm=txt.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
+  if(tm&&(tm[3]||tm[2])){
+    let H=+tm[1],M=+(tm[2]||0);
+    if(tm[3]){if(/pm/i.test(tm[3])&&H<12)H+=12;if(/am/i.test(tm[3])&&H===12)H=0;}
+    when.setHours(H,M,0,0);hasTime=true;
+    txt=txt.replace(tm[0],'').trim();
+  }
+  // day word
+  const dm=txt.match(/\b(today|tomorrow|sun|mon|tue|tues|wed|thu|thur|thurs|fri|sat)(day)?\b/i);
+  if(dm){
+    const w=dm[1].toLowerCase();
+    if(w==='tomorrow')when=new Date(when.getTime()+DAY);
+    else if(w!=='today'&&w in DAYS){
+      let add=(DAYS[w]-when.getDay()+7)%7; if(add===0)add=7;
+      when=new Date(when.getTime()+add*DAY);
+    }
+    txt=txt.replace(dm[0],'').trim();
+  }
+  if(!hasTime)when.setHours(23,59,0,0);
+  return {when,n:txt.replace(/\s+/g,' ')||'Untitled task',s:'',kind:'task',done:false,imp};
+}
+/* ── JARVIS: a briefing that follows the day ─────────────────────────
+   Morning is the day ahead — weather, what to wear, when to leave.
+   Afternoon is what's next. Evening closes the day out. Night is sleep:
+   the debt number only appears when it's actionable, not at noon.
+   ★ bullets underneath hold the big stuff — tests, quizzes, interviews.
+   Real build: weather from Open-Meteo, sleep debt from the Oura API,
+   pushes over ntfy. Here the weather and sleep numbers are synthetic;
+   everything scheduled is read live from the agenda. */
+function fmtT(dt){return dt.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}).toLowerCase().replace(' ','')}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+function hr12(h){return h===0?'12am':h<12?h+'am':h===12?'noon':(h-12)+'pm'}
+const WXDAYS=[ // synthetic day-weather, stable per date: hi, lo, wind mph, rain window [from,to], sunset hour
+ {hi:88,lo:72,wind:6, rain:null,    sunset:20},
+ {hi:84,lo:71,wind:9, rain:null,    sunset:20},
+ {hi:78,lo:66,wind:16,rain:[14,18], sunset:20},
+ {hi:75,lo:63,wind:12,rain:[9,17],  sunset:20},
+ {hi:91,lo:74,wind:5, rain:[16,19], sunset:20}
 ];
-document.getElementById('hwList').innerHTML = HW.map(h=>`
-  <div class="hwc${h.best?'':''}" ${h.best?'style="border-color:var(--dot-hw)"':''}>
-    <div>
-      <div style="font-size:12px;font-weight:600">${h.d}${h.best?' ★':''}</div>
-      <div style="font-size:10px;color:var(--tm)">${h.why}</div>
-    </div>
-    <span class="hw-x">×</span>
-  </div>`).join('');
+function wx(){const d=new Date();return WXDAYS[(d.getDate()+d.getMonth())%WXDAYS.length]}
+// rough temp for right now: coldest around 6am, peak around 4pm
+function tempNow(w,h){
+  const t=Math.cos((h-16)/24*2*Math.PI);
+  return Math.round(w.lo+(w.hi-w.lo)*((t+1)/2));
+}
+/* Oura. Real on the Pi (get_sleep / sleep_debt); synthetic in this demo.
+   Stored as minutes so it can be formatted and done arithmetic on, rather than
+   as the string "6h40", which read as a part number. */
+const SLEEP_LAST_MIN=400, SLEEP_DEBT_MIN=100, SLEEP_BEST=true;
+const fmtDur=m=>{const h=Math.floor(m/60),r=Math.round(m%60);
+  return h&&r?`${h}h ${r}m`:h?`${h}h`:`${r}m`};
 
-/* ── hourly strip ────────────────────────────────────────────────────── */
-const HRS = [['2PM',89],['3PM',90],['4PM',89],['5PM',86],['6PM',83],['7PM',79],['8PM',77]];
-document.getElementById('hourly').innerHTML = HRS.map(([h,t])=>`
-  <div class="hc">
-    <div class="ht">${h}</div>
-    <div class="hb" style="height:${(t-70)*2.4}px"></div>
-    <span class="htp mono">${t}°</span>
-  </div>`).join('');
+/* A bedtime worth suggesting has to account for the whole morning, not just
+   the sleep: eight hours, then getting ready, then getting there. Working back
+   from the alarm is what makes the number wrong by an hour. */
+const SLEEP_TARGET_H=8, GET_READY_MIN=30, TRAVEL_MIN=20;
+/* With nothing scheduled he still surfaces around half nine. */
+const DEFAULT_WAKE_H=9, DEFAULT_WAKE_M=30;
+/* Room sensor, and what he normally keeps it at, so a reading can be
+   compared rather than just stated. Real values on the Pi. */
+const ROOM_TEMP=72.4, ROOM_USUAL=72;
+const bedtimeFor=ev=>new Date(
+  ev.when - (TRAVEL_MIN+GET_READY_MIN)*60000 - SLEEP_TARGET_H*3600000);
+/* Habits it has actually noticed. On the Pi these come from /api/patterns and
+   the daily history rows. */
+const WATER_STREAK=4, WATER_ON_PACE=true;
 
-/* ── shopping ────────────────────────────────────────────────────────── */
-const SHOP = [['Chicken thighs',2],['Rice',1],['Cilantro',1],['Lemons',3]];
-document.getElementById('shL').innerHTML = SHOP.map(([n,q])=>`
-  <div class="shi"><span class="shn">${n}</span><span class="shqv mono">×${q}</span></div>`).join('');
+/* "ELEE 4230 quiz's 3 days out" is wrong — you cannot contract onto a sibilant.
+   Names ending in s, z, x, ch or sh take a full "is". */
+function nameIs(n){
+  return /(s|z|x|ch|sh)$/i.test(String(n).trim()) ? n+' is' : n+"'s";
+}
+
+/* A clause, so it can join the sentence in front of it rather than sitting
+   next to it as its own clipped fragment. */
+function wearClause(w){
+  if(w.hi>=85)return "so it'll be a warm one";
+  if(w.hi>=70)return 'so short sleeves is fine';
+  if(w.hi>=55)return "so it's worth a layer";
+  return "so it's a jacket day";
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function jarvisRender(){
+  const now=new Date(),h=now.getHours();
+  /* When the Pi is answering, the server writes the briefing — it has the Oura
+     numbers, the real sleep debt and the whole agenda, none of which this page
+     can see. The synthetic version below is what the portfolio demo runs on. */
+  if(LIVE.on&&LIVE.brief&&LIVE.brief.lines&&LIVE.brief.lines.length){
+    const bullets=document.getElementById('jarvis-bullets');
+    document.getElementById('jarvis-output').innerHTML=
+      LIVE.brief.lines.map((l,i)=>`<div class="jl${i===0?' lead':''}${
+        /\d+\s*(out|outside|°)/.test(l)?' wx':''}">${esc(l)}</div>`).join('');
+    const imp=[...ITEMS].filter(i=>i.imp&&i.when>now).sort((a,b)=>a.when-b.when).slice(0,2);
+    bullets.innerHTML=imp.map(i=>
+      `<div class="jb"><span class="st"><svg class="ico star" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.6l2.7 5.9 6.3.7-4.7 4.3 1.3 6.3L12 16.7 6.4 19.8l1.3-6.3L3 9.2l6.3-.7z"/></svg></span><b>${esc(i.n)}</b>`+
+      `<span class="when">${i.when.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'})} · ${fmtT(i.when)}</span></div>`).join('');
+    bullets.style.display=imp.length?'':'none';
+    return;
+  }
+  const seed=now.getFullYear()+now.getMonth()*31+now.getDate()*7+h;
+  const pick=(arr,salt)=>arr[(seed+salt)%arr.length];
+  const all=[...ITEMS,...repItems()].sort((a,b)=>a.when-b.when);
+  const today=all.filter(it=>sameDay(it.when,now));
+  const out=document.getElementById('jarvis-output');
+  const bl=document.getElementById('jarvis-bullets');
+  // security jumps the queue: an entry while you're away is the only thing that matters
+  if(typeof entry!=='undefined'&&entry){
+    out.innerHTML=`<span style="color:var(--alert)">Motion in your room ${entry} while you're away.</span> I've pushed it to your phone.`;
+    bl.innerHTML='';bl.style.display='none';
+    return;
+  }
+  const w=wx();
+  const open=today.filter(i=>i.kind==='task'&&!i.done).length;
+  const nextEv=today.find(i=>i.kind==='ev'&&i.when>now);
+  const tmr=all.filter(it=>sameDay(it.when,new Date(now.getTime()+DAY)));
+  const tmrFirst=tmr.find(i=>i.when.getHours()<23);
+  const leaveLine=ev=>{const leave=new Date(ev.when-20*60000);return pick([
+    `${nameIs(ev.n)} at ${fmtT(ev.when)}, so you'll want to be out by ${fmtT(leave)}.`,
+    `You've got ${ev.n} at ${fmtT(ev.when)}. Out the door by ${fmtT(leave)}.`,
+    `${fmtT(leave)} out the door gets you to ${ev.n} for ${fmtT(ev.when)}.`,
+    `${ev.n} at ${fmtT(ev.when)}. That's leaving here about ${fmtT(leave)}.`],1)};
+  /* the things worth saying out loud, computed rather than canned */
+  const midnight=new Date(now);midnight.setHours(0,0,0,0);
+  const nextImp=all.find(i=>i.imp&&!i.done&&i.when>now);
+  const nightsTo=nextImp?Math.round((new Date(nextImp.when).setHours(0,0,0,0)-midnight)/DAY):null;
+  const runway=()=>{ // how much room is left before the next big thing
+    if(!nextImp)return null;
+    // Only append the subtitle when it is actually a subject. "Chapters 5 and 6"
+    // reads; "Zoom" gives "and it's zoom", which is a location pretending to be
+    // one. One word is the tell.
+    const sub=(nextImp.s||'').trim();
+    const on=/\s/.test(sub) ? sub.charAt(0).toLowerCase()+sub.slice(1) : '';
+    if(nightsTo===0)return `${nameIs(nextImp.n)} today at ${fmtT(nextImp.when)}.`;
+    if(nightsTo===1)return `You've got ${nextImp.n} tomorrow at ${fmtT(nextImp.when)}.`;
+    return on
+      ? `${nameIs(nextImp.n)} ${nightsTo} days out, and it's ${on}.`
+      : `${nameIs(nextImp.n)} ${nightsTo} days out.`;
+  };
+  const heavy=()=>{ // the day in the next week carrying the most real load
+    const cnt={};
+    // standing repeats (gym, water the plant) aren't load — they'd make every day
+    // "heavy" — and neither are chores. A hair wash is five minutes; calling
+    // Friday the fullest day because of one is just wrong.
+    all.filter(i=>i.when>now&&i.when-now<7*DAY&&!i.rep&&!i.chore).forEach(i=>{
+      const k=new Date(i.when).setHours(0,0,0,0);cnt[k]=(cnt[k]||0)+1+(i.imp?2:0);
+    });
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+    if(!top||top[1]<3)return null;
+    const d=new Date(+top[0]);
+    if(sameDay(d,now))return null;
+    const on=all.filter(i=>sameDay(i.when,d)&&!i.rep&&!i.chore).slice(0,2).map(i=>i.n);
+    // don't restate the thing the runway line already named
+    if(on.length===1&&nextImp&&on[0]===nextImp.n)return null;
+    return `${dayLabel(d)} looks like the busiest day, with ${on.join(' and then ')}.`;
+  };
+  const waterLine=()=>(typeof water==='undefined'||!water)?null:waterSay(h);
+  const s=[];
+  if(typeof away!=='undefined'&&away)s.push('Room is armed while you’re out.');
+  const t=tempNow(w,h);
+  // ── what it actually says ────────────────────────────────────────────────
+  // The old version ran the same template every time: weather, then calendar,
+  // then sleep, then water, five lines whatever the hour. That is what made it
+  // read like a machine — not the wording. Nobody opens with the temperature
+  // at 10pm, and nobody recites five facts when two of them matter.
+  //
+  // So: lead with the thing that matters at this hour, and mention the weather
+  // only when it would change what he does. At night it never does.
+  const notableWx = () => {
+    if(w.rain) return pick([
+      `there's rain from about ${hr12(w.rain[0])} till ${hr12(w.rain[1])}`,
+      `it's wet between ${hr12(w.rain[0])} and ${hr12(w.rain[1])}`],3);
+    if(w.hi>=88) return `it gets to ${w.hi} today`;
+    if(w.lo<=38) return `it's down to ${w.lo} tonight`;
+    if(w.wind>=14) return `the wind's up at ${w.wind}`;
+    return null;                       // an ordinary day is not worth a line
+  };
+
+  // ── what it says ─────────────────────────────────────────────────────────
+  // Two things make a briefing sound like a person rather than a report:
+  // what it chooses to mention, and the fact that it chooses differently on
+  // different days. So each hour has one LEAD (the thing that matters most
+  // right then) and a POOL of optional observations. Two get drawn from the
+  // pool, seeded on the date and hour, so the same Tuesday does not read like
+  // last Tuesday. A beat returns null when it has nothing true to say, and
+  // nulls simply do not appear.
+  // "Wash hair" is an agenda item now, so the briefing reads it from there
+  // rather than keeping a second copy of the schedule.
+  const washToday = all.some(i=>i.n==='Wash hair'&&sameDay(i.when,now));
+  const dow = now.getDay(), isWknd = dow===0||dow===6;
+  const dayName = now.toLocaleDateString([],{weekday:'long'});
+  // live sensor when there is a Pi, the synthetic constant otherwise
+  const _rt = roomTempLive();
+  const roomT = (_rt===null?ROOM_TEMP:_rt), roomWarm = roomT>=ROOM_USUAL+3, roomCold = roomT<=ROOM_USUAL-3;
+
+  // does rain land on top of something he has to be at?
+  // Only a clash if it is still ahead of him. Telling him at 4pm that he got
+  // rained on at 9am is not a briefing, it is a diary.
+  const rainClash = (()=>{
+    if(!w.rain || h>=w.rain[1]) return null;
+    const hit = all.find(i=>i.kind==='ev' && sameDay(i.when,now) && i.when>now
+      && i.when.getHours()>=w.rain[0]-1 && i.when.getHours()<=w.rain[1]);
+    return hit ? {ev:hit} : null;
+  })();
+
+  const draw = (pool, n) => {
+    const live = pool.map(f=>{try{return f()}catch(e){return null}}).filter(Boolean);
+    const out = [];
+    for(let i=0;i<live.length&&out.length<n;i++) out.push(live[(seed+i*3)%live.length]);
+    return [...new Set(out)];
+  };
+
+  // ── beats, shared across hours ──────────────────────────────────────────
+  const bWeather = () => {
+    if(w.rain && h < w.rain[1]) return pick([
+      `There's rain from about ${hr12(w.rain[0])} till ${hr12(w.rain[1])}.`,
+      `It's wet between ${hr12(w.rain[0])} and ${hr12(w.rain[1])}.`,
+      `Rain comes through around ${hr12(w.rain[0])} and clears by ${hr12(w.rain[1])}.`],3);
+    if(w.hi>=88) return pick([`It gets up to ${w.hi} today.`,
+                              `${w.hi} is the high, so it'll be a warm one.`],3);
+    if(w.lo<=40) return pick([`It drops to ${w.lo} tonight.`,
+                              `Cold one tonight, down to ${w.lo}.`],3);
+    if(w.wind>=14) return pick([`The wind's up at ${w.wind}.`,
+                                `${w.wind} of wind today, so it'll feel cooler than it is.`],3);
+    return null;
+  };
+  const bRainClash = () => rainClash ? pick([
+      `Rain's around when you're at ${rainClash.ev.n}, so you'll be walking back in it.`,
+      `${nameIs(rainClash.ev.n)} right in the middle of the rain.`],13) : null;
+  const bRoom = () => roomWarm ? pick([
+      `It's ${roomT} in here, warmer than you usually keep it.`,
+      `Your room's sitting at ${roomT}.`],14)
+    : roomCold ? `It's ${roomT} in here, cooler than usual.` : null;
+  const bSleep = () => SLEEP_BEST ? pick([
+      `You slept ${fmtDur(SLEEP_LAST_MIN)}, the most you've managed all week.`,
+      `${fmtDur(SLEEP_LAST_MIN)} last night, which is your best of the week.`],9) : null;
+  const bWater = () => waterLine();
+  const bRunway = () => { const r=runway(); return (r&&nightsTo<=3)?r:null };
+  const bHeavy = () => heavy();
+  const bWash = () => washToday ? pick([
+      'Wash day, if you get round to it.',
+      "It's a wash day today."],15) : null;
+  const bWeekend = () => isWknd ? pick([
+      `${dayName}, so nothing has to happen at any particular time.`,
+      `It's ${dayName}.`],16) : null;
+  const bSunset = () => (h>=15&&h<19) ? `Sun's down at ${hr12(w.sunset||20)}.` : null;
+
+  if(h>=5&&h<11){            // morning: what's first, then a couple of things
+    if(nextEv){
+      const leave=new Date(nextEv.when-TRAVEL_MIN*60000);
+      s.push(pick([
+        `${nameIs(nextEv.n)} at ${fmtT(nextEv.when)}, so you'll want to be out by ${fmtT(leave)}.`,
+        `You've got ${nextEv.n} at ${fmtT(nextEv.when)}, so out the door around ${fmtT(leave)}.`,
+        `First thing is ${nextEv.n} at ${fmtT(nextEv.when)}. That's leaving about ${fmtT(leave)}.`],1));
+    }else{
+      s.push(pick([
+        `Nothing on this morning, so it's ${t} out and yours.`,
+        `Your morning's clear. ${t} out at the moment.`,
+        `Nothing until later today.`],1));
+    }
+    s.push(...draw([bWeather, bSleep, bRainClash, bWash, bWeekend, bRoom, bRunway, bHeavy], 2));
+
+  }else if(h>=11&&h<17){     // afternoon
+    if(nextEv)s.push(leaveLine(nextEv));
+    else s.push(pick([
+      "Nothing else on today, so the rest of it's yours.",
+      "That's you done for the day as far as the calendar goes.",
+      'Nothing left on the calendar from here.'],6));
+    s.push(...draw([bWater, bRainClash, bWeather, bRoom, bWash, bRunway, bHeavy, bSunset], 2));
+
+  }else if(h>=17&&h<22){     // evening
+    if(nextEv)s.push(leaveLine(nextEv));
+    else s.push(pick([
+      "Nothing else on tonight, so the evening's yours.",
+      "That's everything for today.",
+      "You're done for the day."],7));
+    const bTomorrow = () => tmrFirst ? pick([
+        `Tomorrow starts with ${tmrFirst.n} at ${fmtT(tmrFirst.when)}.`,
+        `First thing tomorrow is ${tmrFirst.n} at ${fmtT(tmrFirst.when)}.`],11) : null;
+    s.push(...draw([bTomorrow, bWater, bWash, bRunway, bWeather, bRoom], 2));
+
+  }else{                     // night: one thing, which is when to go to bed
+    // No debt figures and no encouragement. At 1am the only useful sentence is
+    // a time, so that is nearly the whole briefing.
+    const late = h<5 ? 'Still up' : 'Getting late';
+    const nextUp = all.find(i => i.when > now) || null;
+    const soon = nextUp && (nextUp.when - now) < 18*3600000 ? nextUp : null;
+
+    let wake;
+    if(soon){
+      wake = new Date(soon.when - (TRAVEL_MIN+GET_READY_MIN)*60000);
+    }else{
+      wake = new Date(now);
+      if(h >= 5) wake.setDate(wake.getDate()+1);
+      wake.setHours(DEFAULT_WAKE_H, DEFAULT_WAKE_M, 0, 0);
+    }
+    const bed = new Date(wake - SLEEP_TARGET_H*3600000);
+
+    // A bedtime outside a plausible night is arithmetic, not advice: an 11:30
+    // gym works out to 2:40am. When it does not bind, say what is on instead.
+    const bedBinds = bed.getHours()>=20 || bed.getHours()<=1;
+    if(!bedBinds && soon){
+      s.push(pick([
+        `${late}, but nothing's early tomorrow. First thing is ${soon.n} at ${fmtT(soon.when)}.`,
+        `${late}. Nothing early tomorrow, ${soon.n} at ${fmtT(soon.when)} is the first thing.`],12));
+    }else if(now < bed){
+      s.push(soon
+        ? pick([`${nameIs(soon.n)} at ${fmtT(soon.when)}, so bed around ${fmtT(bed)} gives you eight hours.`,
+                `${late}. Bed by about ${fmtT(bed)} puts you at eight before ${soon.n} at ${fmtT(soon.when)}.`,
+                `Eight hours before ${soon.n} at ${fmtT(soon.when)} means turning in around ${fmtT(bed)}.`],12)
+        : pick([`Nothing on tomorrow, so if you're up around ${fmtT(wake)}, bed by ${fmtT(bed)} gives you eight hours.`,
+                `${late}. Nothing on tomorrow, so bed around ${fmtT(bed)} still gets you eight before a ${fmtT(wake)} start.`],12));
+    }else{
+      // Past it. A bedtime you have already missed is no use, but the hours
+      // still available are, and that is a fact rather than a telling off.
+      const left = Math.max(0, Math.round((wake - now)/60000));
+      s.push(soon
+        ? pick([`Going to bed now still gets you ${fmtDur(left)} before ${soon.n} at ${fmtT(soon.when)}.`,
+                `${fmtDur(left)} left if you turn in now, before ${soon.n} at ${fmtT(soon.when)}.`],12)
+        : pick([`Going to bed now still gets you ${fmtDur(left)} before a ${fmtT(wake)} start.`,
+                `${fmtDur(left)} if you go now, on a ${fmtT(wake)} start.`],12));
+    }
+  }
+  out.innerHTML=s.map((line,i)=>`<div class="jl${i===0?' lead':''}">${line}</div>`).join('');
+  // ★ bullets: important items in the next ten days, soonest first
+  const imps=all.filter(i=>i.imp&&!i.done&&i.when>now&&i.when-now<10*DAY).slice(0,3);
+  // On a short wall the briefing can outgrow its box. Drop lines off the end,
+  // which are the least load-bearing, so the ★ items are never the thing that
+  // falls off the screen.
+  requestAnimationFrame(()=>{
+    let guard=0;
+    while(out.scrollHeight>out.clientHeight+1&&out.children.length>1&&guard++<20)
+      out.removeChild(out.lastElementChild);
+  });
+  bl.innerHTML=imps.map(i=>{
+    const dl=sameDay(i.when,now)?'Today':dayLabel(i.when)==='Tomorrow'?'Tomorrow'
+      :i.when.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'});
+    return `<div class="jb"><span class="st"><svg class="ico star" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.6l2.7 5.9 6.3.7-4.7 4.3 1.3 6.3L12 16.7 6.4 19.8l1.3-6.3L3 9.2l6.3-.7z"/></svg></span><b>${i.n}</b><span class="when">${dl} · ${fmtT(i.when)}</span></div>`;
+  }).join('');
+  bl.style.display=imps.length?'':'none';
+}
+
+/* water ─────────────────────────────────────────────────────────────
+   Logging comes from the phone buttons below. A desk button is wired on the
+   backend too (pi/flic_hydration.py: click a glass, double a bottle, hold to
+   undo) for whenever that hardware exists; entries it posts get tagged 'flic'
+   and the card names them. Off the Pi there is no endpoint, so the demo falls
+   back to a synthetic day that fills itself in as the hours pass, and the
+   buttons still work, they just stay local. */
+const WATER_API='/api/hydration';
+/* The target isn't a fixed 80. Heat and a workout both cost water, which is what
+   the bottle project measured, so the day's number moves with them. On the Pi this
+   belongs in _target_oz() in app.py with real weather; here the weather is the same
+   synthetic day the briefing reads. */
+const WATER_BASE=80;
+function waterTarget(){
+  const w=wx(),bump=[];
+  let t=WATER_BASE;
+  if(w.hi>=92){t+=12;bump.push(`${w.hi} out`)}
+  else if(w.hi>=85){t+=8;bump.push(`${w.hi} out`)}
+  // a workout counts for the whole day, so this looks at today's schedule, not
+  // only what's still ahead — repItems() drops anything already past
+  const rx=/\b(gym|run|running|lift|workout|soccer|basketball|practice|ride)\b/i;
+  const today=new Date();
+  const act=ITEMS.find(i=>sameDay(i.when,today)&&rx.test(i.n))
+    ||REPS.find(r=>rx.test(r.n)&&(r.freq==='daily'||+r.freq===today.getDay()));
+  if(act){t+=8;bump.push(act.n.toLowerCase())}
+  return {oz:t,why:bump};
+}
+function demoWater(){
+  // a normal day: two glasses in the morning, the Owala at lunch, glasses after
+  const plan=[[8,10,12],[10,25,12],[12,50,24],[15,20,12],[18,5,12],[20,40,12]];
+  const now=new Date(),log=[];
+  plan.forEach(([H,M,oz])=>{
+    const t=new Date();t.setHours(H,M,0,0);
+    if(t<=now)log.push({ts:t.toISOString(),oz,src:'app'});
+  });
+  return {total_oz:log.reduce((a,e)=>a+e.oz,0),target_oz:waterTarget().oz,
+          servings:{single:8,glass:12,double:32},log,live:false};
+}
+let water=demoWater();
+const W_FROM=8,W_TO=21;                       // the drinking day, 8am to 9pm
+function paintTrack(){
+  const t=water.target_oz||WATER_BASE;
+  const pct=v=>Math.min(100,Math.max(0,v/t*100))+'%';
+  document.getElementById('wPace').style.width=pct(t*waterPace());
+  document.getElementById('wFill').style.width=pct(water.total_oz);
+  const el=document.getElementById('wTrack'),r=hydration();
+  el.setAttribute('aria-valuemax',t);
+  el.setAttribute('aria-valuenow',water.total_oz);
+  el.setAttribute('aria-valuetext',`${water.total_oz} of ${t} oz, `+
+    (r.behind>0?`${r.behind} glass${r.behind>1?'es':''} behind`:'on pace'));
+}
+
+/* how far through the day you'd be if you drank it evenly, 8am to 9pm */
+function waterPace(){
+  const n=new Date();
+  return Math.min(1,Math.max(0,(n.getHours()+n.getMinutes()/60-W_FROM)/(W_TO-W_FROM)));
+}
+/* One read of the day's water, shared by the chart and by what MonCoeur says, so
+   the two can never disagree. "behind" rounds to whole glasses: being a mouthful
+   under pace is not worth a sentence. */
+function hydration(){
+  const t=water.target_oz||WATER_BASE;
+  const g=(water.servings&&water.servings.single)||8;
+  const due=t*waterPace(),left=Math.max(0,t-water.total_oz);
+  const log=water.log||[];
+  const last=log.length?new Date(log[log.length-1].ts):null;
+  return {t,g,total:water.total_oz,due:Math.round(due),left,met:left<=0,
+    behind:Math.max(0,Math.round((due-water.total_oz)/g)),
+    glassesLeft:Math.ceil(left/g),
+    last,gap:last?(Date.now()-last)/3600000:null};
+}
+/* What MonCoeur says about water, at most one line, and nothing at all when the
+   day is going fine. Morning explains the number, the middle of the day watches
+   the gaps, night stops asking him to drink and just says how it went. */
+function waterSay(h){
+  const r=hydration(),tg=waterTarget();
+  // Every line below counts in oz, not glasses. An earlier draft phrased the
+  // shortfall as "two glasses", which stopped being safe the moment the middle
+  // button became 12 oz while the pace unit stayed 8: the same word would have
+  // meant two amounts in one sentence. The helpers that built those phrases are
+  // gone; if a glass count ever comes back it has to say which glass.
+  if(h>=5&&h<11){
+    if(!r.total&&h>=8)return `Nothing logged yet today.`;
+    if(r.behind>=1)return `You're at ${r.total} oz for the day.`;
+    return null;
+  }
+  if(h>=11&&h<17){
+    if(r.met)return null;
+    if(WATER_ON_PACE&&r.total&&r.behind<1)
+      return `You're at ${r.total} oz, which is about where you normally are by now.`;
+    if(r.gap!==null&&r.gap>=3)
+      return `Nothing since ${fmtT(r.last)}, so that's about ${Math.round(r.gap)} hours.`;
+    if(r.behind>=1)
+      return `You're at ${r.total} oz for the day.`;
+    return null;
+  }
+  if(h>=17&&h<22){
+    if(r.met)return WATER_STREAK>=3
+      ? `Water's done for the day. That's ${WATER_STREAK} days running now.`
+      : `Water's done for the day at ${r.total} oz.`;
+    if(r.behind>=1)return `You're at ${r.total} oz for the day.`;
+    return null;
+  }
+  // night: telling him to drink at 1am is how you get up at 4am
+  if(!r.met&&r.left>=2*r.g)return `You finished ${r.left} oz short today.`;
+  return null;
+}
+function paintWater(){
+  const t=water.target_oz||96,left=Math.max(0,t-water.total_oz);
+  const glass=(water.servings&&water.servings.single)||8;
+  document.getElementById('wNum').innerHTML=water.total_oz+`<u>of ${t} oz</u>`;
+  document.getElementById('wLeft').textContent=left?left+' oz left':'target met';
+
+  paintTrack();
+  const last=water.log&&water.log[water.log.length-1];
+  document.getElementById('wSub').textContent=last
+    ?`${last.oz} oz at ${fmtT(new Date(last.ts))}${last.src==='flic'?' · button':''}`
+    :'Nothing logged yet today.';
+  // The drawer says the number too, so pressing + in there gives feedback
+  // without having to close it and look at the card.
+  const dt=document.getElementById('wDrawTot');
+  if(dt)dt.textContent=`${water.total_oz} / ${t} oz`;
+  const dh=document.getElementById('wDrawHint');
+  if(dh)dh.textContent=left?`${left} OZ LEFT`:'TARGET MET';
+}
+/* ── the backend, when there is one ───────────────────────────────────────────
+   This page has two lives. On GitHub Pages it is a portfolio demo with no Pi
+   behind it, so everything falls back to a synthetic day. On the wall in his
+   room the Pi answers, and then the server owns the truth: it merges the
+   agenda, writes the briefing, and knows whether its own data is stale.
+
+   The rule for going live is one probe, not one per feature — a page with no
+   backend should not fire five 404s every twenty seconds. When nothing answers
+   it backs off to five minutes and stays synthetic.                          */
+const LIVE={on:false,everOn:false,wallMode:'dashboard',fresh:null,brief:null,agenda:null,note:null,miss:0,es:null,timer:null};
+
+async function api(path,opts){
+  const r=await fetch(path,Object.assign({cache:'no-store'},opts||{}));
+  if(!r.ok)throw new Error(r.status);
+  return r.json();
+}
+function reschedule(ms){clearTimeout(LIVE.timer);LIVE.timer=setTimeout(pull,ms)}
+
+async function pull(){
+  try{
+    // ONE probe decides live-ness. Firing the whole set in parallel would put
+    // three 404s in the console of every portfolio visitor before we even know
+    // whether a Pi exists — so the rest waits until this one answers.
+    const brief=await api('/api/brief');
+    // days=14, not 7. The frontend horizon was widened first and nothing
+    // changed, because the data was never asked for: the server was being told
+    // to send a week and then blamed for stopping at Thursday. build_agenda()
+    // defaults to 14, so this asks for what it already builds.
+    const [ag,w,wall]=await Promise.all([api('/api/agenda?days=14'),api(WATER_API),
+                                        api('/api/wall').catch(()=>null)]);
+    LIVE.on=true;LIVE.everOn=true;LIVE.miss=0;
+    LIVE.brief=brief;LIVE.fresh=brief.fresh;LIVE.agenda=ag.days;
+    if(wall&&wall.mode)LIVE.wallMode=wall.mode;
+    if(typeof w.total_oz==='number')water=Object.assign(w,{live:true});
+    applyLive();
+    subscribe();
+    pullNote();
+    // SSE carries the fast path; this is only a floor in case it drops.
+    reschedule(60000);
+    return;
+  }catch(e){/* no Pi on the other end */}
+  LIVE.miss++;
+  if(LIVE.on){LIVE.on=false;LIVE.fresh=null;LIVE.everOn=true}
+  if(!water.live){water=demoWater()}
+  applyLive();
+  // Two different callers, two different right answers. A portfolio visitor's
+  // browser will never find a Pi, so backing off to five minutes stops it
+  // hammering. The wall HAS found one before, so the same five minutes would
+  // leave it showing demo data for five minutes after the Pi reboots. Once it
+  // has ever been live it keeps trying at a steady 15s.
+  reschedule(LIVE.everOn ? 15000 : (LIVE.miss>=3 ? 300000 : 20000));
+}
+
+/* A Flic press should land on the wall in about a second, not whenever the
+   next poll happens to come round. */
+function subscribe(){
+  if(LIVE.es||!window.EventSource)return;
+  try{
+    const es=new EventSource('/api/stream');
+    es.addEventListener('change',()=>{clearTimeout(LIVE.timer);pull()});
+    es.onerror=()=>{try{es.close()}catch(_){ }LIVE.es=null};
+    LIVE.es=es;
+  }catch(e){/* no SSE: the 60s floor still refreshes */}
+}
+
+/* The weekly finding. Cheap, slow-moving, so once an hour is plenty. */
+let noteAt=0;
+async function pullNote(){
+  if(Date.now()-noteAt<3600000)return;
+  noteAt=Date.now();
+  try{
+    const p=await api('/api/patterns');
+    LIVE.note=(p.ready&&p.findings&&p.findings.length)?p.findings[0].text:null;
+  }catch(e){LIVE.note=null}
+  paintNote();
+}
+function paintNote(){
+  const el=document.getElementById('jarvis-note');
+  if(!el)return;
+  if(LIVE.note){el.textContent=LIVE.note;el.hidden=false}
+  else{el.textContent='';el.hidden=true}
+}
+
+/* The server's agenda, reshaped into what render() already draws. Repeats are
+   expanded server-side when live, so the client stops expanding its own. */
+function serverItems(days){
+  const out=[];
+  (days||[]).forEach(d=>(d.items||[]).forEach(i=>{
+    const t=(i.time||'23:59').slice(0,5);
+    out.push({when:new Date(d.date+'T'+t+':00'),n:i.name,s:i.sub||'',
+              kind:i.kind==='event'?'ev':'task',done:!!i.done,imp:!!i.starred,
+              id:i.id,src:i.source,editable:i.editable!==false});
+  }));
+  return out;
+}
+
+function applyLive(){
+  // stale means the room readings are old; drop them rather than dress them up
+  document.body.dataset.stale=(LIVE.fresh===false)?'1':'';
+  // the "synthetic data" banner is honest on the portfolio demo and a lie on
+  // the wall, where every number on screen is real
+  const bn=document.getElementById('demoBanner');
+  if(bn)bn.style.display=LIVE.on?'none':'';
+  if(LIVE.on&&LIVE.agenda){ITEMS=serverItems(LIVE.agenda)}
+  // Keep the lamp tile honest: the Flic and presence both change the lights
+  // without the screen knowing, so read the state back rather than trusting
+  // whatever this client last set.
+  syncLights();
+  syncRoomTemp();
+  // The first pull is what tells us a Pi exists; the course list has to be
+  // re-read at that point or it stays on the demo names for the whole session.
+  if(LIVE.on&&!applyLive._courses){applyLive._courses=true;loadCourses();loadShop();loadReps();loadWallAuto()}
+  if(LIVE.on)applyWallMode(LIVE.wallMode||'dashboard');
+  // The Away toggle, the motion trigger and the stale switch stand in for
+  // sensors that are real on the Pi. On the wall they are not controls, they
+  // are lies, so they go the moment a Pi answers.
+  const dm=document.getElementById('demoOnly');
+  if(dm)dm.style.display=LIVE.on?'none':'';
+  const pw=document.getElementById('pwSec');
+  if(pw)pw.style.display=LIVE.on?'':'none';
+  // Same reasoning as the password form: with no Pi there is nothing to save it
+  // to and no motion sensor to read, so offering the control would be a lie.
+  const wa=document.getElementById('waSec');
+  if(wa)wa.style.display=LIVE.on?'':'none';
+  if(!LIVE.on)applyLive._courses=false;
+  paintWater();
+  render();
+  jarvisRender();
+  paintNote();
+}
+
+async function logWater(oz){
+  if(water.live){
+    const undo=oz<0;
+    try{
+      const r=await fetch(WATER_API+(undo?'/undo':''),{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(undo?{}:{oz,src:'wall'})});
+      if(r.ok){water=Object.assign(await r.json(),{live:true});paintWater();jarvisRender();return}
+    }catch(e){/* fall through and keep it local rather than swallow the press */}
+  }
+  if(oz<0)water.log.pop();
+  else water.log.push({ts:new Date().toISOString(),oz,src:'wall'});
+  water.total_oz=water.log.reduce((a,e)=>a+e.oz,0);
+  paintWater();jarvisRender();
+}
+
+/* Homework, from the phone. The wall shows; the phone edits. */
+async function addHomework(){
+  const name=document.getElementById('hwName').value.trim();
+  const due=document.getElementById('hwDue').value;
+  const hint=document.getElementById('hwHint');
+  if(!name||!due){hint.textContent=!name?'NEEDS A NAME':'NEEDS A DUE DATE';return}
+  const body={name,due_date:due,type:document.getElementById('hwType').value,
+              course:document.getElementById('hwCourse').value.trim()||null};
+  if(LIVE.on){
+    try{
+      await api('/api/assignments',{method:'POST',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      hint.textContent='ADDED';
+      document.getElementById('hwName').value='';
+      loadCourses();
+      clearTimeout(LIVE.timer);pull();
+      return;
+    }catch(e){hint.textContent='COULD NOT SAVE'}
+  }
+  // demo with no Pi: put it on the board anyway so the flow is visible
+  ITEMS.push({when:new Date(due+'T23:59:00'),n:name,
+              s:body.course||'',kind:'task',done:false});
+  document.getElementById('hwName').value='';
+  hint.textContent='ADDED (DEMO)';
+  render();
+}
+/* One tap. Marking a bad day should not itself be work, and a migraine day is
+   exactly the day he will not feel like filling in a form. */
+async function mark(kind,daysAgo){
+  const hint=document.getElementById('mkHint');
+  const d=new Date(Date.now()-(daysAgo||0)*864e5).toISOString().slice(0,10);
+  if(!LIVE.on){hint.textContent='NEEDS THE PI';return}
+  try{
+    const r=await api('/api/mark',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({kind,date:d})});
+    hint.textContent=r.marked?('MARKED '+d).toUpperCase():('CLEARED '+d).toUpperCase();
+    clearTimeout(LIVE.timer);pull();
+  }catch(e){hint.textContent='COULD NOT SAVE'}
+}
+
+/* Courses come off the calendar on the Pi (course_list), so the buttons are
+   there on day one without him typing a code once. Each carries that class's
+   next meeting, because homework is nearly always due at the next class —
+   which turns adding one into two taps and no date picking. */
+const DEMO_COURSES=[
+  {code:'ELEE 4230', next:dISO(1), nextTime:'9:00 AM'},
+  {code:'PHYS 203',  next:dISO(1), nextTime:'6:00 PM'},
+  {code:'HIST 2111', next:dISO(2), nextTime:'11:00 AM'},
+  {code:'MATH 2700', next:dISO(3), nextTime:'1:00 PM'}
+];
+function dISO(off){const n=new Date();n.setDate(n.getDate()+off);
+  return new Date(n.getTime()-n.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+
+function paintCourses(list){
+  const box=document.getElementById('hwCourseChips');
+  const dl=document.getElementById('hwCourses');
+  if(dl)dl.innerHTML=list.map(c=>`<option value="${c.code}">`).join('');
+  if(!box)return;
+  box.innerHTML='';
+  list.forEach(c=>{
+    const b=document.createElement('span');
+    b.className='chip';
+    b.textContent=c.code;
+    if(c.next)b.title='Next meeting '+c.next+(c.nextTime?' at '+c.nextTime:'');
+    b.onclick=()=>{
+      document.getElementById('hwCourse').value=c.code;
+      // Date it to the next meeting when we know one, and leave whatever is
+      // already there when we don't, rather than guessing at a date.
+      if(c.next)document.getElementById('hwDue').value=c.next;
+      box.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      document.getElementById('hwName').focus();
+    };
+    box.appendChild(b);
+  });
+}
+
+/* There is no tick list in the drawer. It listed every recurring thing on the
+   calendar so the guess could be corrected — Exec Meeting, All Chairs Meeting
+   and the rest alongside the five real classes — and Zack's answer was that
+   Settings should show his classes and nothing else. The chips above are that
+   list. /api/courses/candidates still exists and still takes a correction, so
+   if the detection ever gets a class wrong it can be fixed with one POST
+   without putting the whole calendar back on screen. */
+
+async function loadCourses(){
+  if(!LIVE.on){paintCourses(DEMO_COURSES);return}
+  try{
+    const list=await api('/api/courses');
+    paintCourses(Array.isArray(list)?list.map(c=>typeof c==='string'?{code:c}:c):[]);
+  }catch(e){paintCourses(DEMO_COURSES)}
+}
+loadCourses();
+
+/* Three sizes: 8 oz the Flic's press and any small pour, 12 the glass he
+   actually drinks from, 32 the Owala. Rounding the first two together loses a
+   third of a fill a day. The pace maths stays in 8s — see hydration(). */
+document.getElementById('wSmall').onclick=()=>logWater((water.servings&&water.servings.single)||8);
+document.getElementById('wGlass').onclick=()=>logWater((water.servings&&water.servings.glass)||12);
+document.getElementById('wBottle').onclick=()=>logWater((water.servings&&water.servings.double)||32);
+document.getElementById('wUndo').onclick=()=>logWater(-1);
+/* The drawer's copies. Same sizes, same logWater, so the two can never drift —
+   the amounts are read from water.servings in both places, not hardcoded here. */
+document.getElementById('wSmall2').onclick=()=>logWater((water.servings&&water.servings.single)||8);
+document.getElementById('wGlass2').onclick=()=>logWater((water.servings&&water.servings.glass)||12);
+document.getElementById('wBottle2').onclick=()=>logWater((water.servings&&water.servings.double)||32);
+document.getElementById('wUndo2').onclick=()=>logWater(-1);
+document.getElementById('waAfter').onchange=saveWallAuto;
+document.getElementById('waReturn').onchange=saveWallAuto;
+document.getElementById('hwAdd').onclick=addHomework;
+/* Any of the last fortnight, because a migraine day is rarely a day you feel
+   like logging anything, and it was two buttons that could only reach as far
+   back as yesterday. Named days beyond that: "Thu 13" is easier to pick
+   correctly than a date field is to type. */
+(function fillMkDays(){
+  const sel=document.getElementById('mkDay');
+  if(!sel)return;
+  for(let i=0;i<14;i++){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const o=document.createElement('option');
+    o.value=i;
+    o.textContent=i===0?'Today':i===1?'Yesterday'
+      :d.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'});
+    sel.appendChild(o);
+  }
+})();
+document.getElementById('mkMigraine').onclick=()=>
+  mark('migraine',parseInt(document.getElementById('mkDay').value,10)||0);
+document.getElementById('hwDue').value=new Date(Date.now()+864e5).toISOString().slice(0,10);
+paintWater();
+pull();   // reschedules itself, faster when the Pi is answering
+
+render();
+paintSecurity();
+matchMedia('(min-aspect-ratio:5/4)').addEventListener('change',render);
+
+/* word of the day — one sense, the same idea in both languages.
+   [ sense, [fr word, pronunciation, example], [es word, pronunciation, example] ]
+   Both sides are everyday/familiar register, not textbook. */
+const MOTS=[
+ ["to really like something",
+  ["kiffer","kee-fay","Je kiffe ce resto."],
+  ["encantar","en-kan-tar","Me encanta este sitio."]],
+ ["to work, to grind",
+  ["bosser","boh-say","Je bosse sur mon projet."],
+  ["currar","koo-rrar","Estoy currando en mi proyecto."]],
+ ["can't be bothered",
+  ["la flemme","lah flem","J'ai la flemme d'y aller."],
+  ["pereza","pe-re-sa","Me da pereza ir."]],
+ ["totally, so much",
+  ["grave","grahv","Il est grave sympa."],
+  ["súper","soo-per","Es súper simpático."]],
+ ["a thing, a whatsit",
+  ["un truc","uhn trook","C'est quoi ce truc ?"],
+  ["un cacharro","oon ka-cha-rro","¿Qué es este cacharro?"]],
+ ["completely, straight-up",
+  ["carrément","kah-ray-mahn","Carrément d'accord."],
+  ["totalmente","to-tal-men-te","Totalmente de acuerdo."]],
+ ["so, as a result",
+  ["du coup","doo koo","Du coup, on part à midi."],
+  ["así que","ah-see keh","Así que salimos a mediodía."]],
+ ["like, kind of",
+  ["genre","zhahn-ruh","Il est genre très fort."],
+  ["como que","ko-mo keh","Es como que muy fuerte."]],
+ ["to look forward to it",
+  ["avoir hâte","ah-vwahr aht","J'ai hâte de te voir."],
+  ["tener ganas","te-ner ga-nas","Tengo ganas de verte."]],
+ ["still, all the same",
+  ["quand même","kahn mem","C'est quand même bien."],
+  ["aun así","ah-oon ah-see","Aun así está bien."]]
+];
+let mi=new Date().getDate()%MOTS.length;
+function mot(){
+  const [sense,fr,es]=MOTS[mi%MOTS.length];
+  document.getElementById('motSense').textContent=sense;
+  document.getElementById('frW').textContent=fr[0];
+  document.getElementById('frP').textContent=fr[1];
+  document.getElementById('frE').textContent=fr[2];
+  document.getElementById('esW').textContent=es[0];
+  document.getElementById('esP').textContent=es[1];
+  document.getElementById('esE').textContent=es[2];
+}
+document.getElementById('motBtn').onclick=()=>{mi++;mot()};
+mot();
 
 </script>
 </body>

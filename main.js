@@ -1,30 +1,32 @@
-const io = new IntersectionObserver((es) => {
-  es.forEach((e) => {
-    if (!e.isIntersecting) return;
-    const sibs = [...(e.target.parentElement?.children || [])].filter(c => c.classList.contains('rv') || c.classList.contains('wipe'));
-    const i = Math.max(0, Math.min(sibs.indexOf(e.target), 3));
-    e.target.style.transitionDelay = (i * 80) + 'ms';
-    e.target.classList.add('in');
-    io.unobserve(e.target);
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
-document.querySelectorAll('.rv, .wipe').forEach(el => io.observe(el));
+document.documentElement.classList.add('js');
+const bar=document.getElementById('bar'),nav=document.getElementById('nav');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  if(bar)bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  if(nav&&nav.dataset.solidAfter)nav.classList.toggle('solid',h.scrollTop>innerHeight*parseFloat(nav.dataset.solidAfter));
+},{passive:true});
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}
+  }),{threshold:.15});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+}else{
+  document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
+}
+// a photo that isn't in the repo yet should read as a pending placeholder,
+// not a broken-image icon
+document.querySelectorAll('img[src*="images/"]').forEach(img=>{
+  const swap=()=>{
+    const ph=document.createElement('div');
+    ph.className='imgph';
+    ph.textContent='[ '+(img.alt||'photo').toUpperCase()+' — PHOTO PENDING ]';
+    img.replaceWith(ph);
+  };
+  if(img.complete&&img.naturalWidth===0)swap();
+  img.addEventListener('error',swap);
+});
 
-const nav = document.querySelector('nav');
-let lastY = scrollY, ticking = false;
-addEventListener('scroll', () => {
-  if (ticking) return;
-  ticking = true;
-  requestAnimationFrame(() => {
-    const y = scrollY;
-    nav?.classList.toggle('stuck', y > 12);
-    if (y > 140 && y > lastY) nav?.classList.add('hidden'); else nav?.classList.remove('hidden');
-    lastY = y; ticking = false;
-  });
-}, { passive: true });
-
-setTimeout(() => {
-  document.querySelectorAll('.rv:not(.in), .wipe:not(.in)').forEach(el => {
-    el.style.transitionDelay = '0ms'; el.classList.add('in');
-  });
-}, 2500);
+// safety: never leave content hidden
+setTimeout(()=>document.querySelectorAll('.rv:not(.in)').forEach(el=>{
+  if(el.getBoundingClientRect().top<innerHeight)el.classList.add('in');
+}),1500);

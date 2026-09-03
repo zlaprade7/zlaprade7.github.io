@@ -3,163 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydration Coach | Zack LaPrade</title>
-<meta name="description" content="A five-sensor hydration tracker. ESP32-C3, INA333 instrumentation amplifier, beta-model linearisation, custom PCB.">
-<script>document.documentElement.classList.add("js")</script>
+<meta name="description" content="A water bottle that sets a daily hydration target from temperature, humidity and motion. Built solo for $31.70 around a custom analog front end.">
+<link rel="icon" type="image/png" sizes="512x512" href="../images/icon-512.png">
+<link rel="apple-touch-icon" href="../images/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zack LaPrade">
+<meta property="og:title" content="Smart Water Bottle | Zack LaPrade">
+<meta property="og:description" content="A water bottle that sets a daily hydration target from temperature, humidity and motion. Built solo for $31.70 around a custom analog front end.">
+<meta property="og:url" content="https://zlaprade7.github.io/projects/water-bottle.html">
+<meta property="og:image" content="https://zlaprade7.github.io/images/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<title>Smart Water Bottle | Zack LaPrade</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<nav>
+<a class="skip" href="#main">Skip to content</a>
+<div id="bar"></div>
+<nav id="nav" data-solid-after="0.05">
   <div class="wrap">
-    <a class="brand" href="../index.html">Zack LaPrade <small>Computer Systems Engineering</small></a>
-    <div class="navlinks">
-      <a class="back" href="../index.html#work">All work</a>
-      <a href="../index.html#contact">Contact</a>
+    <a class="brand" href="../index.html">Zack LaPrade</a>
+    <div class="links">
+      <a href="../index.html#work">WORK</a>
+      <a href="../index.html#experience">EXPERIENCE</a>
+      <a href="../index.html#about">ABOUT</a>
+      <a href="../index.html#contact">CONTACT</a>
     </div>
   </div>
 </nav>
-<header class="p-hero">
+<main id="main" role="main">
+<header class="phero">
   <div class="wrap">
-    <div class="eyebrow rv">003 / 2026 / ELEE 4230, Sensors and Transducers</div>
-    <h1 class="rv">Hydration Coach</h1>
-    <p class="deck rv">A water bottle that measures how much you drink, the conditions you're drinking in, and how much you're moving, then adjusts your daily target accordingly. Five sensors, a custom analog front end, a two-layer board, and a printed housing, built to a $50 cap.</p>
-    <div class="figpair rv" style="margin-top:52px">
-      <figure><div class="fig ratio wipe"><img src="../images/bottle-sketch.jpg" alt="Concept sketch"></div>
-        <figcaption>Initial concept. Ultrasonic firing down through the water; thermistor, SHT40, accelerometer, ESP32 and battery stacked in the side column.</figcaption></figure>
-      <figure><div class="fig ratio wipe"><img src="../images/bottle-hero.jpg" alt="Housing mounted on the bottle"></div>
-        <figcaption>Final PETG housing, threaded between the body and lid of a 32 fl oz Owala.</figcaption></figure>
-    </div>
-    <dl class="spec rv">
-      <div><dt>Role</dt><dd>Solo. Hardware, firmware, CAD.</dd></div>
-      <div><dt>Course</dt><dd>ELEE 4230</dd></div>
-      <div><dt>Budget</dt><dd>$31.70 against a $50 cap</dd></div>
-      <div><dt>Status</dt><dd>Built and calibrated</dd></div>
-    </dl>
+    <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 003</span><span>2026</span></div>
+    <h1><span class="row"><span>Smart Water</span></span><span class="row"><span>Bottle</span></span></h1>
+    <p class="deck">A water bottle that measures what you drink, the conditions around you, and how much you move, then sets a daily hydration target that shifts with your day. Built solo for a sensors course.</p>
+    <div class="chips"><div class="chip"><div class="v">$31.70</div><div class="l">of a $50 cap</div></div><div class="chip"><div class="v">0.15%</div><div class="l">best temp error</div></div><div class="chip"><div class="v"><0.3%</div><div class="l">level error</div></div><div class="chip"><div class="v">5</div><div class="l">sensors fused</div></div></div>
   </div>
-</header>
-<div class="narrow prose">
-  <div class="block">
-    <h2><span class="k">The problem</span>A hydration problem I actually have.</h2>
-    <p>When I get busy with classes and commitments I stop drinking water. The result is fatigue, brain fog, and eventually migraines that can last more than a day. This has been a problem for about six years, and I've tried a number of solutions: a smart Gatorade bottle, phone apps, and asking my parents to remind me.</p>
-    <p>Each one failed for a specific reason. The Gatorade bottle was too loud to carry daily. The apps used hardcoded targets that were either too much or too little on any given day. And I didn't want to make my hydration someone else's job.</p>
-    <p>So the design brief was to take the parts that worked, water-level detection and a reminder that reaches my phone, and fix the part that didn't: the fixed goal. A person needs roughly a gallon of water a day, but temperature, humidity and activity all shift that number. Those are the parameters this project measures.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Sensor selection</span>Three measurements, and one sensor I turned down.</h2>
-    <p>Hydration here is inferred from water level, the ambient environment, and user activity. Each needed a sensor, and each choice was a tradeoff.</p>
-
-    <h3>Water level: A02YYUW waterproof ultrasonic</h3>
-    <p>The obvious alternative was <b>capacitive rods</b>, at roughly the same price. I rejected them. Capacitive sensing is intrusive, since the electrodes sit in the water I'm going to drink and clean, and it requires calibration. Worse, capacitance shifts with water temperature, which would force the user to drink water at a specific temperature for an accurate reading, and a metal bottle changes the capacitance again.</p>
-    <p>The ultrasonic measures the surface from above and never touches the water. It is not temperature dependent. It is more expensive at $17.88 and it carries its own error sources, including air purity and altitude affecting the speed of sound, but those are smaller and more predictable than the ones capacitive sensing introduces.</p>
-
-    <div class="callout">
-      <strong>The easy sensor was the wrong sensor.</strong> Capacitive rods were cheaper and simpler, and they would have compromised the thing being measured. Choosing the harder sensor and then doing the filtering work to make it behave is the part of this project I would defend first.
-    </div>
-
-    <h3>Temperature: Semitec 103AT-2 thermistor and SHT40</h3>
-    <p>Sensor fusion was a project requirement, so temperature is measured twice: once with a raw NTC thermistor and once with a packaged IC. The <b>103AT-2</b> is small, has low uncertainty, and comes from a reliable manufacturer. The <b>SHT40</b> is accurate to ±0.2°C and gives humidity as well, which matters because higher humidity increases dehydration.</p>
-
-    <h3>Motion: MPU-6050</h3>
-    <p>The L3GD20H is more accurate but more expensive and has only one IMU. Precision isn't critical here. All I need is a broad tilt measurement to detect a drinking event and a rough velocity for activity, so the cheaper part was the correct call and it kept the build under budget.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Analog front end</span>Wheatstone bridge and an instrumentation amplifier.</h2>
-    <p>The thermistor's raw output through a plain voltage divider is nearly flat across the temperature range that matters. Reading it straight into the ESP32's ADC throws away most of the available resolution, so the signal has to be amplified before it is digitised.</p>
-    <p>The thermistor sits in one leg of a <b>Wheatstone bridge</b>: a 10kΩ thermistor against a 10kΩ resistor, with a matched 10k/10k divider forming the reference leg at 1.65V. The differential output goes into an <b>INA333</b> instrumentation amplifier at a <b>gain of 3</b>.</p>
-    <p>An instrumentation amplifier was the right choice over an op-amp plus RC filter because of its <b>high CMRR</b>, which is what cleans the signal while amplifying it. Getting comparable common-mode rejection from a discrete op-amp would require very tightly matched resistors to hit a figure the INA333 guarantees out of the box.</p>
-
-    <h3>The low-pass filter earned its place</h3>
-    <p>A capacitor sits in parallel with the bridge output node. Without it, moving the circuit or bringing other electronics near it produced spikes of about <b>0.06V</b>. With it, that dropped to a periodic <b>0.01V</b>. The thermistor signal is DC, so a low-pass filter removes high-frequency noise from surrounding electronics while leaving the signal untouched. It is cheap and it measurably worked.</p>
-
-    <figure class="fig wide wipe rv" style="margin:44px 0 0">
-      <img src="../images/bottle-pcb.jpg" alt="PCB layout">
-    </figure>
-    <figcaption>Two-layer board, EasyEDA, fabricated by JLCPCB. ESP32-C3-MINI centre, analog front end right, USB-C and power chain along the bottom edge.</figcaption>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Linearisation</span>Why I used the beta model and not Steinhart-Hart.</h2>
-    <p>A thermistor's resistance-to-temperature curve is exponential, so converting voltage back to a temperature needs a mathematical model. I started with the <b>Steinhart-Hart equation</b>, which is accurate to about 0.01°C, and then deliberately moved away from it.</p>
-    <p>I chose the <b>beta model</b> instead. It needs two parameters, both given on the datasheet: β = 3435 and the resistance at 25°C. The manufacturer has already tested and confirmed those values, and the model is accurate to under 1°C across 0°C to 100°C, which is well inside what this project needs.</p>
-
-    <div class="callout">
-      <strong>The reasoning is a systems argument, not an accuracy one.</strong> The beta model's math is simpler, so the ESP32 does less work, so the board draws less power, so there is less heat inside the housing, and the housing's temperature is the thing that most threatens the accuracy of an ambient temperature measurement. Chasing 0.01°C with Steinhart-Hart would have cost accuracy elsewhere. And I already have the SHT40 at ±0.2°C to fuse against, so the second decimal place on the thermistor buys nothing.
-    </div>
-
-    <p>The three-point method was also considered and rejected, since the curve is exponential and a three-point fit would carry large error. The beta model has known drawbacks, including drift over long periods, but the datasheet range of -50°C to 110°C comfortably covers the 0°C to 100°C water range this project assumes.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Filtering</span>A different filter for each sensor.</h2>
-    <p>Each sensor fails differently, so each one gets a filter matched to how it fails. Using one filter for all of them would have been the easier answer and a worse one.</p>
-    <ul>
-      <li><b>Thermistor and SHT40: Kalman.</b> The filter predicts the next value from past values, so isolated spikes get averaged out. Room temperature does not physically jump, and on the rare occasion it does, such as carrying the bottle from a cold building into summer heat, the Kalman filter converges on the new true value after a short time rather than rejecting it.</li>
-      <li><b>Ultrasonic: median.</b> A Kalman filter is the wrong tool here, because the ultrasonic only fires on motion or tilt, so there is no continuous series to predict from. Instead the filter takes five measurements and reports the median, which discards outlier spikes without needing a model.</li>
-      <li><b>MPU-6050: no library.</b> I averaged the directional tilts and velocities into a single magnitude, which was stable enough to detect movement and a tilt past the drinking threshold.</li>
-    </ul>
-
-    <h3>Tilt detection</h3>
-    <p>Drinking is detected geometrically. The gravity magnitude is |g| = √(ax² + ay² + az²), and the tilt angle is θ = arccos(az / |g|). A consistent tilt past roughly 8° reads as a drinking event.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Power</span>3.7V LiPo over a 9V and a regulator.</h2>
-    <p>Two options. A common 9V battery with a linear regulator is cheaper up front, but it takes more space and its voltage sags as it drains. A 3.7V LiPo is rechargeable, cheaper over its life, and takes far less room inside the housing.</p>
-    <p>I went with the LiPo. Size and rechargeability matter more here than the up-front cost, because this is meant to be something a person actually carries. The 3.7V feeds the ESP32's 5V terminal and the 3.3V rail powers the sensors.</p>
-    <p>The board carries the full chain that decision implies: <b>USB-C</b> in with 5.1kΩ CC pull-downs, <b>USBLC6-2SC6</b> ESD protection, a <b>TP4056</b> charger, <b>DW01A and FS8205A</b> for over-charge, over-discharge and over-current protection, and an <b>AP2112K-3.3</b> regulator. A lithium cell in a bottle I carry around is not a place to leave out the protection circuitry.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Firmware and output</span>The goal moves with the conditions.</h2>
-    <p>The ESP32-C3-MINI was selected against five requirements: an ADC channel for the thermistor, WiFi, UART for the ultrasonic, I²C for the MPU-6050 and SHT40, and a small footprint. It meets all of them at around $11.</p>
-    <p>Notifications go to my phone through <b>ntfy</b>. The ESP32 posts to a server address and the app receives it: a morning hydration target, check-ins if I'm falling behind, and an evening summary.</p>
-    <p>The target itself moves. Temperature adjusts it by roughly <b>±1 fl oz per ±5°F over 30 minutes</b>, and activity adds <b>+1 fl oz per 15 minutes of movement</b>. That is the whole point of the project, and it is the thing the phone apps could not do.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">Results</span>Measured against known references.</h2>
-    <table class="dt">
-      <tr><th>Ultrasonic</th><th>Actual</th><th>Measured</th><th>Error</th></tr>
-      <tr><td>Near range</td><td>30 mm</td><td>30.1 mm</td><td>0.3%</td></tr>
-      <tr><td>Mid range</td><td>241 mm</td><td>241 mm</td><td>0%</td></tr>
-      <tr><td>Mid range</td><td>165 mm</td><td>165 mm</td><td>0%</td></tr>
-    </table>
-    <table class="dt">
-      <tr><th>Temperature</th><th>Actual</th><th>Measured</th><th>Error</th></tr>
-      <tr><td>Ambient</td><td>70.2 °F</td><td>70.4 °F</td><td>0.28%</td></tr>
-      <tr><td>Ambient</td><td>68.4 °F</td><td>68.5 °F</td><td>0.15%</td></tr>
-      <tr><td>Ambient</td><td>74.1 °F</td><td>74.3 °F</td><td>0.27%</td></tr>
-    </table>
-    <p>Both temperature paths landed inside ±0.2°C, and the fused reading held. The ultrasonic's worst error was 0.3%, at the near end of its range, which is where you would expect it. Tilt and velocity have no tabulated data, because I had no way to test them repeatably at controlled angles and speeds without proper equipment. They were calibrated by hand to a drinking tilt and an activity threshold, and they worked in use.</p>
-  </div>
-
-  <div class="block">
-    <h2><span class="k">What I would do differently</span>The housing was harder than the circuit.</h2>
-    <p>The electronics were not the bottleneck. The housing was, and I did not plan for that.</p>
-    <p>The design goal was a housing that threads between the body and lid of an Owala bottle, so it could be moved between bottles. The problem is that <b>Owala uses a proprietary thread</b>, the dimensions are not published anywhere, and I had never done serious CAD before. Reverse-engineering the thread meant learning to use calipers properly and learning to think about tolerance, and it took several iterations and more time than the entire circuit design.</p>
-
-    <div class="callout">
-      <strong>The honest lesson is about sequencing.</strong> I ordered sensors before I understood how hard the housing would be, which meant the mechanical design had to work around parts that were already chosen. If I did it again I would design a platform the bottle sits on instead of a threaded collar. It's less elegant and less portable, but it works with any bottle, it's cheaper, and it doesn't depend on reverse-engineering somebody's threading.
-    </div>
-
-    <p>That change also points at V2. The current design is welded to one specific bottle, which defeats the goal of using it every day. I'm rebuilding it as something smaller and bottle-agnostic, closer to a keychain counter, which means stripping it back to the sensors that actually earn their place rather than adding more.</p>
-  </div>
-
-</div>
-<div class="next">
+</header><section class="doc">
   <div class="wrap">
-    <a href="bench-instrument.html">
-      <div><div class="lbl">Next project</div><h3>Bench Instrument</h3></div>
-      <span class="ar">→</span>
-    </a>
+    <div class="shead rv"><h2 class="big">Problem</h2></div>
+    <p class="slede rv">When I get busy I stop drinking water. Fatigue, brain fog, migraines that can last more than a day.</p>
+    <p class="rv">I tried the existing options. A smart bottle that was too loud to carry daily. Phone apps with fixed targets that were too much on some days and too little on others. Even asking my parents to remind me, which just made my hydration someone else's job.</p>
+<p class="rv">The part that worked in all of them was knowing the water level and getting a reminder on my phone. The part that never worked was the fixed goal. Temperature, humidity and activity all change how much water you need, so my goal was to measure those three things and let the target move.</p>
   </div>
+</section><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Plan</h2></div>
+    <p class="slede rv">Three measurements, one sensor for each.</p>
+    <h3 class="rv">Measure the water without touching it</h3>
+<p class="rv">The cheap option was capacitive rods inside the bottle, but the electrodes would sit in the water I drink, the reading drifts with water temperature, and a metal bottle throws it off further. A waterproof ultrasonic sensor reads the surface from above and never touches the water. It cost more and has its own quirks, but they're smaller and easier to predict.</p>
+<h3 class="rv">Measure temperature twice, and trust the fusion</h3>
+<p class="rv">A raw thermistor barely changes its signal over the range that matters, so I built a small analog front end, a bridge circuit into an instrumentation amplifier, to stretch that signal into something worth digitizing. A second packaged sensor reads temperature and humidity independently, and the two get fused. Humidity matters more than it sounds, since humid air dehydrates you faster.</p>
+<h3 class="rv">Detect drinking with geometry</h3>
+<p class="rv">An accelerometer gives tilt and rough motion. A steady tilt past about 8° counts as a drink, and overall movement scales the activity adjustment. I didn't need precision here, so the cheaper part made sense.</p>
+<h3 class="rv">Power it like something a person carries</h3>
+<p class="rv">I went with a rechargeable lithium cell over a disposable 9V, since it fits the housing and doesn't sag as it drains. That meant adding a full charging and protection chain to the board, which felt worth it for a battery living in something I carry around all day.</p>
+<div class="figrow rv">
+<figure><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch"></div><figcaption><b>FIG. 1</b> — Concept. Ultrasonic firing down through the water, electronics stacked in the side column.</figcaption></figure>
+<figure><div class="frame"><img src="../images/bottle-pcb.jpg" alt="PCB"></div><figcaption><b>FIG. 2</b> — Custom two-layer board. Microcontroller centre, analog front end right, power along the bottom.</figcaption></figure>
 </div>
-<footer><div class="wrap"><span>Built by hand. No frameworks.</span><span>2026</span></div></footer>
+  </div>
+</section><div class="giant"><div class="rv"><div class="n">0.06 → 0.01 V</div><div class="c">Noise on the temperature signal, before and after one capacitor</div></div></div><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
+    <p class="slede rv">The circuit mostly behaved. The housing did not.</p>
+    <figure class="rv" style="max-width:620px"><div class="frame"><img src="../images/bottle-proto.jpg" alt="The sensor front end on a breadboard, calipers alongside"></div><figcaption><b>FIG. 3</b> &mdash; The front end on a breadboard, before any of it was a board.</figcaption></figure>
+<h3 class="rv">The noise problem</h3>
+<p class="rv">Moving the circuit or bringing other electronics near it put visible spikes on the temperature signal. One capacitor at the right node cut the noise to about a sixth of what it was. Since the signal moves slowly anyway, filtering out the fast noise doesn't cost anything.</p>
+<h3 class="rv">Each sensor fails differently, so each got its own filter</h3>
+<ul class="rv">
+<li><b>Temperature: Kalman filter.</b> Room temperature doesn't physically jump, so spikes get averaged away. When the reading genuinely changes, like walking from AC into summer heat, the filter follows it instead of rejecting it.</li>
+<li><b>Water level: median of five.</b> The ultrasonic only fires when the bottle moves, so there's no continuous history to predict from. Taking the median just throws out the outliers.</li>
+<li><b>Motion: none needed.</b> Averaging tilt and velocity into one number was stable enough.</li>
+</ul>
+<h3 class="rv">The housing was harder than the circuit</h3>
+<p class="rv">The goal was a collar that threads between the body and lid of the bottle. The manufacturer's thread is proprietary and the dimensions aren't published anywhere, so I had to reverse-engineer it: learning to use calipers properly, learning tolerances the hard way, and going through more printed iterations than I'd like to admit. This was my first real CAD work.</p>
+<div class="note rv"><p><b>Biggest lesson: order of operations.</b> I ordered sensors before I understood how hard the housing would be, so the mechanical design had to work around parts that were already locked in. Next time I'd figure out the enclosure first.</p></div>
+<figure class="rv" style="max-width:620px;margin-top:34px"><div class="frame"><img src="../images/bottle-hero.jpg" alt="Final housing"></div><figcaption><b>FIG. 4</b> — Final printed housing, threaded onto the bottle.</figcaption></figure>
+  </div>
+</section><section class="doc" style="border-bottom:none">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Result</h2></div>
+    <p class="slede rv">I tested everything against known references. Both temperature paths landed inside ±0.2°C.</p>
+    <table class="rv"><caption><b>TABLE 1</b> — Water level vs. caliper reference</caption>
+<tr><th>Range</th><th>Actual</th><th>Measured</th><th>Error</th></tr>
+<tr><td>Near</td><td>30 mm</td><td>30.1 mm</td><td class="err">0.3%</td></tr>
+<tr><td>Mid</td><td>241 mm</td><td>241 mm</td><td class="err">0%</td></tr>
+<tr><td>Mid</td><td>165 mm</td><td>165 mm</td><td class="err">0%</td></tr></table>
+<table class="rv"><caption><b>TABLE 2</b> — Temperature vs. reference thermometer</caption>
+<tr><th>Condition</th><th>Actual</th><th>Measured</th><th>Error</th></tr>
+<tr><td>Ambient</td><td>70.2 °F</td><td>70.4 °F</td><td class="err">0.28%</td></tr>
+<tr><td>Ambient</td><td>68.4 °F</td><td>68.5 °F</td><td class="err">0.15%</td></tr>
+<tr><td>Ambient</td><td>74.1 °F</td><td>74.3 °F</td><td class="err">0.27%</td></tr></table>
+<p class="rv">The worst level error is at the near end of the sensor's range, which is where you'd expect it. Notifications reach my phone as a morning target, catch-up nudges, and an evening summary. The moving target is the part the apps I tried couldn't do.</p>
+<p class="rv">I'm planning a version two. The current build only fits one specific bottle, which works against the whole point, so the rebuild will be smaller and work with any bottle.</p><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>ESP32-C3</span><span>INA333 · gain 3</span><span>Semitec 103AT-2</span><span>SHT40</span><span>MPU-6050</span><span>A02YYUW ultrasonic</span><span>Wheatstone bridge</span><span>Beta-model linearization</span><span>TP4056 + DW01A/FS8205A</span><span>EasyEDA / JLCPCB</span><span>Fusion 360 · PETG</span></div></div>
+  </div>
+</section><div class="next"><div class="wrap"><a href="schmitt-pcb.html"><div><div class="lbl">Next project</div><h3>Light-Activated Switch PCB</h3></div><span class="ar">→</span></a></div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <span>Zack LaPrade · University of Georgia</span>
+  </div>
+</footer>
 <script src="../main.js"></script>
 </body>
 </html>
