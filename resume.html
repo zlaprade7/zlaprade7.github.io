@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zack LaPrade — Resume</title>
+<style>
+  @page { size: letter; margin: 0.3in 0.5in; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 9.2pt;
+    line-height: 1.19;
+    color: #000;
+    background: #fff;
+  }
+  h1 {
+    font-size: 19pt;
+    letter-spacing: .2px;
+    margin: 0 0 2pt;
+    text-align: center;
+    font-weight: 700;
+  }
+  .contact {
+    text-align: center;
+    font-size: 8.5pt;
+    margin: 0 0 8pt;
+  }
+  .contact a { color: #000; text-decoration: none; }
+  h2 {
+    font-size: 9.5pt;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 5.6pt 0 2pt;
+    padding-bottom: 1.5pt;
+    border-bottom: 1px solid #000;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12pt;
+  }
+  .row .l { font-weight: 700; }
+  .row .r { font-size: 9.4pt; white-space: nowrap; }
+  .sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12pt;
+    font-style: italic;
+  }
+  .sub .r { font-style: normal; font-size: 9.4pt; white-space: nowrap; }
+  .entry { margin-top: 3.6pt; }
+  .entry:first-of-type { margin-top: 2pt; }
+  ul { margin: 1.5pt 0 0; padding-left: 13pt; }
+  li { margin: 0 0 0.8pt; }
+  .tight li { margin: 0; }
+  .skill { margin: 2pt 0 0; }
+  .skill b { font-weight: 700; }
+
+  /* Reached from the site's contact block, so it needs a way back. Screen only:
+     the printed sheet and the PDF must stay exactly as they were. */
+  .r-back{font-family:"Spline Sans Mono",ui-monospace,monospace;font-size:8.5pt;
+    letter-spacing:.06em;text-transform:uppercase;color:#444;text-decoration:none;
+    display:inline-block;margin-bottom:8pt}
+  .r-back:hover{color:#000}
+  @media print{ .r-back{display:none} }
+</style>
+</head>
+<body>
+<a class="r-back" href="index.html">← Zack LaPrade</a>
+
+<h1>Zack LaPrade</h1>
+<div class="contact">
+  470-423-9540 &nbsp;·&nbsp; zacklaprade@gmail.com &nbsp;·&nbsp; zlaprade7.github.io &nbsp;·&nbsp;
+  github.com/zlaprade7 &nbsp;·&nbsp; LinkedIn: zack-laprade
+</div>
+
+<h2>Education</h2>
+<div class="row"><span class="l">University of Georgia</span><span class="r">Athens, GA</span></div>
+<div class="sub"><span>Bachelor of Science, Computer Engineering</span><span class="r">May 2027</span></div>
+<div class="sub"><span style="font-style:normal"><b>Scholarships</b>: Zell Miller Scholarship</span><span class="r">Cumulative GPA: 3.54/4.00</span></div>
+
+<h2>Work and Research Experience</h2>
+
+<div class="entry">
+  <div class="row"><span class="l">Technology Service Corporation &mdash; Defense Contractor</span><span class="r">Huntsville, AL</span></div>
+  <div class="sub"><span>Electrical Engineering Intern</span><span class="r">May - August 2026</span></div>
+  <ul>
+    <li>Researched and tested an Over-Current Detection device, detecting over-current in devices within 300ns</li>
+    <li>Created schematics and PCB layout for Over-Current Detection and several other schematics</li>
+    <li>Debugged and validated units through measures such as X-Rays, probing voltages/resistances, and replacing components</li>
+    <li>Gained experience using radio frequency and a Network Analyzer to scan the Quiet Zone of a compact range</li>
+  </ul>
+</div>
+
+<div class="entry">
+  <div class="row"><span class="l">UGA Robotics Research</span><span class="r">Athens, GA</span></div>
+  <div class="sub"><span>Undergraduate Researcher</span><span class="r">February 2026 - Present</span></div>
+  <ul>
+    <li>Working with a team to develop a glove that would allow the user to control a robotic hand across the room</li>
+    <li>Implementing the required sensors, including flex sensors and a 9-DOF IMU, to develop the project</li>
+  </ul>
+</div>
+
+<div class="entry">
+  <div class="row"><span class="l">Peer Learning Assistant</span><span class="r">Athens, GA</span></div>
+  <div class="sub"><span>UGA Physics PLA</span><span class="r">August - December 2025</span></div>
+  <ul>
+    <li>Assisted the professor in answering questions/misconceptions from 100+ students in Physics 1 in lecture and/or lab</li>
+    <li>Attended weekly peer education classes to practice effective communication methods when teaching and instructing</li>
+  </ul>
+</div>
+
+<h2>Project Experience</h2>
+
+<div class="entry">
+  <div class="row"><span class="l">Raspberry Pi Smart Room System (MonCoeur)</span><span class="r">May 2025 - Present</span></div>
+  <ul>
+    <li>Hosted a local server on a Raspberry Pi, logged sleep, hydration, exercise, and temperature to self-identify my migraine triggers and prevent them</li>
+    <li>Utilized 4 API's, 20 threads, 21 methods, 3 sensors and 2 sockets to add room data, lightbulbs, and health data</li>
+    <li>Achieved a hands-free and automatic experience through 4 different mediums: a Bluetooth button, voice commands, an iPhone app, and a wall display</li>
+    <li>Applied offline speech recognition, sensor readings and API calls are controlled without internet or cloud service dependency</li>
+  </ul>
+</div>
+
+<div class="entry">
+  <div class="row"><span class="l">Multitool Bench</span><span class="r">January - May 2026</span></div>
+  <ul>
+    <li>Worked with 4 classmates as hardware lead to replicate standard tools under the constraint of no IC's and weekly checkpoints</li>
+    <li>Derived a stable +-12V supply through a class B push-pull amplifier with feedback to ensure no voltage sag</li>
+    <li>Designed a Voltmeter and Ohmmeter using a 6-bit ADC and a Wheatstone bridge to negate noise with 2% error</li>
+    <li>Created a frequency counter for any waveform utilizing a transistor with accuracy to 0.1 Hz</li>
+  </ul>
+</div>
+
+<div class="entry">
+  <div class="row"><span class="l">Smart Water Bottle</span><span class="r">January - August 2026</span></div>
+  <ul>
+    <li>Integrated multiple sensors to measure water temperature, water level, and motion from the bottle for automatic logging and coaching on hydration</li>
+    <li>Deployed HTTPS, TCP, and I2C to connect for sensor fusion and enable the software to send messages through NTFY</li>
+    <li>Utilized Fusion 360 to design and 3D print a chassis to house the ESP32, sensors, and battery</li>
+  </ul>
+</div>
+
+<h2>Memberships and Associations</h2>
+<div class="entry">
+  <div class="row"><span class="l">Theta Tau, Professional Engineering Fraternity</span><span class="r">Athens, GA</span></div>
+  <div class="sub"><span>Rush / Recruitment Chair</span><span class="r">May 2025 - May 2026</span></div>
+  <ul class="tight">
+    <li>Collaborated with 2 co-chairs to plan and advertise all rush events and interviews for 250+ rushees</li>
+    <li>Gained experience in public speaking, communication, and improved time management to effectively meet deadlines</li>
+  </ul>
+  <div class="sub" style="margin-top:2pt"><span style="font-style:normal"><b>IEEE, Institute of Electrical and Electronic Engineers</b>, Member</span><span class="r">August 2025 - Present</span></div>
+  <ul class="tight">
+    <li>Engaged in technical workshops and projects to enhance engineering skills, professionalism, and communication</li>
+  </ul>
+</div>
+
+<h2>Technical Skills and Languages</h2>
+<div class="skill"><b>Technical</b>: Matlab, Altium, Fusion 360, Multisim, LTspice, Verilog, Assembly, Java, C, C++, Python, HTML, JavaScript, Parallel Programming, Circuit Analysis, PCB Design</div>
+<div class="skill"><b>Languages</b>: English (Fluent), Spanish (Advanced), French (Advanced)</div>
+
+<h2>Awards and Accolades</h2>
+<div class="skill">International Baccalaureate Diploma, International Skills Diploma Seal, Georgia Seal of Biliteracy</div>
+
+</body>
+</html>
