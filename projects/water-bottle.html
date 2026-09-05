@@ -64,15 +64,15 @@
 <h3 class="rv">Power it like something a person carries</h3>
 <p class="rv">I went with a rechargeable lithium cell over a disposable 9V, since it fits the housing and doesn't sag as it drains. That meant adding a full charging and protection chain to the board, which felt worth it for a battery living in something I carry around all day.</p>
 <div class="figrow rv">
-<figure><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch"></div><figcaption><b>FIG. 1</b> — Concept. Ultrasonic firing down through the water, electronics stacked in the side column.</figcaption></figure>
-<figure><div class="frame"><img src="../images/bottle-pcb.jpg" alt="PCB"></div><figcaption><b>FIG. 2</b> — Custom two-layer board. Microcontroller centre, analog front end right, power along the bottom.</figcaption></figure>
+<figure class="rv" style="max-width:680px"><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch: the ultrasonic sensor firing down through the water, electronics stacked in the side column"></div><figcaption><b>FIG. 1</b> — Concept. Ultrasonic firing down through the water, electronics stacked in the side column.</figcaption></figure>
+<figure class="rv" style="max-width:680px"><div class="frame" data-lens><img src="../images/bottle-pcb.jpg" alt="The custom two-layer board: microcontroller centre, analog front end right, power along the bottom"></div><figcaption><b>FIG. 2</b> — Custom two-layer board. Microcontroller centre, analog front end right, power along the bottom.</figcaption></figure>
 </div>
   </div>
 </section><div class="giant"><div class="rv"><div class="n">0.06 → 0.01 V</div><div class="c">Noise on the temperature signal, before and after one capacitor</div></div></div><section class="doc">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
     <p class="slede rv">The circuit mostly behaved. The housing did not.</p>
-    <figure class="rv" style="max-width:620px"><div class="frame"><img src="../images/bottle-proto.jpg" alt="The sensor front end on a breadboard, calipers alongside"></div><figcaption><b>FIG. 3</b> &mdash; The front end on a breadboard, before any of it was a board.</figcaption></figure>
+    <figure class="rv" style="max-width:680px"><div class="frame" data-lens><img src="../images/bottle-proto.jpg" alt="The sensor front end on a breadboard, calipers alongside"></div><figcaption><b>FIG. 3</b> &mdash; The front end on a breadboard, before any of it was a board.</figcaption></figure>
 <h3 class="rv">The noise problem</h3>
 <p class="rv">Moving the circuit or bringing other electronics near it put visible spikes on the temperature signal. One capacitor at the right node cut the noise to about a sixth of what it was. Since the signal moves slowly anyway, filtering out the fast noise doesn't cost anything.</p>
 <h3 class="rv">Each sensor fails differently, so each got its own filter</h3>
@@ -84,7 +84,16 @@
 <h3 class="rv">The housing was harder than the circuit</h3>
 <p class="rv">The goal was a collar that threads between the body and lid of the bottle. The manufacturer's thread is proprietary and the dimensions aren't published anywhere, so I had to reverse-engineer it: learning to use calipers properly, learning tolerances the hard way, and going through more printed iterations than I'd like to admit. This was my first real CAD work.</p>
 <div class="note rv"><p><b>Biggest lesson: order of operations.</b> I ordered sensors before I understood how hard the housing would be, so the mechanical design had to work around parts that were already locked in. Next time I'd figure out the enclosure first.</p></div>
-<figure class="rv" style="max-width:620px;margin-top:34px"><div class="frame"><img src="../images/bottle-hero.jpg" alt="Final housing"></div><figcaption><b>FIG. 4</b> — Final printed housing, threaded onto the bottle.</figcaption></figure>
+<figure class="rv" style="max-width:680px;margin-top:34px"><div class="frame"><img src="../images/bottle-hero.jpg" alt="The finished printed housing clamped to the bottle"></div><figcaption><b>FIG. 4</b> — Final printed housing, threaded onto the bottle.</figcaption></figure><figure class="rv noprint" style="max-width:680px;margin-top:34px">
+  <div class="frame"><model-viewer src="../models/bottle-collar.glb"
+      alt="The printed collar and lid as a rotatable 3D model. The reverse-engineered thread is on the underside."
+      camera-controls touch-action="pan-y" loading="lazy"
+      camera-orbit="25deg 112deg 72%" field-of-view="30deg"
+      min-field-of-view="12deg" max-field-of-view="45deg"
+      exposure="1.1" shadow-intensity="0.6" interaction-prompt="none">
+      <div class="mvposter" slot="poster">3D MODEL · DRAG TO ROTATE</div>
+    </model-viewer></div>
+  <figcaption><b>FIG. 5</b> &mdash; The same part from the CAD, rotatable. The thread that took the calipers is on the underside.</figcaption></figure>
   </div>
 </section><section class="doc" style="border-bottom:none">
   <div class="wrap">
@@ -110,6 +119,7 @@
     <span>Zack LaPrade · University of Georgia</span>
   </div>
 </footer>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 <script src="../main.js"></script>
 </body>
 </html>

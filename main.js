@@ -30,3 +30,42 @@ document.querySelectorAll('img[src*="images/"]').forEach(img=>{
 setTimeout(()=>document.querySelectorAll('.rv:not(.in)').forEach(el=>{
   if(el.getBoundingClientRect().top<innerHeight)el.classList.add('in');
 }),1500);
+
+/* Hover magnifier on board photos. A four-layer board at 573px of column is
+   unreadable — you cannot make out silkscreen or part numbers — so the
+   detail-dense figures get a lens. Mouse only: on a touch screen there is no
+   hover, and pinch-zoom already does this job.
+
+   The maths has to emulate `object-fit:cover`, which is what `.frame img`
+   uses. Scaling the background to the box's own aspect instead would stretch
+   the zoomed view whenever the photo is not 4:3, which none of them are. */
+document.querySelectorAll('.frame[data-lens]').forEach(box=>{
+  const img = box.querySelector('img');
+  if(!img) return;
+  const mag = document.createElement('div');
+  mag.className = 'mag';
+  box.appendChild(mag);
+  const Z = 2.6, R = 92;
+  function draw(e){
+    const r = box.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    const nat = (img.naturalWidth || 4) / (img.naturalHeight || 3);
+    const boxA = r.width / r.height;
+    let bw, bh;
+    if(nat > boxA){ bh = r.height * Z; bw = bh * nat; }   // wider than the frame
+    else          { bw = r.width  * Z; bh = bw / nat; }
+    const ox = (bw - r.width  * Z) / 2;                   // the cover crop
+    const oy = (bh - r.height * Z) / 2;
+    mag.style.left = (x - R) + 'px';
+    mag.style.top  = (y - R) + 'px';
+    mag.style.backgroundImage = 'url("' + (img.currentSrc || img.src) + '")';
+    mag.style.backgroundSize = bw + 'px ' + bh + 'px';
+    mag.style.backgroundPosition = (-(x * Z - R + ox)) + 'px ' + (-(y * Z - R + oy)) + 'px';
+  }
+  box.addEventListener('pointerenter', e=>{
+    if(e.pointerType !== 'mouse') return;
+    box.classList.add('lenson'); draw(e);
+  });
+  box.addEventListener('pointermove', e=>{ if(e.pointerType === 'mouse') draw(e); });
+  box.addEventListener('pointerleave', ()=> box.classList.remove('lenson'));
+});

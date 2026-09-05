@@ -168,6 +168,32 @@ figure{margin:0}
 figcaption{font-family:var(--mono);font-size:12px;color:var(--grey);padding-top:10px;border-top:2px solid var(--accent)}
 figcaption b{color:var(--ink);font-weight:500}
 
+/* ── interactive model ────────────────────────────────────────────────
+   A rotatable part sits in the same square frame a photograph does, so the
+   page does not suddenly acquire a second visual language for one figure.
+   No auto-rotate: it holds still until someone drags it, which is also what
+   a reduced-motion setting would want. */
+/* `height:auto` is load-bearing: model-viewer's own :host rule sets
+   height:150px, and `aspect-ratio` is ignored unless a dimension is auto, so
+   without it the figure collapses to a 574x150 letterbox. */
+.frame model-viewer{width:100%;height:auto;aspect-ratio:4/3;display:block;
+  background:#eef0f3;cursor:grab}
+.frame model-viewer:active{cursor:grabbing}
+.mvposter{display:flex;align-items:center;justify-content:center;height:100%;
+  background:#eef0f3;font-family:var(--mono);font-size:12px;letter-spacing:.11em;color:#8d95a1}
+
+/* the lens itself. `.frame` is overflow:hidden, so it clips at the photo edge,
+   which is what you want — the magnifier never floats outside the picture. */
+.frame[data-lens]{position:relative}
+.frame[data-lens] img{cursor:zoom-in}
+.frame .mag{position:absolute;width:184px;height:184px;border-radius:50%;
+  pointer-events:none;opacity:0;transition:opacity .16s;background-repeat:no-repeat;
+  box-shadow:0 0 0 1px rgba(255,255,255,.5),0 0 0 2px rgba(18,20,25,.55),0 10px 30px rgba(0,0,0,.3);
+  z-index:3}
+.frame.lenson .mag{opacity:1}
+@media(pointer:coarse){.frame .mag{display:none}}
+@media(prefers-reduced-motion:reduce){.frame .mag{transition:none}}
+
 .note{border-left:3px solid var(--accent);background:var(--wash);padding:20px 24px;margin:28px 0;max-width:66ch}
 .note p{margin:0;max-width:none}
 
@@ -242,7 +268,7 @@ footer a{color:var(--accent)}
 @media print{
   @page{margin:16mm 14mm}
 
-  nav,#bar,#wreath,.skip,.cue,.next,footer,.contact .links{display:none!important}
+  nav,#bar,#wreath,.skip,.cue,.next,footer,.contact .links,.noprint,.mag{display:none!important}
 
   /* revealed-on-scroll content must be visible in a snapshot that never scrolled */
   .rv,.js .rv{opacity:1!important;transform:none!important}
