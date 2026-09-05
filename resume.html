@@ -70,19 +70,54 @@
 </style>
 </head>
 <body>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     EDITING THIS RESUME
+
+     Change the text below, then run  ./update-resume.sh  from this folder.
+     That re-renders resume.pdf, tells you if it still fits on one page, and
+     copies both files into _deploy/ and the live repo.
+
+     The shapes you will need:
+
+       A job or a project        A skills line
+       ------------------        --------------
+       <div class="entry">       <div class="skill"><b>Label</b>: a, b, c</div>
+         <div class="row">
+           <span class="l">Employer or project</span>
+           <span class="r">City, ST  — or a date</span>
+         </div>
+         <div class="sub">
+           <span>Job title</span>
+           <span class="r">May - August 2026</span>
+         </div>
+         <ul>
+           <li>One accomplishment, with a number in it where you have one</li>
+         </ul>
+       </div>
+
+     `.row` is the bold top line, `.sub` is the italic line under it, and the
+     `.r` span in each is the right-aligned half. A project has no `.sub`.
+     Drop the whole <div class="entry"> block to remove something.
+
+     It is a one-pager and it is close to full. If update-resume.sh says two
+     pages, cut a bullet, or take body font-size from 9.2pt down to 9.0pt.
+     ═══════════════════════════════════════════════════════════════════ -->
 <a class="r-back" href="index.html">← Zack LaPrade</a>
 
+<!-- EDIT: name, then the contact line below it -->
 <h1>Zack LaPrade</h1>
 <div class="contact">
   470-423-9540 &nbsp;·&nbsp; zacklaprade@gmail.com &nbsp;·&nbsp; zlaprade7.github.io &nbsp;·&nbsp;
   github.com/zlaprade7 &nbsp;·&nbsp; LinkedIn: zack-laprade
 </div>
 
+<!-- EDIT: school, degree, graduation date, GPA, scholarships -->
 <h2>Education</h2>
 <div class="row"><span class="l">University of Georgia</span><span class="r">Athens, GA</span></div>
 <div class="sub"><span>Bachelor of Science, Computer Engineering</span><span class="r">May 2027</span></div>
 <div class="sub"><span style="font-style:normal"><b>Scholarships</b>: Zell Miller Scholarship</span><span class="r">Cumulative GPA: 3.54/4.00</span></div>
 
+<!-- EDIT: jobs. Newest first. -->
 <h2>Work and Research Experience</h2>
 
 <div class="entry">
@@ -114,6 +149,7 @@
   </ul>
 </div>
 
+<!-- EDIT: projects. Keep these in step with the case studies in projects/. -->
 <h2>Project Experience</h2>
 
 <div class="entry">
@@ -145,6 +181,7 @@
   </ul>
 </div>
 
+<!-- EDIT: clubs and societies -->
 <h2>Memberships and Associations</h2>
 <div class="entry">
   <div class="row"><span class="l">Theta Tau, Professional Engineering Fraternity</span><span class="r">Athens, GA</span></div>
@@ -159,10 +196,12 @@
   </ul>
 </div>
 
+<!-- EDIT: skills. The homepage reads FROM here — add it here first, then to index.html. -->
 <h2>Technical Skills and Languages</h2>
 <div class="skill"><b>Technical</b>: Matlab, Altium, Fusion 360, Multisim, LTspice, Verilog, Assembly, Java, C, C++, Python, HTML, JavaScript, Parallel Programming, Circuit Analysis, PCB Design</div>
 <div class="skill"><b>Languages</b>: English (Fluent), Spanish (Advanced), French (Advanced)</div>
 
+<!-- EDIT: awards. Also listed under Recognition on the homepage. -->
 <h2>Awards and Accolades</h2>
 <div class="skill">International Baccalaureate Diploma, International Skills Diploma Seal, Georgia Seal of Biliteracy</div>
 
