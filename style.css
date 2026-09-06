@@ -10,6 +10,7 @@
   --panel:#101a2c;        /* very slightly raised: frames, bands, cells */
   --wash:rgba(255,255,255,.055);
   --accent:#c3cbd6;
+  --gut:clamp(16px,2.2vw,34px);   /* page gutter; images break out of it */
   --serif:"Source Serif 4",Georgia,serif;
   --sans:"Archivo",sans-serif;
   --mono:"Spline Sans Mono",monospace;
@@ -213,8 +214,8 @@ figcaption b{color:var(--ink);font-weight:500}
 @media(min-width:1040px){
   .phero .wrap,.next .wrap,footer .wrap,.contact .wrap{
     width:100%;max-width:none;margin:0;
-    padding-left:clamp(28px,5vw,88px);
-    padding-right:clamp(28px,5vw,88px);
+    padding-left:var(--gut);
+    padding-right:var(--gut);
   }
 }
 
@@ -272,8 +273,8 @@ footer a{color:var(--accent)}
     grid-template-columns:210px minmax(0,64ch) minmax(0,1fr);
     column-gap:64px;
     max-width:none;
-    padding-left:clamp(28px,5vw,88px);
-    padding-right:clamp(28px,5vw,88px);
+    padding-left:var(--gut);
+    padding-right:var(--gut);
     align-items:start;
   }
   .doc .wrap > .shead{
@@ -296,8 +297,9 @@ footer a{color:var(--accent)}
   /* A full-width figure spans the label column too, so the sticky section name
      collides with it — "Result" sat on top of the dashboard demo. The figure
      paints over the label instead, which reads as the label sliding under it. */
-  .doc .wrap > figure.wide{grid-column:1 / -1; width:100%;
+  .doc .wrap > figure.wide{grid-column:1 / -1; width:auto;
      max-width:none !important;
+     margin-left:calc(-1*var(--gut)); margin-right:calc(-1*var(--gut));
      position:relative; z-index:2; background:var(--paper)}
   .doc .wrap > .shead{z-index:1}
 }
