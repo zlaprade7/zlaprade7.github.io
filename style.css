@@ -11,6 +11,10 @@
   --wash:rgba(255,255,255,.055);
   --accent:#c3cbd6;
   --gut:clamp(28px,5vw,88px);      /* page gutter */
+  /* The document block's width as a fixed value. It was calc(...64ch), but ch
+     resolves against each element's own font, so the mono footer computed a
+     754px block against the serif document's 862 and sat inset from it. */
+  --doc:862px;                     /* 210 label + 64 gutter + 64ch measure */
   --serif:"Source Serif 4",Georgia,serif;
   --sans:"Archivo",sans-serif;
   --mono:"Spline Sans Mono",monospace;
@@ -222,9 +226,9 @@ figcaption b{color:var(--ink);font-weight:500}
    a single thing beneath it. These all share the document's left edge now. */
 @media(min-width:1040px){
   .phero .wrap,.next .wrap,footer .wrap,.contact .wrap{
-    width:100%;max-width:none;margin:0;
-    padding-left:var(--gut);
-    padding-right:var(--gut);
+    width:min(calc(100% - 2*var(--gut)), var(--doc));
+    max-width:none;margin-left:auto;margin-right:auto;
+    padding-left:0;padding-right:0;
   }
 }
 
@@ -277,10 +281,15 @@ footer a{color:var(--accent)}
      side at 1440 and the section names floated in the middle of the window
      instead of sitting on the page edge. The third track soaks up the extra
      width, so wide figures can use it and prose still stops at its measure. */
+  /* Centred, not left-anchored. Anchoring left put the whole document against
+     one edge with ~500px of dead space on the other, which reads as lopsided.
+     The block is centred and every band below matches its width, so there is
+     one column of text down the middle of the window with even margins. */
   .doc .wrap{
     display:grid;
-    grid-template-columns:210px minmax(0,64ch) minmax(0,1fr);
+    grid-template-columns:210px minmax(0,64ch);
     column-gap:64px;
+    justify-content:center;
     max-width:none;
     padding-left:var(--gut);
     padding-right:var(--gut);
