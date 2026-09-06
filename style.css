@@ -10,7 +10,7 @@
   --panel:#101a2c;        /* very slightly raised: frames, bands, cells */
   --wash:rgba(255,255,255,.055);
   --accent:#c3cbd6;
-  --gut:clamp(16px,2.2vw,34px);   /* page gutter; images break out of it */
+  --gut:clamp(28px,5vw,88px);      /* page gutter */
   --serif:"Source Serif 4",Georgia,serif;
   --sans:"Archivo",sans-serif;
   --mono:"Spline Sans Mono",monospace;
@@ -301,9 +301,8 @@ footer a{color:var(--accent)}
   /* A full-width figure spans the label column too, so the sticky section name
      collides with it — "Result" sat on top of the dashboard demo. The figure
      paints over the label instead, which reads as the label sliding under it. */
-  .doc .wrap > figure.wide{grid-column:1 / -1; width:auto;
+  .doc .wrap > figure.wide{grid-column:1 / -1; width:100%;
      max-width:none !important;
-     margin-left:calc(-1*var(--gut)); margin-right:calc(-1*var(--gut));
      position:relative; z-index:2; background:var(--paper)}
   .doc .wrap > .shead{z-index:1}
 }
