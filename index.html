@@ -473,6 +473,12 @@ main{position:relative;z-index:1}
   const R=2.75;
   function rnd(a,b){return a+Math.random()*(b-a)}
 
+  /* Every leaf's rest pose, kept so the wind and the pointer can be added as
+     offsets rather than accumulated. Until now the whole group rotated as one
+     rigid body, which is why it read as a rendered object: after the entrance,
+     no leaf ever moved relative to any other leaf. */
+  const flutter=[];
+
   // same layout as the approved silhouette: join at top, tips at the bottom opening
   function branch(a0,a1,flip){
     const steps=72,pts=[];
@@ -499,6 +505,10 @@ main{position:relative;z-index:1}
         leaf.userData.grown=leaf.scale.x;   // entrance target
         leaf.userData.at=t;                 // position along the branch, 0..1
         wreath.add(leaf);
+        flutter.push({o:leaf, at:t, side:side,
+          rx:leaf.rotation.x, ry:leaf.rotation.y, rz:leaf.rotation.z,
+          px:leaf.position.x, py:leaf.position.y,
+          ph:Math.random()*6.283});        // per-leaf phase, or it marches in step
       }
       if(i%4===1&&t>.12&&t<.9){
         const o=new THREE.Mesh(new THREE.SphereGeometry(rnd(.055,.075),12,10),Math.random()<.32?silverMat:oliveMat);
@@ -596,8 +606,37 @@ main{position:relative;z-index:1}
     t+=dt*0.18;
     const settle=calm.matches?0:(1-exit); // idle sway eases out as it dissolves
     const ease=exit*exit*(3-2*exit);   // smoothstep: even, graceful recede (no abrupt poof)
-    wreath.rotation.y=(Math.sin(t)*.14+mx*.12)*settle;
-    wreath.rotation.x=(Math.cos(t*.8)*.05+my*.08)*settle;
+
+    /* ── wind, and the pointer ──────────────────────────────────────
+       A gust travels from the binding out to the tips rather than the ring
+       rocking as one piece: each leaf's phase is offset by how far along the
+       branch it sits, so you can watch the wave run. GUST breathes so the air
+       is never perfectly steady.
+
+       The pointer is projected onto the z=0 plane in the leaves' own units,
+       then leaves near it lean and are pushed aside, the way brushing a real
+       branch works. Both are offsets from the rest pose above, so nothing
+       drifts, and both scale with `settle` so they stop as the wreath goes. */
+    if(!calm.matches && flutter.length){
+      const vFOV=cam.fov*Math.PI/180;
+      const visH=2*Math.tan(vFOV/2)*cam.position.z, visW=visH*cam.aspect;
+      const pxw=(mx*visW)/baseScale, pyw=(-my*visH)/baseScale;
+      const gust=0.55+0.45*Math.sin(t*0.9);
+      for(const f of flutter){
+        const w=Math.sin(t*3.2-f.at*7.0+f.ph)*0.12*gust*settle;
+        const dx=f.px-pxw, dy=f.py-pyw, d2=dx*dx+dy*dy;
+        const k=Math.exp(-d2*0.9)*settle;          // smooth, no hard edge
+        const d=Math.sqrt(d2)||1e-4;
+        f.o.rotation.z=f.rz+w+k*0.55*f.side;
+        f.o.rotation.x=f.rx+w*0.45;
+        f.o.position.x=f.px+(dx/d)*k*0.26;
+        f.o.position.y=f.py+(dy/d)*k*0.26;
+      }
+    }
+
+    /* the group itself barely moves now; the life is in the leaves */
+    wreath.rotation.y=(Math.sin(t)*.05+mx*.05)*settle;
+    wreath.rotation.x=(Math.cos(t*.8)*.02+my*.03)*settle;
     wreath.position.y=Math.sin(t*1.4)*.06*settle+ease*.7; // idle sway, then rises away as it fades
     wreath.scale.setScalar(baseScale*(1+ease*.06)); // a few percent of bloom, no fall
     cv.style.transform=`translateY(${followPx}px)`;
