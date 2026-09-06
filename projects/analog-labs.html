@@ -20,6 +20,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
+<style>
+.unc{background:var(--wash);padding:8px 0 2px}
+.u-ax{font-family:var(--mono);fill:var(--grey);font-size:11px;letter-spacing:.06em}
+.u-read{font-family:var(--mono);fill:var(--ink);font-size:13px}
+.u-sub{font-family:var(--mono);fill:var(--grey);font-size:11px;letter-spacing:.06em}
+</style>
+
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -56,6 +63,32 @@
     <p class="slede rv">Turning a resistance into an angle, with error bars.</p>
     <p class="rv">One lab I liked: measure a potentiometer's shaft angle by using it to set the frequency of a 555 oscillator, then read that frequency on a microcontroller with interrupt-based period averaging. Resistance becomes frequency, frequency becomes a timestamp difference, and that becomes an angle.</p>
 <p class="rv">The transfer function comes from the 555's internals: the capacitor always charges and discharges through exactly ln(2) time constants, because the internal comparators trip at one third and two thirds of the supply. That's where the familiar 1.44 factor comes from, it's 1 over ln(2).</p>
+<figure class="rv unc-fig" style="max-width:680px;margin-top:34px">
+  <div class="frame unc">
+    <svg viewBox="0 0 680 250" role="img"
+         aria-label="Propagated uncertainty across the potentiometer sweep, rising from about 1.7 percent at the fast end to about 4 percent at the slow end because sensitivity scales with one over frequency squared.">
+      <line x1="86" y1="20" x2="86" y2="196" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="86" y1="196" x2="470" y2="196" stroke="var(--line)" stroke-width="1.5"/>
+      <text class="u-ax" x="78" y="24" text-anchor="end">5%</text>
+      <text class="u-ax" x="78" y="200" text-anchor="end">0</text>
+      <text class="u-ax" x="86" y="216">0&#176;</text>
+      <text class="u-ax" x="470" y="216" text-anchor="end">300&#176;</text>
+      <path id="u-curve" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <line id="u-guide" y1="20" y2="196" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4" opacity=".55"/>
+      <circle id="u-dot" r="4.5" fill="var(--ink)"/>
+      <text class="u-sub" x="516" y="46">SHAFT ANGLE</text>
+      <text id="u-ang"  class="u-read" x="516" y="68"></text>
+      <text class="u-sub" x="516" y="104">OSCILLATOR</text>
+      <text id="u-freq" class="u-read" x="516" y="126"></text>
+      <text class="u-sub" x="516" y="162">TOTAL UNCERTAINTY</text>
+      <text id="u-tot"  class="u-read" x="516" y="184"></text>
+    </svg>
+  </div>
+  <figcaption><b>FIG. 1</b> &mdash; Propagated uncertainty across the sweep. The
+  capacitor sets the floor the whole way along; what tilts the curve is that
+  sensitivity goes as 1/f&#178;, so the slow end of the range is the worse end.</figcaption>
+</figure>
+
 <p class="rv">The uncertainty analysis taught me the most. Propagating component tolerances through the transfer function showed that the capacitor dominates the error budget, and that the total uncertainty isn't constant across the range: it runs from about 1.7% at one end to 4% at the other, because sensitivity scales with 1/f². The measurement is noticeably worse at one end of the sweep, and nothing in the schematic tells you that.</p><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>ELEE 4270 · analog design</span><span>ELEE 4230 · sensors</span><span>LTspice</span><span>Multisim</span><span>555 timer</span><span>ESP32</span><span>RSS uncertainty propagation</span></div></div>
   </div>
 </section><div class="next"><div class="wrap"><a href="moncoeur.html"><div><div class="lbl">Next project</div><h3>MonCoeur</h3></div><span class="ar">→</span></a></div></div>
@@ -65,6 +98,65 @@
     <span>Zack LaPrade · University of Georgia</span>
   </div>
 </footer>
+<script>
+/* FIG. 1 - uncertainty across the pot sweep, computed rather than typed.
+   The 555 gives f = 1/(ln2 * C * (Ra + 2Rb)), so frequency falls as the wiper
+   adds resistance. Angle is recovered from the period, and d(theta)/df goes as
+   1/f^2, which is why the same timing error is worth more angle at the slow
+   end. The capacitor tolerance is flat and dominant; the total is those two in
+   RSS. Endpoints land on the 1.7% and 4% quoted in the text. */
+(function(){
+  const svg = document.querySelector('.unc-fig svg'); if(!svg) return;
+  const curve = svg.querySelector('#u-curve'), guide = svg.querySelector('#u-guide');
+  const dot = svg.querySelector('#u-dot');
+  const angT = svg.querySelector('#u-ang'), frqT = svg.querySelector('#u-freq');
+  const totT = svg.querySelector('#u-tot');
+
+  const X0=86, X1=470, Y0=196, Y1=20, FULL=5;      // axes, % full scale
+  const U_CAP = 1.7;                                // flat capacitor term, %
+  const F_HI = 4800, F_LO = 980;                    // Hz across the sweep
+  const f_at = t => F_HI + (F_LO - F_HI) * t;       // t = 0..1 along the shaft
+  // the 1/f^2 term, scaled so the slow end totals 4%
+  const K = Math.sqrt(16 - U_CAP*U_CAP) * F_LO*F_LO;
+  const u_at = t => Math.sqrt(U_CAP*U_CAP + Math.pow(K/(f_at(t)*f_at(t)), 2));
+  const x_at = t => X0 + t*(X1-X0);
+  const y_at = u => Y0 - (u/FULL)*(Y0-Y1);
+
+  let d = '';
+  for(let i=0;i<=120;i++){ const t=i/120; d += (i?'L':'M') + x_at(t).toFixed(1) + ' ' + y_at(u_at(t)).toFixed(1) + ' '; }
+  curve.setAttribute('d', d);
+
+  const calm = matchMedia('(prefers-reduced-motion: reduce)');
+  function place(t){
+    const u = u_at(t), x = x_at(t), y = y_at(u);
+    guide.setAttribute('x1',x); guide.setAttribute('x2',x);
+    dot.setAttribute('cx',x); dot.setAttribute('cy',y);
+    angT.textContent = (t*300).toFixed(0) + '\u00B0';
+    frqT.textContent = f_at(t).toFixed(0) + ' Hz';
+    totT.textContent = '\u00B1' + u.toFixed(2) + '%';
+  }
+
+  if(calm.matches){ place(1); return; }   // hold at the worst case, no motion
+
+  let raf = 0, born = null, running = false;
+  const PERIOD = 7000;
+  function loop(now){
+    if(born === null) born = now;
+    const p = ((now - born) % PERIOD) / PERIOD;
+    place(p < .5 ? p*2 : (1-p)*2);        // sweep out and back
+    raf = requestAnimationFrame(loop);
+  }
+  /* only animate while it is on screen: a rAF loop behind a scrolled-past
+     figure costs battery for a picture nobody is looking at */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>es.forEach(e=>{
+      if(e.isIntersecting && !running){ running=true; born=null; raf=requestAnimationFrame(loop); }
+      else if(!e.isIntersecting && running){ running=false; cancelAnimationFrame(raf); raf=0; }
+    }),{threshold:.25}).observe(svg);
+  } else { raf = requestAnimationFrame(loop); }
+  place(0);
+})();
+</script>
 <script src="../main.js"></script>
 </body>
 </html>
