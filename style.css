@@ -202,12 +202,21 @@ figcaption b{color:var(--ink);font-weight:500}
 @media(pointer:coarse){.frame .mag{display:none}}
 @media(prefers-reduced-motion:reduce){.frame .mag{transition:none}}
 
-/* the scroll-grown olive branch (see main.js). Fixed in the right margin the
-   left-anchored grid leaves free; never over the text, never clickable. */
-#vine{position:fixed;top:0;right:0;width:118px;height:100vh;
-  z-index:0;pointer-events:none;opacity:.42}
-@media(max-width:1039px){#vine{display:none}}
-@media print{#vine{display:none!important}}
+
+/* ── one left edge ────────────────────────────────────────────────────
+   Every band that is not the document grid was still using the centred
+   1120px `.wrap`, which put it at x=160 while the left-anchored document
+   sat at x=72. `.phero` was worse: it is a column flex container, so its
+   `.wrap` shrink-wrapped to its content and `margin:0 auto` centred that,
+   landing the project title at x=391. The hero title never lined up with
+   a single thing beneath it. These all share the document's left edge now. */
+@media(min-width:1040px){
+  .phero .wrap,.next .wrap,footer .wrap,.contact .wrap{
+    width:100%;max-width:none;margin:0;
+    padding-left:clamp(28px,5vw,88px);
+    padding-right:clamp(28px,5vw,88px);
+  }
+}
 
 .note{border-left:3px solid var(--accent);background:var(--wash);padding:20px 24px;margin:28px 0;max-width:66ch}
 .note p{margin:0;max-width:none}
