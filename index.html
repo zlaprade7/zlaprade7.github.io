@@ -450,22 +450,43 @@ main{position:relative;z-index:1}
 
   const wreath=new THREE.Group();
 
-  // olive leaf: lens shape, folded along the midrib
+  /* Olive leaf. The old one was a fat almond: 0.55 long by 0.30 across, about
+     1.8:1, asymmetric (its two control points did not match) and faceted at 10
+     curve segments. A real olive leaf is lanceolate and narrow, nearer 5:1,
+     pointed at both ends and widest just past halfway.
+
+     It is also a flat membrane, so this is ShapeGeometry rather than an
+     extrusion with a bevel: the old solid spent polygons on an edge you cannot
+     see at this size. The blade lifts into a shallow trough along the midrib
+     (quadratic in y, so it curves instead of creasing the way |y| did) and
+     droops slightly toward the tip. */
   function leafGeometry(){
     const shape=new THREE.Shape();
     shape.moveTo(0,0);
-    shape.quadraticCurveTo(.12,.15,.55,.01);
-    shape.quadraticCurveTo(.14,-.12,0,0);
-    const g=new THREE.ExtrudeGeometry(shape,{depth:.012,bevelEnabled:true,bevelSize:.008,bevelThickness:.006,bevelSegments:1,curveSegments:10});
-    g.translate(-.03,0,0);
+    shape.bezierCurveTo(.20,.062, .44,.072, .66,0);
+    shape.bezierCurveTo(.44,-.072, .20,-.062, 0,0);
+    const g=new THREE.ShapeGeometry(shape,26);
+    g.translate(-.02,0,0);
     const p=g.attributes.position;
-    for(let i=0;i<p.count;i++){p.setZ(i,p.getZ(i)+Math.abs(p.getY(i))*.22)}
+    for(let i=0;i<p.count;i++){
+      const x=p.getX(i), y=p.getY(i);
+      p.setZ(i, y*y*2.4 - x*x*0.13);
+    }
     g.computeVertexNormals();
     return g;
   }
   const leafGeo=leafGeometry();
-  const leafCols=[0x5e7048,0x6d7f52,0x7c8f5e,0x8a9a68,0x9cab7b];
-  const leafMats=leafCols.map(c=>new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:.05,side:THREE.DoubleSide}));
+
+  /* The reason an olive grove flashes when the wind crosses it: the leaves are
+     bicoloured, dull grey-green above and near-silver beneath. One DoubleSide
+     material painted both faces the same, so every bit of twist in the wind was
+     invisible. Each leaf is now two coincident single-sided meshes over one
+     geometry - dark on top, pale underneath - and the flutter finally shows. */
+  const leafCols=[0x55663f,0x5e7048,0x687a50,0x71835a,0x7d8f66];
+  const leafMats=leafCols.map(c=>new THREE.MeshStandardMaterial(
+    {color:c,roughness:.82,metalness:0,side:THREE.FrontSide}));
+  const underMat=new THREE.MeshStandardMaterial(
+    {color:0xb4bfae,roughness:.72,metalness:.04,side:THREE.BackSide});
   const stemMat=new THREE.MeshStandardMaterial({color:0x5d4c30,roughness:.9});
   const oliveMat=new THREE.MeshStandardMaterial({color:0x3c4726,roughness:.35});
   const silverMat=new THREE.MeshStandardMaterial({color:0xc3cbd6,roughness:.35,metalness:.5});
@@ -496,12 +517,14 @@ main{position:relative;z-index:1}
       const tangent=(a1>a0)?a+Math.PI/2:a-Math.PI/2;
       const taper=.5+.6*Math.sin(t*Math.PI*.92);
       for(const side of [1,-1]){
-        const leaf=new THREE.Mesh(leafGeo,leafMats[(Math.random()*leafMats.length)|0]);
+        const leaf=new THREE.Group();
+        leaf.add(new THREE.Mesh(leafGeo,leafMats[(Math.random()*leafMats.length)|0]));
+        leaf.add(new THREE.Mesh(leafGeo,underMat));
         leaf.position.set(Math.cos(a)*R,Math.sin(a)*R,rnd(-.04,.04));
         leaf.rotation.z=tangent+side*rnd(.5,.75);   // fan along the stem, both sides
         leaf.rotation.y=side*rnd(.15,.4)*flip;       // gentle 3D tilt, disciplined
         leaf.rotation.x=rnd(-.15,.15);
-        leaf.scale.setScalar(taper*rnd(1.4,1.7));
+        leaf.scale.setScalar(taper*rnd(1.5,1.85));   // narrower blade, so a touch longer
         leaf.userData.grown=leaf.scale.x;   // entrance target
         leaf.userData.at=t;                 // position along the branch, 0..1
         wreath.add(leaf);
