@@ -585,7 +585,7 @@ main{position:relative;z-index:1}
   const GROW_MS=2000, STAGGER=0.72;
   let born=null;
 
-  let t=0, last=performance.now(), raf=0;
+  let t=0, tw=0, last=performance.now(), raf=0;   // tw is real seconds, for the wind
   function loop(now){
     now = now || performance.now();
     /* seconds, not frames: `t+=.003` per frame ran twice as fast on a 120Hz
@@ -604,6 +604,7 @@ main{position:relative;z-index:1}
     }
 
     t+=dt*0.18;
+    tw+=dt;                       // t is deliberately slow; wind needs real time
     const settle=calm.matches?0:(1-exit); // idle sway eases out as it dissolves
     const ease=exit*exit*(3-2*exit);   // smoothstep: even, graceful recede (no abrupt poof)
 
@@ -621,16 +622,23 @@ main{position:relative;z-index:1}
       const vFOV=cam.fov*Math.PI/180;
       const visH=2*Math.tan(vFOV/2)*cam.position.z, visW=visH*cam.aspect;
       const pxw=(mx*visW)/baseScale, pyw=(-my*visH)/baseScale;
-      const gust=0.55+0.45*Math.sin(t*0.9);
+      const gust=0.45+0.55*Math.sin(tw*0.42)*Math.sin(tw*0.17);  // uneven, not a metronome
       for(const f of flutter){
-        const w=Math.sin(t*3.2-f.at*7.0+f.ph)*0.12*gust*settle;
+        /* One coherent wave. The phase depends ONLY on how far along the
+           branch the leaf sits, so the gust visibly runs from the binding out
+           to the tips; a random per-leaf phase (which is what was here) is
+           not a wave at all, it is noise, and at 0.58 rad/s it read as
+           nothing moving. The blade twists about its own long axis, which is
+           what a leaf on a stem actually does, and the tips move most. */
+        const wave=Math.sin(tw*2.6-f.at*9.0);
+        const amp=(0.045+0.20*f.at)*gust*settle;
         const dx=f.px-pxw, dy=f.py-pyw, d2=dx*dx+dy*dy;
-        const k=Math.exp(-d2*0.9)*settle;          // smooth, no hard edge
+        const k=Math.exp(-d2*1.7)*settle;          // tighter, and gentler than before
         const d=Math.sqrt(d2)||1e-4;
-        f.o.rotation.z=f.rz+w+k*0.55*f.side;
-        f.o.rotation.x=f.rx+w*0.45;
-        f.o.position.x=f.px+(dx/d)*k*0.26;
-        f.o.position.y=f.py+(dy/d)*k*0.26;
+        f.o.rotation.x=f.rx+wave*amp;              // twist along the blade
+        f.o.rotation.z=f.rz+wave*amp*0.30+k*0.20*f.side;
+        f.o.position.x=f.px+(dx/d)*k*0.09;
+        f.o.position.y=f.py+(dy/d)*k*0.09;
       }
     }
 
