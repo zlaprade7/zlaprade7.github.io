@@ -68,9 +68,13 @@ main{position:relative;z-index:1}
    same document when you move between them. */
 .mcol{max-width:1120px;margin:0 auto;padding:0 clamp(20px,5vw,56px)}
 @media(min-width:1040px){
-  .mcol{display:grid;grid-template-columns:210px minmax(0,64ch);column-gap:64px;justify-content:center;
-    max-width:none;padding-left:var(--gut);padding-right:var(--gut);
-    align-items:start}
+  /* The index is a three-column row: label, picture, words - side by side, so
+     an entry's height is whichever of the picture and the text is taller
+     rather than the two of them stacked. The block is wider than the reading
+     measure because it is an index, not prose. */
+  .mcol{display:grid;grid-template-columns:190px 400px minmax(0,1fr);column-gap:48px;
+    width:min(calc(100% - 2*var(--gut)),1180px);margin-left:auto;margin-right:auto;
+    max-width:none;padding-left:0;padding-right:0;align-items:start}
 }
 
 /* Section header. The 2px ink rule sits ABOVE the name, exactly as
@@ -83,17 +87,17 @@ main{position:relative;z-index:1}
 .sec .lede{color:#c6d0e0;font-size:clamp(17px,2vw,20px);max-width:54ch;margin-top:14px}
 @media(min-width:1040px){
   .sec h2{grid-column:1;font-size:30px;line-height:1.08}
-  .sec .lede{grid-column:2;margin-top:0;padding-top:12px}
+  .sec .lede{grid-column:2 / -1;margin-top:0;padding-top:12px}
 }
 /* `.span` is the same geometry as `.mcol` with the two columns fused, for the
    things that run the whole measure: the header rule and the awards strip.
    Without it they sit on the 1120px `.wrap` and miss the grid by 80px. */
 .span{max-width:1120px;margin:0 auto;padding:0 clamp(20px,5vw,56px)}
 @media(min-width:1040px){
-  .span{display:grid;grid-template-columns:210px minmax(0,64ch);column-gap:64px;justify-content:center;
-    max-width:none;padding-left:var(--gut);padding-right:var(--gut);
-    align-items:start}
-  .span > *{grid-column:1 / 3}
+  .span{display:grid;grid-template-columns:190px 400px minmax(0,1fr);column-gap:48px;
+    width:min(calc(100% - 2*var(--gut)),1180px);margin-left:auto;margin-right:auto;
+    max-width:none;padding-left:0;padding-right:0;align-items:start}
+  .span > *{grid-column:1 / -1}
 }
 
 /* ── an index entry ───────────────────────────────────────────────────
@@ -110,10 +114,10 @@ main{position:relative;z-index:1}
      wide figures break out to the full viewport width. */
   /* `width:fit-content` rather than a full-width grid, so the hairline divider
      ends where the text ends instead of running off both edges of the window */
-  .entry{display:grid;grid-template-columns:210px minmax(0,64ch);
-    column-gap:64px;justify-content:center;max-width:none;
-    padding-left:var(--gut);padding-right:var(--gut);
-    align-items:start;row-gap:26px}
+  .entry{display:grid;grid-template-columns:190px 400px minmax(0,1fr);
+    column-gap:48px;width:min(calc(100% - 2*var(--gut)),1180px);
+    margin-left:auto;margin-right:auto;max-width:none;
+    padding-left:0;padding-right:0;align-items:start;row-gap:26px}
   /* Images share the text's left edge and run right into the spare track,
      instead of a 1296px full-bleed plate sitting above a 573px column that
      starts 274px further in. One left edge per entry; the picture is what
@@ -122,16 +126,21 @@ main{position:relative;z-index:1}
   /* The number and dates ride at the TOP of the entry, level with the picture.
      They were auto-placed into the row below it, which left the margin column
      empty beside every image - a 693px void next to the two portrait shots. */
-  .entry .fig, .entry .fig.wide{grid-column:2;grid-row:1;width:100%}
   .entry .meta{grid-column:1;grid-row:1}
-  .entry .body{grid-column:2;grid-row:2}
-  /* A portrait photograph keeps its own shape, but narrow enough that a tall
-     entry is not twice the height of a wide one: 1010px against 540 was what
-     broke the rhythm going down the page. */
-  .entry .fig.tall{max-width:352px}
-  .entry .meta{grid-column:1;padding-top:8px}
-  .entry .body{grid-column:2}
-
+  .entry .fig, .entry .fig.wide, .entry .fig.tall{grid-column:2;grid-row:1;
+    width:auto;max-width:100%}
+  .entry .body{grid-column:3;grid-row:1}
+  /* The frame hugs the photograph rather than stretching it, and the height is
+     capped so a 3:4 portrait cannot make its row three times the height of a
+     wide one. Nothing is cropped - the picture just gets smaller. */
+  /* The frame hugs the photograph instead of stretching it, and never exceeds
+     its own column. Height is capped so a 3:4 portrait cannot make its row
+     three times the height of a wide one - nothing is cropped, the picture
+     just gets smaller. */
+  .entry .fig{min-width:0;margin-bottom:0}
+  .entry .fig .frame{display:block;width:fit-content;max-width:100%}
+  .entry .fig .frame img{width:auto;max-width:100%;max-height:300px}
+  .entry .meta{padding-top:6px}
 }
 .entry .meta{font-family:var(--mono);font-size:12.5px;letter-spacing:.09em;
   text-transform:uppercase;color:var(--grey);display:flex;flex-wrap:wrap;gap:6px 16px;
