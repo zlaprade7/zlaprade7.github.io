@@ -119,10 +119,16 @@ main{position:relative;z-index:1}
      starts 274px further in. One left edge per entry; the picture is what
      fills the width, not empty space. */
   /* the picture reaches the glass on both sides */
-  .entry .fig, .entry .fig.wide{grid-column:2;width:100%}
-  /* a portrait photograph is not a banner: it keeps the content column and its
-     own height rather than being cropped into a letterbox */
-  .entry .fig.tall{grid-column:2;width:100%;max-width:520px}
+  /* The number and dates ride at the TOP of the entry, level with the picture.
+     They were auto-placed into the row below it, which left the margin column
+     empty beside every image - a 693px void next to the two portrait shots. */
+  .entry .fig, .entry .fig.wide{grid-column:2;grid-row:1;width:100%}
+  .entry .meta{grid-column:1;grid-row:1}
+  .entry .body{grid-column:2;grid-row:2}
+  /* A portrait photograph keeps its own shape, but narrow enough that a tall
+     entry is not twice the height of a wide one: 1010px against 540 was what
+     broke the rhythm going down the page. */
+  .entry .fig.tall{max-width:352px}
   .entry .meta{grid-column:1;padding-top:8px}
   .entry .body{grid-column:2}
 
