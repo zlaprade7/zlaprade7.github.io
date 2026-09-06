@@ -283,6 +283,8 @@ footer a{color:var(--accent)}
   }
   .doc .wrap > .shead h2.big{font-size:30px;line-height:1.08;letter-spacing:-.01em}
   .doc .wrap > *:not(.shead){grid-column:2}
+  /* a figure may use the spare track; prose still stops at its measure */
+  .doc .wrap > figure{grid-column:2 / -1}
   .doc .wrap > .slede{margin-top:0;max-width:none}
   .doc .wrap > p, .doc .wrap > ul{max-width:none}
   /* wide artefacts take the whole width back */

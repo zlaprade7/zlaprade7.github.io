@@ -116,8 +116,11 @@ main{position:relative;z-index:1}
   .entry{display:grid;grid-template-columns:210px minmax(0,64ch) minmax(0,1fr);column-gap:64px;
     max-width:none;padding-left:clamp(28px,5vw,88px);padding-right:clamp(28px,5vw,88px);
     align-items:start;row-gap:26px}
-  .entry .fig{grid-column:2}
-  .entry .fig.wide{grid-column:1/-1;width:100%}
+  /* Images share the text's left edge and run right into the spare track,
+     instead of a 1296px full-bleed plate sitting above a 573px column that
+     starts 274px further in. One left edge per entry; the picture is what
+     fills the width, not empty space. */
+  .entry .fig, .entry .fig.wide{grid-column:2 / -1;width:100%}
   .entry .meta{grid-column:1;padding-top:5px}
   .entry .body{grid-column:2}
 }
@@ -224,6 +227,9 @@ main{position:relative;z-index:1}
   </a>
 
   <a class="entry mcol rv" href="projects/bench-instrument.html">
+    <div class="fig">
+        <div class="frame"><img src="images/bench-pcb.jpg" alt="The multitool bench's four-layer board" style="aspect-ratio:16/9"></div>
+      </div>
     <div class="meta">
       <span class="num">002</span>
       <span>2026</span>
@@ -231,9 +237,6 @@ main{position:relative;z-index:1}
       <span>Hardware lead</span>
     </div>
     <div class="body">
-      <div class="fig">
-        <div class="frame"><img src="images/bench-pcb.jpg" alt="The multitool bench's four-layer board" style="aspect-ratio:16/9"></div>
-      </div>
       <h3>Multitool Bench <span class="arw">↗</span></h3>
       <p>Four instruments in one box. The course forbade instrumentation ICs, so the voltmeter is a 6-bit converter built from a resistor ladder and a comparator.</p>
       <div class="chipset"><b>0 instrumentation ICs</b><span>R-2R ladder</span><span>4-layer PCB</span></div>
@@ -241,15 +244,15 @@ main{position:relative;z-index:1}
   </a>
 
   <a class="entry mcol rv" href="projects/water-bottle.html">
+    <div class="fig">
+        <div class="frame"><img src="images/bottle-hero.jpg" alt="The smart water bottle, assembled" style="aspect-ratio:16/9"></div>
+      </div>
     <div class="meta">
       <span class="num">003</span>
       <span>2026</span>
       <span>Solo</span>
     </div>
     <div class="body">
-      <div class="fig">
-        <div class="frame"><img src="images/bottle-hero.jpg" alt="The smart water bottle, assembled" style="aspect-ratio:16/9"></div>
-      </div>
       <h3>Smart Water Bottle <span class="arw">↗</span></h3>
       <p>A bottle that moves its daily hydration target with heat, humidity and activity, around a custom analog front end I had to fit inside a parts budget.</p>
       <div class="chipset"><b>$31.70 of a $50 cap</b><span>ESP32-C3</span><span>INA333</span></div>

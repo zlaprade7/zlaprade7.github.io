@@ -63,7 +63,7 @@
     <p class="slede rv">Turning a resistance into an angle, with error bars.</p>
     <p class="rv">One lab I liked: measure a potentiometer's shaft angle by using it to set the frequency of a 555 oscillator, then read that frequency on a microcontroller with interrupt-based period averaging. Resistance becomes frequency, frequency becomes a timestamp difference, and that becomes an angle.</p>
 <p class="rv">The transfer function comes from the 555's internals: the capacitor always charges and discharges through exactly ln(2) time constants, because the internal comparators trip at one third and two thirds of the supply. That's where the familiar 1.44 factor comes from, it's 1 over ln(2).</p>
-<figure class="rv unc-fig" style="max-width:680px;margin-top:34px">
+<figure class="rv unc-fig" style="max-width:900px;margin-top:34px">
   <div class="frame unc">
     <svg viewBox="0 0 680 250" role="img"
          aria-label="Propagated uncertainty across the potentiometer sweep, rising from about 1.7 percent at the fast end to about 4 percent at the slow end because sensitivity scales with one over frequency squared.">

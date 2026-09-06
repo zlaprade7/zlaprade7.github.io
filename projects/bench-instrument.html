@@ -76,7 +76,7 @@
 <p class="rv">The voltmeter is a 6-bit successive-approximation converter made from an R-2R resistor ladder and a comparator. The ladder, driven from six GPIO pins, generates a trial voltage. The comparator checks that trial against the unknown input and returns one bit. The Pi walks from the most significant bit down, keeping each bit that doesn't overshoot. Six comparisons give six bits, basically a binary search in hardware.</p>
 <p class="rv">Normally you'd just use an off-the-shelf ADC chip. Building one instead taught me a lot about what's inside them: the ladder's output impedance, the comparator's offset and delay, the settling time between trials, and why six bits was as much resolution as this design could honestly claim.</p>
 
-<figure class="rv sar" style="max-width:680px">
+<figure class="rv sar" style="max-width:900px">
   <div class="frame sarbox">
     <svg viewBox="0 0 680 260" role="img"
          aria-label="One six-bit successive-approximation conversion of a 2.05 volt input against a 3.3 volt reference, ending at code 100111.">
@@ -116,7 +116,7 @@
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
     <p class="slede rv">We prototyped and probed every stage on the bench before doing the layout.</p>
-<figure class="rv" style="max-width:680px"><div class="frame" data-lens><img src="../images/bench-proto.jpg" alt="The instrument breadboarded, each stage labelled on paper tags"></div><figcaption><b>FIG. 2</b> &mdash; Every mode on the breadboard first, each stage labelled so we could probe one at a time.</figcaption></figure>
+<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bench-proto.jpg" alt="The instrument breadboarded, each stage labelled on paper tags"></div><figcaption><b>FIG. 2</b> &mdash; Every mode on the breadboard first, each stage labelled so we could probe one at a time.</figcaption></figure>
     <ul class="rv">
 <li><b>Settling time was real.</b> Stepping the ladder and reading the comparator immediately gave wrong answers. The ladder needs time to settle after each trial, and I had to find that number on a scope since no datasheet covers a circuit you built yourself.</li>
 <li><b>Comparator offset set the floor.</b> The comparator's offset and delay, not the ladder, were what limited us to six usable bits.</li>
@@ -132,7 +132,7 @@
 <div><div class="v">128</div><div class="l">step ohmmeter sweep</div></div>
 <div><div class="v">±12 V</div><div class="l">from a single 24V input</div></div>
 </div>
-<figure class="rv" style="max-width:680px"><div class="frame" data-lens><img src="../images/bench-pcb.jpg" alt="Multitool bench PCB"></div><figcaption><b>FIG. 3</b> — The four-layer board. Five names on the silkscreen.</figcaption></figure><figure class="rv" style="max-width:680px"><div class="frame"><img src="../images/bench-freq.jpg" alt="The instrument's frequency reading checked against a lab generator"></div><figcaption><b>FIG. 4</b> — Checking the frequency counter against a lab generator. Ours on the LCD, the reference behind it.</figcaption></figure><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>Raspberry Pi</span><span>R-2R ladder</span><span>LM339 comparator</span><span>MCP4231 digipot</span><span>Class B rail splitter</span><span>Rotary encoder</span><span>20×4 LCD</span><span>4-layer PCB</span></div></div>
+<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bench-pcb.jpg" alt="Multitool bench PCB"></div><figcaption><b>FIG. 3</b> — The four-layer board. Five names on the silkscreen.</figcaption></figure><figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/bench-freq.jpg" alt="The instrument's frequency reading checked against a lab generator"></div><figcaption><b>FIG. 4</b> — Checking the frequency counter against a lab generator. Ours on the LCD, the reference behind it.</figcaption></figure><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>Raspberry Pi</span><span>R-2R ladder</span><span>LM339 comparator</span><span>MCP4231 digipot</span><span>Class B rail splitter</span><span>Rotary encoder</span><span>20×4 LCD</span><span>4-layer PCB</span></div></div>
   </div>
 </section><div class="next"><div class="wrap"><a href="water-bottle.html"><div><div class="lbl">Next project</div><h3>Smart Water Bottle</h3></div><span class="ar">→</span></a></div></div>
 </main>
