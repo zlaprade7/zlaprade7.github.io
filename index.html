@@ -56,9 +56,6 @@ main{position:relative;z-index:1}
 /* on a phone the ring's clear middle is only ~260px across, so the tagline has
    to stay narrower than that or it wraps onto the leaves */
 @media(max-width:560px){.cover .tag{max-width:30ch}}
-.cover .cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
-  font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:#98a1b0;
-  animation:bob 2s ease-in-out infinite}
 
 /* the paper slides up over the cover as you scroll — no JS, the canvas is fixed */
 .paper{background:var(--paper);position:relative;z-index:1;padding-bottom:clamp(54px,7vw,88px)}
@@ -123,6 +120,10 @@ main{position:relative;z-index:1}
   /* the picture reaches the glass on both sides */
   .entry .fig, .entry .fig.wide{grid-column:1 / -1;width:auto;
     margin-left:calc(-1*var(--gut));margin-right:calc(-1*var(--gut))}
+  /* a portrait photograph is not a banner: it keeps the content column and its
+     own height rather than being cropped into a letterbox */
+  .entry .fig.tall{grid-column:2;width:100%;max-width:560px;
+    margin-left:0;margin-right:0}
   .entry .meta{grid-column:1;padding-top:8px}
   .entry .body{grid-column:2}
   /* description left, earned number out at the right edge: the row spans the
@@ -207,7 +208,6 @@ main{position:relative;z-index:1}
     <h1><span class="row"><span>Zack LaPrade</span></span></h1>
     <p class="tag">Fourth-year Computer Engineering student at the University of Georgia, building embedded hardware from the sensor to the enclosure.</p>
   </div>
-  <div class="cue">SCROLL ↓</div>
 </header>
 
 <div class="paper">
@@ -215,7 +215,7 @@ main{position:relative;z-index:1}
 <section class="sheet" id="work">
   <div class="sec mcol rv">
     <h2>Projects</h2>
-    <p class="lede">Four builds written up in full, from what went wrong to what the numbers came out to. Two more are linked at the end of each.</p>
+    <p class="lede">Four builds, written up from what went wrong to what the numbers came out to.</p>
   </div>
 
   <a class="entry mcol rv" href="projects/moncoeur.html">
@@ -237,7 +237,7 @@ main{position:relative;z-index:1}
 
   <a class="entry mcol rv" href="projects/bench-instrument.html">
     <div class="fig">
-        <div class="frame"><img src="images/bench-pcb.jpg" alt="The multitool bench's four-layer board" style="aspect-ratio:16/9"></div>
+        <div class="frame"><img src="images/bench-pcb.jpg" alt="The multitool bench's four-layer board" style="aspect-ratio:1546/712;object-fit:cover"></div>
       </div>
     <div class="meta">
       <span class="num">002</span>
@@ -253,8 +253,8 @@ main{position:relative;z-index:1}
   </a>
 
   <a class="entry mcol rv" href="projects/water-bottle.html">
-    <div class="fig">
-        <div class="frame"><img src="images/bottle-hero.jpg" alt="The smart water bottle, assembled" style="aspect-ratio:16/9"></div>
+    <div class="fig tall">
+        <div class="frame"><img src="images/bottle-hero.jpg" alt="The smart water bottle, assembled"></div>
       </div>
     <div class="meta">
       <span class="num">003</span>
@@ -269,8 +269,8 @@ main{position:relative;z-index:1}
   </a>
 
   <a class="entry mcol rv" href="projects/sensor-glove.html">
-    <div class="fig wide">
-      <div class="frame"><img src="images/glove-build.jpg" alt="The sensor glove, five flex sensors taped one per finger" style="aspect-ratio:21/8;object-position:50% 35%"></div>
+    <div class="fig tall">
+      <div class="frame"><img src="images/glove-build.jpg" alt="The sensor glove, five flex sensors taped one per finger"></div>
     </div>
     <div class="meta">
       <span class="num">004</span>
@@ -419,7 +419,7 @@ main{position:relative;z-index:1}
 <section class="contact" id="contact">
   <div class="wrap">
     <h2>Get in touch</h2>
-    <p>Email is the fastest way to reach me. The code for most of what's on this site is on GitHub, and the résumé is here in both formats.</p>
+    <p>Email is the fastest way to reach me. Most of what is on this site is on GitHub.</p>
     <div class="links">
       <a href="mailto:zacklaprade@gmail.com">zacklaprade@gmail.com</a>
       <a href="https://github.com/zlaprade7" target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
@@ -428,7 +428,7 @@ main{position:relative;z-index:1}
       <a href="resume.html">RÉSUMÉ · WEB</a>
     </div>
     <div class="base">
-      <span>Zack LaPrade · University of Georgia</span>
+      <span>Zack LaPrade</span>
       <span>Athens, Georgia</span>
     </div>
   </div>
@@ -695,17 +695,6 @@ main{position:relative;z-index:1}
   }
   loop();
   }catch(e){fallback()}
-})();
-</script>
-<script>
-/* The cue sits at the bottom of the cover, so a little way into the scroll it
-   slides up behind the fixed nav and the two collide. Fade it as soon as the
-   page has moved — by then it has done its job. */
-(function(){
-  const cue=document.querySelector('.cover .cue');
-  if(!cue) return;
-  cue.style.transition='opacity .35s';
-  addEventListener('scroll',()=>{cue.style.opacity=scrollY>40?0:1},{passive:true});
 })();
 </script>
 <script src="main.js"></script>

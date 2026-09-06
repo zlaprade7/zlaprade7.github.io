@@ -171,7 +171,11 @@ section.doc li{margin-bottom:10px}
 @media(max-width:700px){.figrow{grid-template-columns:1fr}}
 figure{margin:0}
 .frame{overflow:hidden;background:var(--panel)}
-.frame img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;transform:scale(1.06);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+/* No forced aspect. Most of these photographs are portrait 3:4, and a blanket
+   4/3 + object-fit:cover was throwing 44% of every one of them away - 71% in
+   the case of the glove, which is why that entry was a picture of duct tape.
+   The frame takes the shape of the photograph instead of the other way round. */
+.frame img{width:100%;height:auto;display:block;transform:scale(1.06);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
 .rv.in .frame img{transform:scale(1)}
 .frame .imgph{width:100%;aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#121d31 0 12px,#16223a 12px 24px);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--grey);text-align:center;padding:12px}
 figcaption{font-family:var(--mono);font-size:12px;color:var(--grey);padding-top:10px;border-top:2px solid var(--accent)}
