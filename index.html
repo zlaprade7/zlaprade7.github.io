@@ -519,6 +519,7 @@ main{position:relative;z-index:1}
      rigid body, which is why it read as a rendered object: after the entrance,
      no leaf ever moved relative to any other leaf. */
   const flutter=[];
+  const berries=[];
 
   // same layout as the approved silhouette: join at top, tips at the bottom opening
   function branch(a0,a1,flip){
@@ -556,8 +557,15 @@ main{position:relative;z-index:1}
         const o=new THREE.Mesh(new THREE.SphereGeometry(rnd(.055,.075),12,10),Math.random()<.32?silverMat:oliveMat);
         o.scale.y=1.3;
         o.userData.grown=1; o.userData.at=t;
-        o.position.set(Math.cos(a)*(R-.14),Math.sin(a)*(R-.14),rnd(-.03,.1)*flip);
+        const bz=rnd(-.03,.1)*flip;
+        o.position.set(Math.cos(a)*(R-.14),Math.sin(a)*(R-.14),bz);
         wreath.add(o);
+        /* An olive hangs off the branch on a short stalk, so it swings about
+           where the stalk meets the stem rather than drifting on its own. Keep
+           the joint and the arm; the loop rotates the arm. */
+        berries.push({o:o, at:t, br:(flip>0?0:1), z:bz,
+          ax:Math.cos(a)*R, ay:Math.sin(a)*R,
+          ox:-0.14*Math.cos(a), oy:-0.14*Math.sin(a)});
       }
     }
   }
@@ -688,6 +696,21 @@ main{position:relative;z-index:1}
            to the branch however hard the pointer leans on it. */
         f.o.rotation.x=f.rx+wave*amp+k*0.22;       // twist along the blade
         f.o.rotation.z=f.rz+wave*amp*0.30+k*0.30*f.side;
+      }
+      /* The olives were in the entrance array only, so they had not moved
+         since load while every leaf around them fluttered. They swing on
+         their stalks now: the arm from the branch is rotated, so the fruit
+         travels but the joint does not. Heavier than a leaf, so it lags the
+         wave a little and swings less. */
+      for(const b of berries){
+        const w=Math.sin(tw*(2.6+b.br*0.37)-b.at*9.0+b.br*2.2-0.9);
+        const dx=b.ax+b.ox-pxw, dy=b.ay+b.oy-pyw;
+        const k=Math.exp(-(dx*dx+dy*dy)*1.7)*settle;
+        const th=(w*0.22*gust+k*0.35)*settle;
+        const c=Math.cos(th), sn=Math.sin(th);
+        b.o.position.set(b.ax + b.ox*c - b.oy*sn,
+                         b.ay + b.ox*sn + b.oy*c,
+                         b.z + w*0.02*settle);
       }
     }
 
