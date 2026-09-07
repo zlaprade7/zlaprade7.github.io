@@ -549,9 +549,8 @@ main{position:relative;z-index:1}
         leaf.userData.at=t;                 // position along the branch, 0..1
         wreath.add(leaf);
         flutter.push({o:leaf, at:t, side:side,
-          rx:leaf.rotation.x, ry:leaf.rotation.y, rz:leaf.rotation.z,
-          px:leaf.position.x, py:leaf.position.y,
-          ph:Math.random()*6.283});        // per-leaf phase, or it marches in step
+          br:(flip>0?0:1),                 // which branch, so the two are not a mirror
+          rx:leaf.rotation.x, ry:leaf.rotation.y, rz:leaf.rotation.z});
       }
       if(i%4===1&&t>.12&&t<.9){
         const o=new THREE.Mesh(new THREE.SphereGeometry(rnd(.055,.075),12,10),Math.random()<.32?silverMat:oliveMat);
@@ -673,15 +672,22 @@ main{position:relative;z-index:1}
            not a wave at all, it is noise, and at 0.58 rad/s it read as
            nothing moving. The blade twists about its own long axis, which is
            what a leaf on a stem actually does, and the tips move most. */
-        const wave=Math.sin(tw*2.6-f.at*9.0);
+        /* The two branches are independent. The phase used to depend only on
+           position along the branch, and both branches run 0..1 from the
+           binding, so every leaf had a twin on the other side doing exactly
+           the same thing at exactly the same moment. They now differ in
+           phase and, more importantly, in speed - incommensurate rates never
+           fall back into step. */
+        const wave=Math.sin(tw*(2.6+f.br*0.37)-f.at*9.0+f.br*2.2);
         const amp=(0.045+0.20*f.at)*gust*settle;
-        const dx=f.px-pxw, dy=f.py-pyw, d2=dx*dx+dy*dy;
-        const k=Math.exp(-d2*1.7)*settle;          // tighter, and gentler than before
-        const d=Math.sqrt(d2)||1e-4;
-        f.o.rotation.x=f.rx+wave*amp;              // twist along the blade
-        f.o.rotation.z=f.rz+wave*amp*0.30+k*0.20*f.side;
-        f.o.position.x=f.px+(dx/d)*k*0.09;
-        f.o.position.y=f.py+(dy/d)*k*0.09;
+        const p=f.o.position;
+        const dx=p.x-pxw, dy=p.y-pyw, d2=dx*dx+dy*dy;
+        const k=Math.exp(-d2*1.7)*settle;
+        /* Rotation only. Pushing the leaf bodily aside moved it off the stem -
+           the pivot is at the attachment point, so turning it keeps it joined
+           to the branch however hard the pointer leans on it. */
+        f.o.rotation.x=f.rx+wave*amp+k*0.22;       // twist along the blade
+        f.o.rotation.z=f.rz+wave*amp*0.30+k*0.30*f.side;
       }
     }
 
