@@ -20,6 +20,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
+<style>
+.kal{background:var(--wash);padding:8px 0 2px}
+.k-ax{font-family:var(--mono);fill:var(--grey);font-size:11px;letter-spacing:.06em}
+.k-rd{font-family:var(--mono);fill:var(--ink);font-size:13px}
+.k-sub{font-family:var(--mono);fill:var(--grey);font-size:11px;letter-spacing:.06em}
+</style>
+
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -75,6 +82,33 @@
     <figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bottle-proto.jpg" alt="The sensor front end on a breadboard, calipers alongside"></div><figcaption><b>FIG. 3</b> &mdash; The front end on a breadboard, before any of it was a board.</figcaption></figure>
 <h3 class="rv">The noise problem</h3>
 <p class="rv">Moving the circuit or bringing other electronics near it put visible spikes on the temperature signal. One capacitor at the right node cut the noise to about a sixth of what it was. Since the signal moves slowly anyway, filtering out the fast noise doesn't cost anything.</p>
+<figure class="rv kal-fig" style="max-width:900px;margin-top:26px">
+  <div class="frame kal">
+    <svg viewBox="0 0 680 250" role="img"
+         aria-label="A Kalman filter following a temperature signal: it averages away noise while it is steady, and still follows a genuine step when the reading really changes.">
+      <line x1="70" y1="26" x2="70" y2="196" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="70" y1="196" x2="470" y2="196" stroke="var(--line)" stroke-width="1.5"/>
+      <text class="k-ax" x="62" y="32" text-anchor="end">28&#176;</text>
+      <text class="k-ax" x="62" y="200" text-anchor="end">20&#176;</text>
+      <text class="k-ax" x="70" y="216">AC</text>
+      <text class="k-ax" x="470" y="216" text-anchor="end">OUTSIDE</text>
+      <path id="k-raw" fill="none" stroke="var(--grey)" stroke-width="1" opacity=".85"/>
+      <path id="k-fil" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+      <circle id="k-dot" r="4.5" fill="var(--ink)"/>
+      <text class="k-sub" x="516" y="52">RAW SENSOR</text>
+      <text id="k-rawv" class="k-rd" x="516" y="74"></text>
+      <text class="k-sub" x="516" y="112">FILTERED</text>
+      <text id="k-filv" class="k-rd" x="516" y="134"></text>
+      <text id="k-note" class="k-sub" x="516" y="172"></text>
+      <text id="k-note2" class="k-sub" x="516" y="188"></text>
+    </svg>
+  </div>
+  <figcaption><b>FIG. 4</b> &mdash; The filter running on the temperature signal.
+  Thin line is the raw reading, thick line is what the bottle uses. It flattens
+  the noise while the room is steady, and still follows the step when the
+  reading genuinely changes.</figcaption>
+</figure>
+
 <h3 class="rv">Each sensor fails differently, so each got its own filter</h3>
 <ul class="rv">
 <li><b>Temperature: Kalman filter.</b> Room temperature doesn't physically jump, so spikes get averaged away. When the reading genuinely changes, like walking from AC into summer heat, the filter follows it instead of rejecting it.</li>
@@ -84,7 +118,7 @@
 <h3 class="rv">The housing was harder than the circuit</h3>
 <p class="rv">The goal was a collar that threads between the body and lid of the bottle. The manufacturer's thread is proprietary and the dimensions aren't published anywhere, so I had to reverse-engineer it: learning to use calipers properly, learning tolerances the hard way, and going through more printed iterations than I'd like to admit. This was my first real CAD work.</p>
 <div class="note rv"><p><b>Biggest lesson: order of operations.</b> I ordered sensors before I understood how hard the housing would be, so the mechanical design had to work around parts that were already locked in. Next time I'd figure out the enclosure first.</p></div>
-<figure class="rv" style="max-width:900px;margin-top:34px"><div class="frame"><img src="../images/bottle-hero.jpg" alt="The finished printed housing clamped to the bottle"></div><figcaption><b>FIG. 4</b> — Final printed housing, threaded onto the bottle.</figcaption></figure><figure class="rv noprint" style="max-width:900px;margin-top:34px">
+<figure class="rv" style="max-width:900px;margin-top:34px"><div class="frame"><img src="../images/bottle-hero.jpg" alt="The finished printed housing clamped to the bottle"></div><figcaption><b>FIG. 5</b> — Final printed housing, threaded onto the bottle.</figcaption></figure><figure class="rv noprint" style="max-width:900px;margin-top:34px">
   <div class="frame"><model-viewer src="../models/bottle-collar.glb"
       alt="The printed collar and lid as a rotatable 3D model. The reverse-engineered thread is on the underside."
       camera-controls touch-action="pan-y" loading="lazy"
@@ -92,7 +126,7 @@
       exposure="1.1" shadow-intensity="0.6" interaction-prompt="none">
       <div class="mvposter" slot="poster">3D MODEL · DRAG TO ROTATE</div>
     </model-viewer></div>
-  <figcaption><b>FIG. 5</b> &mdash; The same part from the CAD. The thread that took the calipers is on the underside.</figcaption></figure>
+  <figcaption><b>FIG. 6</b> &mdash; The same part from the CAD. The thread that took the calipers is on the underside.</figcaption></figure>
   </div>
 </section><section class="doc" style="border-bottom:none">
   <div class="wrap">
@@ -119,6 +153,75 @@
   </div>
 </footer>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+<script>
+/* FIG. 4 - a Kalman filter on the temperature signal. The trace is generated
+   from the same shape the real one had: a steady room, a genuine step when you
+   walk out of the AC, then steady again, with noise on top. The filter is the
+   real one-dimensional update - predict, then correct by the innovation times
+   the gain - not a moving average dressed up as one, so the way it lags the
+   step and then catches up is the filter's actual behaviour. */
+(function(){
+  const svg=document.querySelector('.kal-fig svg'); if(!svg) return;
+  const raw=svg.querySelector('#k-raw'), fil=svg.querySelector('#k-fil');
+  const dot=svg.querySelector('#k-dot');
+  const rv=svg.querySelector('#k-rawv'), fv=svg.querySelector('#k-filv');
+  const note=svg.querySelector('#k-note'), note2=svg.querySelector('#k-note2');
+  const X0=70, X1=470, Y0=196, Y1=26, LO=20, HI=28, N=150;
+  const x=i=>X0+(i/(N-1))*(X1-X0);
+  const y=t=>Y0-((t-LO)/(HI-LO))*(Y0-Y1);
+
+  // truth: steady, a real step at 45%, steady again
+  const truth=[], meas=[];
+  let seed=7;
+  const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff-0.5};
+  for(let i=0;i<N;i++){
+    const t = i<N*0.45 ? 22.0 : 22.0+5.0*Math.min(1,(i-N*0.45)/8);
+    truth.push(t);
+    meas.push(t + rnd()*1.9);            // sensor noise
+  }
+  // 1-D Kalman: x = x + K(z - x), K from the running covariance
+  const est=[]; let xh=meas[0], P=1, Q=0.006, R=0.5;
+  for(let i=0;i<N;i++){
+    P=P+Q;
+    const K=P/(P+R);
+    xh=xh+K*(meas[i]-xh);
+    P=(1-K)*P;
+    est.push(xh);
+  }
+  const path=a=>a.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
+  raw.setAttribute('d',path(meas));
+  fil.setAttribute('d',path(est));
+
+  const calm=matchMedia('(prefers-reduced-motion: reduce)');
+  function place(i){
+    i=Math.max(0,Math.min(N-1,Math.round(i)));
+    dot.setAttribute('cx',x(i)); dot.setAttribute('cy',y(est[i]));
+    rv.textContent=meas[i].toFixed(2)+' \u00B0C';
+    fv.textContent=est[i].toFixed(2)+' \u00B0C';
+    /* two short lines: one long one ran off the right edge of the viewBox */
+    const stepping = i>N*0.45 && i<N*0.45+22;
+    note.textContent  = stepping ? 'a real change:'  : 'steady:';
+    note2.textContent = stepping ? 'the filter follows' : 'noise averaged away';
+  }
+  if(calm.matches){ place(N-1); return; }
+
+  let raf=0, born=null, running=false;
+  const PERIOD=9000;
+  function tick(now){
+    if(born===null) born=now;
+    const p=((now-born)%PERIOD)/PERIOD;
+    place(p*(N-1));
+    raf=requestAnimationFrame(tick);
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>es.forEach(e=>{
+      if(e.isIntersecting && !running){running=true;born=null;raf=requestAnimationFrame(tick)}
+      else if(!e.isIntersecting && running){running=false;cancelAnimationFrame(raf);raf=0}
+    }),{threshold:.25}).observe(svg);
+  } else raf=requestAnimationFrame(tick);
+  place(0);
+})();
+</script>
 <script src="../main.js"></script>
 </body>
 </html>

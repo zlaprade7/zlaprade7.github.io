@@ -20,6 +20,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
+<style>
+.hys{background:var(--wash);padding:8px 0 2px}
+.h-ax{font-family:var(--mono);fill:var(--grey);font-size:11px;letter-spacing:.06em}
+.h-rd{font-family:var(--mono);fill:var(--ink);font-size:13px}
+.h-sub{font-family:var(--mono);fill:var(--grey);font-size:11px;letter-spacing:.06em}
+</style>
+
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -60,8 +67,41 @@
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
     <p class="slede rv">Six versions of one circuit, and almost everything I learned was on the physical side.</p>
+<figure class="rv hys-fig" style="max-width:900px;margin-top:8px">
+  <div class="frame hys">
+    <svg viewBox="0 0 680 250" role="img"
+         aria-label="A Schmitt trigger's hysteresis loop: as light rises the output does not switch until the upper threshold, and going back down it does not switch again until the lower threshold, so a noisy signal cannot chatter.">
+      <line x1="70" y1="30" x2="70" y2="196" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="70" y1="196" x2="470" y2="196" stroke="var(--line)" stroke-width="1.5"/>
+      <text class="h-ax" x="62" y="36" text-anchor="end">ON</text>
+      <text class="h-ax" x="62" y="200" text-anchor="end">OFF</text>
+      <text class="h-ax" x="70" y="216">DARK</text>
+      <text class="h-ax" x="470" y="216" text-anchor="end">BRIGHT</text>
+      <!-- the two thresholds -->
+      <line id="h-lo" y1="30" y2="196" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
+      <line id="h-hi" y1="30" y2="196" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
+      <text id="h-lolab" class="h-ax" y="238" text-anchor="middle">V-</text>
+      <text id="h-hilab" class="h-ax" y="238" text-anchor="middle">V+</text>
+      <!-- the loop itself, drawn once -->
+      <path id="h-loop" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <circle id="h-dot" r="5" fill="var(--ink)"/>
+      <text class="h-sub" x="516" y="52">LIGHT ON THE SENSOR</text>
+      <text id="h-lux"  class="h-rd" x="516" y="74"></text>
+      <text class="h-sub" x="516" y="112">OUTPUT</text>
+      <text id="h-out"  class="h-rd" x="516" y="134"></text>
+      <text id="h-why"  class="h-sub" x="516" y="172"></text>
+      <text id="h-why2" class="h-sub" x="516" y="188"></text>
+    </svg>
+  </div>
+  <figcaption><b>FIG. 1</b> &mdash; Why two thresholds and not one. Coming up, the
+  output waits for V+; going back down it waits for V&minus;. Between them the
+  output simply will not change, which is what stops fading daylight from
+  chattering the load on and off.</figcaption>
+</figure>
+
+
     <p class="rv">Four breadboard revisions to get the thresholds and switching behavior right, then two board revisions. The schematic barely changed. What changed was everything around it: footprints that didn't match real parts, routing that passed the design rule check but would have been miserable to assemble, and slowly realizing that a board is a mechanical object as much as an electrical one.</p>
-<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/lightswitch-proto.jpg" alt="The light-activated switch on a breadboard"></div><figcaption><b>FIG. 1</b> &mdash; The circuit on a breadboard, before any of the revisions.</figcaption></figure>
+<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/lightswitch-proto.jpg" alt="The light-activated switch on a breadboard"></div><figcaption><b>FIG. 2</b> &mdash; The circuit on a breadboard, before any of the revisions.</figcaption></figure>
   </div>
 </section><section class="doc" style="border-bottom:none">
   <div class="wrap">
@@ -77,6 +117,65 @@
     <span>Zack LaPrade · University of Georgia</span>
   </div>
 </footer>
+<script>
+/* FIG. 1 - the hysteresis loop, traced by a light level that rises and falls.
+   The whole point of the circuit is that the output depends on which DIRECTION
+   the input is moving, so the dot walks the loop rather than sitting on a
+   curve: up along the bottom to V+, jump, back along the top to V-, jump. */
+(function(){
+  const svg=document.querySelector('.hys-fig svg'); if(!svg) return;
+  const X0=70, X1=470, YON=30, YOFF=196;
+  const LO=0.38, HI=0.66;                    // thresholds, fraction of the range
+  const x=v=>X0+v*(X1-X0);
+  const loop=svg.querySelector('#h-loop'), dot=svg.querySelector('#h-dot');
+  const lux=svg.querySelector('#h-lux'), out=svg.querySelector('#h-out');
+  const why=svg.querySelector('#h-why'), why2=svg.querySelector('#h-why2');
+  for(const [id,v] of [['#h-lo',LO],['#h-hi',HI]]){
+    const l=svg.querySelector(id); l.setAttribute('x1',x(v)); l.setAttribute('x2',x(v));
+  }
+  svg.querySelector('#h-lolab').setAttribute('x',x(LO));
+  svg.querySelector('#h-hilab').setAttribute('x',x(HI));
+
+  loop.setAttribute('d',
+    'M'+x(0)+' '+YOFF+' L'+x(HI)+' '+YOFF+     // dark, output off, rising
+    ' L'+x(HI)+' '+YON+                        // trips on at V+
+    ' L'+x(1)+' '+YON+                         // bright, stays on
+    ' M'+x(1)+' '+YON+' L'+x(LO)+' '+YON+      // falling, still on
+    ' L'+x(LO)+' '+YOFF+                       // drops out at V-
+    ' L'+x(0)+' '+YOFF);
+
+  const calm=matchMedia('(prefers-reduced-motion: reduce)');
+  let on=false;
+  function place(v, rising){
+    if(rising && v>=HI) on=true;
+    if(!rising && v<=LO) on=false;
+    dot.setAttribute('cx',x(v));
+    dot.setAttribute('cy',on?YON:YOFF);
+    lux.textContent=Math.round(v*100)+'%'+(rising?'  \u2191':'  \u2193');
+    out.textContent=on?'ON':'OFF';
+    const near = rising ? (v<HI && v>LO) : (v>LO && v<HI);
+    why.textContent  = near ? 'between the thresholds:' : '';
+    why2.textContent = near ? 'the output will not move' : '';
+  }
+  if(calm.matches){ place(1,true); return; }
+
+  let raf=0, born=null, running=false;
+  const PERIOD=9000;
+  function tick(now){
+    if(born===null) born=now;
+    const p=((now-born)%PERIOD)/PERIOD;
+    place(p<.5 ? p*2 : (1-p)*2, p<.5);
+    raf=requestAnimationFrame(tick);
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>es.forEach(e=>{
+      if(e.isIntersecting && !running){running=true;born=null;raf=requestAnimationFrame(tick)}
+      else if(!e.isIntersecting && running){running=false;cancelAnimationFrame(raf);raf=0}
+    }),{threshold:.25}).observe(svg);
+  } else raf=requestAnimationFrame(tick);
+  place(0,true);
+})();
+</script>
 <script src="../main.js"></script>
 </body>
 </html>
