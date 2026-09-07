@@ -547,13 +547,22 @@ main{position:relative;z-index:1}
     const pairs=23;
     for(let i=1;i<=pairs;i++){
       const t=i/(pairs+1),a=a0+(a1-a0)*t;
-      const tangent=(a1>a0)?a+Math.PI/2:a-Math.PI/2;
+      /* Attach to the stem the tube actually draws, NOT to the ideal circle the
+         tube was generated from. `w` swings the stem +-0.07 either side of R and
+         the points carry a z drift on top of that, so a leaf placed at
+         cos(a)*R,sin(a)*R sat off the wood everywhere the branch bent outward -
+         a visible gap, worst at the bends, which is exactly where the eye looks.
+         Sampling the curve puts every leaf base on the branch, and the curve's
+         own tangent fans the leaves along the bend instead of along a circle
+         that is no longer underneath them. */
+      const P=curve.getPoint(t), T=curve.getTangent(t);
+      const tangent=Math.atan2(T.y,T.x);
       const taper=.5+.6*Math.sin(t*Math.PI*.92);
       for(const side of [1,-1]){
         const leaf=new THREE.Group();
         leaf.add(new THREE.Mesh(leafGeo,leafMats[(Math.random()*leafMats.length)|0]));
         leaf.add(new THREE.Mesh(leafGeo,underMat));
-        leaf.position.set(Math.cos(a)*R,Math.sin(a)*R,rnd(-.04,.04));
+        leaf.position.set(P.x,P.y,P.z+rnd(-.03,.03));
         leaf.rotation.z=tangent+side*rnd(.5,.75);   // fan along the stem, both sides
         leaf.rotation.y=side*rnd(.15,.4)*flip;       // gentle 3D tilt, disciplined
         leaf.rotation.x=rnd(-.15,.15);
@@ -561,23 +570,34 @@ main{position:relative;z-index:1}
         leaf.userData.grown=leaf.scale.x;   // entrance target
         leaf.userData.at=t;                 // position along the branch, 0..1
         wreath.add(leaf);
+        /* Every leaf gets its own rate, phase and stiffness, fixed at build
+           time. Without them the wind term depended only on `at`, and the two
+           leaves of a pair share `at` exactly - so each pair flapped as one
+           rigid V, and there were 23 identical Vs down each side. A real leaf
+           has its own mass on its own stalk; incommensurate rates mean no two
+           ever fall back into step. */
         flutter.push({o:leaf, at:t, side:side,
           br:(flip>0?0:1),                 // which branch, so the two are not a mirror
-          rx:leaf.rotation.x, ry:leaf.rotation.y, rz:leaf.rotation.z});
+          rx:leaf.rotation.x, ry:leaf.rotation.y, rz:leaf.rotation.z,
+          sp:rnd(.70,1.44),                // own natural rate
+          ph:rnd(0,6.283), ph2:rnd(0,6.283),
+          amp:rnd(.62,1.48)});             // own give: some leaves are stiffer
       }
       if(i%4===1&&t>.12&&t<.9){
         const o=new THREE.Mesh(new THREE.SphereGeometry(rnd(.055,.075),12,10),Math.random()<.32?silverMat:oliveMat);
         o.scale.y=1.3;
         o.userData.grown=1; o.userData.at=t;
-        const bz=rnd(-.03,.1)*flip;
-        o.position.set(Math.cos(a)*(R-.14),Math.sin(a)*(R-.14),bz);
+        // hang off the stem itself, on the inner side, same as the leaves
+        const nx=-Math.cos(a), ny=-Math.sin(a);
+        const bz=P.z+rnd(-.03,.1)*flip;
+        o.position.set(P.x+nx*.14,P.y+ny*.14,bz);
         wreath.add(o);
         /* An olive hangs off the branch on a short stalk, so it swings about
            where the stalk meets the stem rather than drifting on its own. Keep
            the joint and the arm; the loop rotates the arm. */
         berries.push({o:o, at:t, br:(flip>0?0:1), z:bz,
-          ax:Math.cos(a)*R, ay:Math.sin(a)*R,
-          ox:-0.14*Math.cos(a), oy:-0.14*Math.sin(a)});
+          ax:P.x, ay:P.y, ox:nx*.14, oy:ny*.14,
+          sp:rnd(.62,1.05), ph:rnd(0,6.283)});
       }
     }
   }
@@ -688,28 +708,34 @@ main{position:relative;z-index:1}
       const pxw=(mx*visW)/baseScale, pyw=(-my*visH)/baseScale;
       const gust=0.45+0.55*Math.sin(tw*0.42)*Math.sin(tw*0.17);  // uneven, not a metronome
       for(const f of flutter){
-        /* One coherent wave. The phase depends ONLY on how far along the
-           branch the leaf sits, so the gust visibly runs from the binding out
-           to the tips; a random per-leaf phase (which is what was here) is
-           not a wave at all, it is noise, and at 0.58 rad/s it read as
-           nothing moving. The blade twists about its own long axis, which is
-           what a leaf on a stem actually does, and the tips move most. */
-        /* The two branches are independent. The phase used to depend only on
-           position along the branch, and both branches run 0..1 from the
-           binding, so every leaf had a twin on the other side doing exactly
-           the same thing at exactly the same moment. They now differ in
-           phase and, more importantly, in speed - incommensurate rates never
-           fall back into step. */
-        const wave=Math.sin(tw*(2.6+f.br*0.37)-f.at*9.0+f.br*2.2);
-        const amp=(0.045+0.20*f.at)*gust*settle;
+        /* Two separate things, and conflating them is what made the whole ring
+           flap as one object:
+
+           FRONT is the gust itself, travelling from the binding out to the tips.
+           Its phase depends only on `at` and on which branch, so you can still
+           watch a gust cross the wreath. But it is used as an ENVELOPE - how
+           hard the air is pushing on this leaf right now - never as the leaf's
+           own motion.
+
+           OWN is the leaf's motion: two detuned oscillators at rates fixed per
+           leaf at build time. Because `sp` differs leaf to leaf, no two are ever
+           in step, including the two halves of a pair, which previously shared
+           `at` and therefore moved identically. The gust says when the leaves
+           move; each leaf decides how. */
+        const front=Math.sin(tw*(1.30+f.br*0.23)-f.at*7.5+f.br*2.2);
+        const env=0.30+0.70*(0.5+0.5*front);
+        const own=Math.sin(tw*2.85*f.sp+f.ph)*0.72
+                 +Math.sin(tw*5.10*f.sp*0.63+f.ph2)*0.28;
+        const amp=(0.05+0.22*f.at)*gust*env*f.amp*settle;
         const p=f.o.position;
         const dx=p.x-pxw, dy=p.y-pyw, d2=dx*dx+dy*dy;
         const k=Math.exp(-d2*1.7)*settle;
         /* Rotation only. Pushing the leaf bodily aside moved it off the stem -
            the pivot is at the attachment point, so turning it keeps it joined
            to the branch however hard the pointer leans on it. */
-        f.o.rotation.x=f.rx+wave*amp+k*0.22;       // twist along the blade
-        f.o.rotation.z=f.rz+wave*amp*0.30+k*0.30*f.side;
+        f.o.rotation.x=f.rx+own*amp+k*0.22;        // twist along the blade: shows the silver
+        f.o.rotation.z=f.rz+own*amp*0.32+k*0.30*f.side;
+        f.o.rotation.y=f.ry+own*amp*0.45;          // and out of plane, so it is not a flat flap
       }
       /* The olives were in the entrance array only, so they had not moved
          since load while every leaf around them fluttered. They swing on
@@ -717,10 +743,12 @@ main{position:relative;z-index:1}
          travels but the joint does not. Heavier than a leaf, so it lags the
          wave a little and swings less. */
       for(const b of berries){
-        const w=Math.sin(tw*(2.6+b.br*0.37)-b.at*9.0+b.br*2.2-0.9);
+        const front=Math.sin(tw*(1.30+b.br*0.23)-b.at*7.5+b.br*2.2-0.9);
+        const env=0.30+0.70*(0.5+0.5*front);
+        const w=Math.sin(tw*1.75*b.sp+b.ph);   // its own pendulum, slower than a leaf
         const dx=b.ax+b.ox-pxw, dy=b.ay+b.oy-pyw;
         const k=Math.exp(-(dx*dx+dy*dy)*1.7)*settle;
-        const th=(w*0.22*gust+k*0.35)*settle;
+        const th=(w*0.26*gust*env+k*0.35)*settle;
         const c=Math.cos(th), sn=Math.sin(th);
         b.o.position.set(b.ax + b.ox*c - b.oy*sn,
                          b.ay + b.ox*sn + b.oy*c,
