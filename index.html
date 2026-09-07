@@ -130,6 +130,11 @@ main{position:relative;z-index:1}
   .entry .fig, .entry .fig.wide, .entry .fig.tall{grid-column:2;grid-row:1;
     width:auto;max-width:100%}
   .entry .body{grid-column:3;grid-row:1}
+  /* Experience, About and the skill rows carry no photograph, so the picture
+     column sat empty in every one of them - a 400px hole between the dates and
+     the job title. Without a figure the text takes that column back, capped at
+     a reading measure so bullets do not run 940px wide. */
+  .entry:not(:has(.fig)) .body{grid-column:2 / -1;max-width:64ch}
   /* The frame hugs the photograph rather than stretching it, and the height is
      capped so a 3:4 portrait cannot make its row three times the height of a
      wide one. Nothing is cropped - the picture just gets smaller. */
