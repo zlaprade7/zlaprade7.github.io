@@ -46,7 +46,7 @@
 <main id="main" role="main">
 <header class="phero">
   <div class="wrap">
-    <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 006</span><span>2025 – 26</span></div>
+    <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 006</span><span>2025&ndash;26</span></div>
     <h1><span class="row"><span>Analog & Sensors</span></span><span class="row"><span>Coursework</span></span></h1>
     <p class="deck">The coursework behind the rest of these projects: analog design and measurement, including the uncertainty analysis that goes with a real reading.</p>
     <div class="chips"><div class="chip"><div class="v">1.7–4%</div><div class="l">propagated uncertainty</div></div><div class="chip"><div class="v">1/ln(2)</div><div class="l">where 1.44 comes from</div></div></div>
@@ -62,7 +62,7 @@
     <div class="shead rv"><h2 class="big">Measurement</h2></div>
     <p class="slede rv">Turning a resistance into an angle, with error bars.</p>
     <p class="rv">One lab I liked: measure a potentiometer's shaft angle by using it to set the frequency of a 555 oscillator, then read that frequency on a microcontroller with interrupt-based period averaging. Resistance becomes frequency, frequency becomes a timestamp difference, and that becomes an angle.</p>
-<p class="rv">The transfer function comes from the 555's internals: the capacitor always charges and discharges through exactly ln(2) time constants, because the internal comparators trip at one third and two thirds of the supply. That's where the familiar 1.44 factor comes from, it's 1 over ln(2).</p>
+<p class="rv">The transfer function comes from the 555's internals: the capacitor always charges and discharges through exactly ln(2) time constants, because the internal comparators trip at one third and two thirds of the supply. That's where the familiar 1.44 factor comes from: it is 1 over ln(2).</p>
 <figure class="rv unc-fig" style="max-width:900px;margin-top:34px">
   <div class="frame unc">
     <svg viewBox="0 0 680 250" role="img"
