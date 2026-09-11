@@ -669,10 +669,10 @@ main{position:relative;z-index:1}
   const GROW_MS=2000, STAGGER=0.72;
   let born=null;
 
-  let t=0, tw=0, last=performance.now(), raf=0;   // tw is real seconds, for the wind
+  let tw=0, last=performance.now(), raf=0;   // tw is real seconds, for the wind
   function loop(now){
     now = now || performance.now();
-    /* seconds, not frames: `t+=.003` per frame ran twice as fast on a 120Hz
+    /* seconds, not frames: a per-frame increment ran twice as fast on a 120Hz
        display as on a 60Hz one. */
     const dt=Math.min(0.05,(now-last)/1000); last=now;
     if(born===null) born=now;
@@ -687,9 +687,8 @@ main{position:relative;z-index:1}
       }
     }
 
-    t+=dt*0.18;
-    tw+=dt;                       // t is deliberately slow; wind needs real time
-    const settle=calm.matches?0:(1-exit); // idle sway eases out as it dissolves
+    tw+=dt;
+    const settle=calm.matches?0:(1-exit); // the wind eases out as the wreath dissolves
     const ease=exit*exit*(3-2*exit);   // smoothstep: even, graceful recede (no abrupt poof)
 
     /* ── wind, and the pointer ──────────────────────────────────────
@@ -706,7 +705,11 @@ main{position:relative;z-index:1}
       const vFOV=cam.fov*Math.PI/180;
       const visH=2*Math.tan(vFOV/2)*cam.position.z, visW=visH*cam.aspect;
       const pxw=(mx*visW)/baseScale, pyw=(-my*visH)/baseScale;
-      const gust=0.45+0.55*Math.sin(tw*0.42)*Math.sin(tw*0.17);  // uneven, not a metronome
+      /* Uneven, not a metronome - but a PRODUCT of two sines sits near zero
+         most of the time (it was under 0.3 a quarter of the time, and even went
+         slightly negative, which flips the phase). A weighted sum breathes
+         without ever dropping the wind to nothing: 0.24..0.89, mean 0.60. */
+      const gust=0.62+0.38*(0.62*Math.sin(tw*0.31)+0.38*Math.sin(tw*0.17+2.1));
       for(const f of flutter){
         /* Two separate things, and conflating them is what made the whole ring
            flap as one object:
@@ -723,19 +726,28 @@ main{position:relative;z-index:1}
            `at` and therefore moved identically. The gust says when the leaves
            move; each leaf decides how. */
         const front=Math.sin(tw*(1.30+f.br*0.23)-f.at*7.5+f.br*2.2);
-        const env=0.30+0.70*(0.5+0.5*front);
-        const own=Math.sin(tw*2.85*f.sp+f.ph)*0.72
-                 +Math.sin(tw*5.10*f.sp*0.63+f.ph2)*0.28;
-        const amp=(0.05+0.22*f.at)*gust*env*f.amp*settle;
+        const env=0.45+0.55*(0.5+0.5*front);
+        /* SWEEP is the leaf turning about its attachment point - the motion you
+           can actually see, because it is the one that moves the tip across the
+           screen. It used to get 0.32 of the amplitude while the twist got all
+           of it, so the budget was going into a rotation about the blade's own
+           long axis: 18 degrees of twist bought 5.8 degrees of visible swing,
+           and a leaf tip travelled 4-9 px. It is the primary term now, sized so
+           a tip travels ~25-40 px. */
+        const sweep=Math.sin(tw*2.55*f.sp+f.ph)*0.74
+                   +Math.sin(tw*4.30*f.sp*0.57+f.ph2)*0.26;
+        // a real leaf twists as it swings, and lags doing it - this is what flashes the silver
+        const twist=Math.sin(tw*2.55*f.sp+f.ph-1.05);
+        const amp=(0.09+0.13*f.at)*gust*env*f.amp*settle;
         const p=f.o.position;
         const dx=p.x-pxw, dy=p.y-pyw, d2=dx*dx+dy*dy;
         const k=Math.exp(-d2*1.7)*settle;
         /* Rotation only. Pushing the leaf bodily aside moved it off the stem -
            the pivot is at the attachment point, so turning it keeps it joined
            to the branch however hard the pointer leans on it. */
-        f.o.rotation.x=f.rx+own*amp+k*0.22;        // twist along the blade: shows the silver
-        f.o.rotation.z=f.rz+own*amp*0.32+k*0.30*f.side;
-        f.o.rotation.y=f.ry+own*amp*0.45;          // and out of plane, so it is not a flat flap
+        f.o.rotation.z=f.rz+sweep*amp+k*0.30*f.side;   // the swing
+        f.o.rotation.x=f.rx+twist*amp*0.85+k*0.22;     // the twist, showing the pale underside
+        f.o.rotation.y=f.ry+sweep*amp*0.35;            // out of plane, so it is not a flat flap
       }
       /* The olives were in the entrance array only, so they had not moved
          since load while every leaf around them fluttered. They swing on
@@ -744,11 +756,11 @@ main{position:relative;z-index:1}
          wave a little and swings less. */
       for(const b of berries){
         const front=Math.sin(tw*(1.30+b.br*0.23)-b.at*7.5+b.br*2.2-0.9);
-        const env=0.30+0.70*(0.5+0.5*front);
+        const env=0.45+0.55*(0.5+0.5*front);
         const w=Math.sin(tw*1.75*b.sp+b.ph);   // its own pendulum, slower than a leaf
         const dx=b.ax+b.ox-pxw, dy=b.ay+b.oy-pyw;
         const k=Math.exp(-(dx*dx+dy*dy)*1.7)*settle;
-        const th=(w*0.26*gust*env+k*0.35)*settle;
+        const th=(w*0.30*gust*env+k*0.35)*settle;
         const c=Math.cos(th), sn=Math.sin(th);
         b.o.position.set(b.ax + b.ox*c - b.oy*sn,
                          b.ay + b.ox*sn + b.oy*c,
@@ -756,10 +768,18 @@ main{position:relative;z-index:1}
       }
     }
 
-    /* the group itself barely moves now; the life is in the leaves */
-    wreath.rotation.y=(Math.sin(t)*.05+mx*.05)*settle;
-    wreath.rotation.x=(Math.cos(t*.8)*.02+my*.03)*settle;
-    wreath.position.y=Math.sin(t*1.4)*.06*settle+ease*.7; // idle sway, then rises away as it fades
+    /* The group's idle sway and bob are GONE, and this is the whole reason the
+       leaves never read as moving individually. A 0.05 rad sway swings a leaf
+       three units out from the centre about 36 px, and the bob moved every leaf
+       another 14 px - both perfectly coherent, the entire ring as one rigid
+       body - while an individual leaf's tip was travelling 4-9 px underneath.
+       Roughly 7:1 in favour of the motion that reads as "all together", so that
+       is what the eye locked onto. Nothing moves the group on its own now; all
+       the life is in the leaves. The pointer still tilts it, but only while the
+       pointer is actually moving, which does not read as the wreath's own idle. */
+    wreath.rotation.y=mx*.05*settle;
+    wreath.rotation.x=my*.03*settle;
+    wreath.position.y=ease*.7;   // holds still, then rises away as it fades
     wreath.scale.setScalar(baseScale*(1+ease*.06)); // a few percent of bloom, no fall
     cv.style.transform=`translateY(${followPx}px)`;
     const op=Math.max(0,1-ease*1.1);
