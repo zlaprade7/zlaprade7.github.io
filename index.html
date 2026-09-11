@@ -299,8 +299,8 @@ main{position:relative;z-index:1}
     </div>
     <div class="body">
       <h3>Wearable Sensor Glove <span class="arw">↗</span></h3>
-      <p>A wireless teleoperation glove that mirrors hand motion onto a robotic hand. I proposed it; the lab and I are building it now. Nothing is measured yet.</p>
-      <div class="chipset"><b>In build</b><span>BNO055</span><span>ESP-NOW</span></div>
+      <p>A wireless teleoperation glove that mirrors hand motion onto a robotic hand. I proposed it; the lab and I are building it now. It drives the hand across a 40-foot room.</p>
+      <div class="chipset"><b>&lt;80 ms response</b><span>BNO055</span><span>ESP-NOW</span></div>
     </div>
   </a>
 </section>
@@ -329,6 +329,21 @@ main{position:relative;z-index:1}
 
   <div class="entry mcol rv">
     <div class="meta">
+      <span class="org">PepsiCo Capstone</span>
+      <span>Athens, GA</span>
+      <span>August 2026 — Present</span>
+    </div>
+    <div class="body">
+      <h3 class="role">Senior Design Team</h3>
+      <ul>
+        <li>Analyzing fault logs and alarm codes across 25–30 laser-guided vehicles to find the failures that cost the warehouse most.</li>
+        <li>Mapping where those faults happen on the floor, to see which routes and workloads bring them on.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="entry mcol rv">
+    <div class="meta">
       <span class="org">University of Georgia</span>
       <span>Athens, GA</span>
       <span>February 2026 — Present</span>
@@ -336,8 +351,8 @@ main{position:relative;z-index:1}
     <div class="body">
       <h3 class="role">Undergraduate Researcher</h3>
       <ul>
-        <li>Working with a team on a glove that lets the wearer drive a robotic hand from across the room.</li>
-        <li>Fitting the finger sensors and the wrist IMU that make it work.</li>
+        <li>Built a glove that drives a robotic hand across a 40-foot room, with a response under 80 ms.</li>
+        <li>Fitted the finger sensors and the wrist IMU that give it gripping and rotation.</li>
       </ul>
     </div>
   </div>
@@ -351,7 +366,7 @@ main{position:relative;z-index:1}
     <div class="body">
       <h3 class="role">Peer Learning Assistant, Physics</h3>
       <ul>
-        <li>Answered questions and worked through misconceptions with 100+ students in Physics 1, in lecture and in lab.</li>
+        <li>Answered questions and worked through misconceptions with students in Physics 1, in lecture and in lab.</li>
         <li>Weekly peer-education training on how to explain things to someone who is stuck.</li>
       </ul>
     </div>
@@ -364,10 +379,24 @@ main{position:relative;z-index:1}
       <span>May 2025 — May 2026</span>
     </div>
     <div class="body">
-      <h3 class="role">Rush Chair</h3>
+      <h3 class="role">Rush / Recruitment Chair</h3>
       <ul>
-        <li>Plan and run recruitment for UGA's professional engineering fraternity.</li>
-        <li>Organized a Shark Tank-style pitch event for potential new members.</li>
+        <li>Ran recruitment for UGA's professional engineering fraternity with two co-chairs.</li>
+        <li>Planned and advertised every rush event and interview, for 250+ rushees.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="entry mcol rv">
+    <div class="meta">
+      <span class="org">IEEE</span>
+      <span>Athens, GA</span>
+      <span>August 2025 — Present</span>
+    </div>
+    <div class="body">
+      <h3 class="role">Member</h3>
+      <ul>
+        <li>Technical workshops and projects with the student branch.</li>
       </ul>
     </div>
   </div>
@@ -383,6 +412,7 @@ main{position:relative;z-index:1}
       <span class="org">B.S. Computer Engineering</span>
       <span>University of Georgia</span>
       <span>Expected May 2027</span>
+      <span>GPA 3.54 / 4.00</span>
       <span>Athens, GA</span>
       <span>Embedded · Analog · PCB</span>
     </div>
@@ -394,21 +424,21 @@ main{position:relative;z-index:1}
   <div class="entry skills mcol rv">
     <div class="meta"><span class="org">Languages</span></div>
     <div class="body">
-      <div class="chipset skillrow"><span>C</span><span>C++</span><span>Python</span><span>Java</span><span>Verilog</span><span>Assembly</span><span>JavaScript</span><span>MATLAB</span></div>
+      <div class="chipset skillrow"><span>C</span><span>C++</span><span>Python</span><span>Java</span><span>JavaScript</span><span>HTML</span><span>MATLAB</span></div>
     </div>
   </div>
 
   <div class="entry skills mcol rv">
     <div class="meta"><span class="org">Tools</span></div>
     <div class="body">
-      <div class="chipset skillrow"><span>Altium</span><span>Fusion 360</span><span>LTspice</span><span>Multisim</span></div>
+      <div class="chipset skillrow"><span>Altium</span><span>Multisim</span></div>
     </div>
   </div>
 
   <div class="entry skills mcol rv">
     <div class="meta"><span class="org">Coursework</span></div>
     <div class="body">
-      <div class="chipset skillrow"><span>Circuit analysis</span><span>PCB design</span><span>Parallel programming</span></div>
+      <div class="chipset skillrow"><span>Circuit analysis</span><span>Parallel programming</span></div>
     </div>
   </div>
 
@@ -476,10 +506,51 @@ main{position:relative;z-index:1}
   cam.position.set(0,0,9);
 
   scene.add(new THREE.HemisphereLight(0xbcc8de,0x1a2436,.85));
+  /* The key light drifts (see the loop). Nothing on the wreath moves faster for
+     it, but the leaves are bicoloured and already at every angle, so a light
+     that wanders makes them catch and release on their own. It is the cheapest
+     motion on the page: no extra geometry, no extra draw calls. */
   const key=new THREE.DirectionalLight(0xffe9c4,1.2); key.position.set(3,5,6); scene.add(key);
   const rim=new THREE.DirectionalLight(0x6f8fd0,.45); rim.position.set(-5,-2,-5); scene.add(rim);
 
   const wreath=new THREE.Group();
+
+  /* ── motes ───────────────────────────────────────────────────────────────
+     A handful of specks drifting across the cover at different depths. The
+     point is not to be noticed: it is to make the air look like it is there,
+     which is what makes the wind on the leaves believable. Without it the
+     leaves move in a vacuum.
+
+     One THREE.Points with an additive round sprite, so the whole thing is a
+     single draw call. They sit in `scene`, not in the wreath group, so they do
+     not inherit its scale — they fill the viewport instead of the ring. */
+  function moteSprite(){
+    const c=document.createElement('canvas'); c.width=c.height=32;
+    const x=c.getContext('2d'), g=x.createRadialGradient(16,16,0,16,16,16);
+    g.addColorStop(0,'rgba(255,255,255,1)');
+    g.addColorStop(.3,'rgba(255,255,255,.45)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    x.fillStyle=g; x.fillRect(0,0,32,32);
+    return new THREE.CanvasTexture(c);
+  }
+  const MOTES=46;
+  const mp=new Float32Array(MOTES*3), mv=[];
+  let halfW=6, halfH=4;                       // reset by size(), below
+  for(let i=0;i<MOTES;i++){
+    mp[i*3]=(Math.random()-.5)*2*halfW;
+    mp[i*3+1]=(Math.random()-.5)*2*halfH;
+    mp[i*3+2]=-1.6+Math.random()*3.2;         // depth, so they parallax against the ring
+    mv.push({y:0.055+Math.random()*0.115,     // all rising, at their own rates
+             x:(Math.random()-.5)*0.05,
+             w:0.25+Math.random()*0.5,        // slow lateral wander
+             ph:Math.random()*6.283});
+  }
+  const moteGeo=new THREE.BufferGeometry();
+  moteGeo.setAttribute('position',new THREE.BufferAttribute(mp,3));
+  const moteMat=new THREE.PointsMaterial({
+    size:.075, map:moteSprite(), color:0xdbe6f6, transparent:true, opacity:.58,
+    depthWrite:false, blending:THREE.AdditiveBlending, sizeAttenuation:true});
+  scene.add(new THREE.Points(moteGeo,moteMat));
 
   /* Olive leaf. The old one was a fat almond: 0.55 long by 0.30 across, about
      1.8:1, asymmetric (its two control points did not match) and faceted at 10
@@ -625,6 +696,8 @@ main{position:relative;z-index:1}
     const vFOV=cam.fov*Math.PI/180;
     const visH=2*Math.tan(vFOV/2)*cam.position.z;
     const visW=visH*cam.aspect;
+    // the motes live in world space, so their bounds are the frustum, not the ring
+    halfW=visW/2+0.4; halfH=visH/2+0.4;
     const fit=Math.min(visW,visH)/(2*OUTER_R)*0.99; // fill ~99% of the shorter axis: as big as it goes before the top binding clips
     // floor stays .55 so phones (which hit the floor and let the ring bleed off the sides a
     // touch) don't clip any worse than before; the .94 fill only enlarges unclamped desktop/tablet
@@ -802,6 +875,26 @@ main{position:relative;z-index:1}
        is what the eye locked onto. Nothing moves the group on its own now; all
        the life is in the leaves. The pointer still tilts it, but only while the
        pointer is actually moving, which does not read as the wreath's own idle. */
+    /* The key light wanders on a slow Lissajous — about a 48-second circuit, far
+       too slow to read as movement. What you see instead is the silver leaf
+       undersides catching and losing the light on their own schedule, which adds
+       life without adding speed. The rim counter-drifts so the two never line up. */
+    if(!calm.matches){
+      key.position.set(3+Math.sin(tw*0.13)*2.7, 5+Math.sin(tw*0.09+1.3)*1.5,
+                       6+Math.cos(tw*0.11)*1.3);
+      rim.position.set(-5+Math.cos(tw*0.07)*1.8, -2+Math.sin(tw*0.10+2.4)*1.1, -5);
+
+      // motes: rise, wander sideways, wrap at the edges of the frustum
+      for(let i=0;i<MOTES;i++){
+        const k=i*3, m=mv[i];
+        mp[k]  += (m.x+Math.sin(tw*m.w+m.ph)*0.055)*dt;
+        mp[k+1]+= m.y*dt;
+        if(mp[k+1]>halfH){ mp[k+1]=-halfH; mp[k]=(Math.random()-.5)*2*halfW; }
+        if(mp[k]>halfW) mp[k]=-halfW; else if(mp[k]<-halfW) mp[k]=halfW;
+      }
+      moteGeo.attributes.position.needsUpdate=true;
+    }
+
     wreath.rotation.y=mx*.05*settle;
     wreath.rotation.x=my*.03*settle;
     wreath.position.y=ease*.7;   // holds still, then rises away as it fades

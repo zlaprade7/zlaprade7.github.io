@@ -41,8 +41,8 @@
   <div class="wrap">
     <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 004</span><span>2026, in progress</span></div>
     <h1><span class="row"><span>Wearable</span></span><span class="row"><span>Sensor Glove</span></span></h1>
-    <p class="deck">A wireless teleoperation glove for a university robotics lab. I proposed it and I'm building it with the team. It isn't finished, and I'm listing it anyway.</p>
-    <div class="chips"><div class="chip"><div class="v">5</div><div class="l">flex sensors</div></div><div class="chip"><div class="v">9-DOF</div><div class="l">wrist IMU</div></div><div class="chip"><div class="v">2</div><div class="l">boards, linked directly</div></div></div>
+    <p class="deck">A wireless teleoperation glove for a university robotics lab. I proposed it and I'm building it with the team. It runs; it is not finished, and I'm listing it anyway.</p>
+    <div class="chips"><div class="chip"><div class="v">5</div><div class="l">flex sensors</div></div><div class="chip"><div class="v">9-DOF</div><div class="l">wrist IMU</div></div><div class="chip"><div class="v">&lt;80 ms</div><div class="l">finger to servo</div></div></div>
   </div>
 </header><section class="doc">
   <div class="wrap">
@@ -65,13 +65,13 @@
 <li><b>Flex sensor calibration.</b> Each sensor has a different flat and bent resistance, and those values drift with wear. A per-sensor calibration routine is not optional.</li>
 <li><b>Mapping bend to servo angle.</b> Finger curl is not linear in resistance, and a human finger's range does not correspond to a servo's.</li>
 </ul>
-<div class="note rv"><p><b>Where it stands.</b> Nothing here has been measured yet, so anything I said about how well it works would be a guess.</p></div>
+<div class="note rv"><p><b>Where it stands.</b> It drives the hand end to end: 40 feet of range and under 80 ms from finger to servo. The calibration and mapping above are still open, so it works without yet being reliable.</p></div>
   </div>
 </section><section class="doc" style="border-bottom:none">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Result</h2></div>
-    <p class="slede rv">No results yet. Here's the plan.</p>
-    <p class="rv">One finger before five: get a single finger tracking cleanly end to end, measure latency and accuracy properly instead of judging by eye, and then decide whether flex sensors are good enough or the design needs per-finger IMUs.</p>
+    <p class="slede rv">It works across a room. Whether it works <em>well</em> is the open question.</p>
+    <p class="rv">The link carries a hand across 40 feet with the response under 80 ms, which was the part I was least sure of, and gripping and rotation both come through. What is not settled is accuracy: per-sensor calibration drifts with wear, and the bend-to-angle mapping is still approximate. The next measurement is one finger tracked properly end to end, with the error written down instead of judged by eye, and then a decision on whether the finger sensors are good enough or the design needs per-finger IMUs.</p>
 <figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/glove-build.jpg" alt="Five flex sensors taped along the fingers of the glove"></div><figcaption><b>FIG. 1</b> — Where it is now: five flex sensors taped down one per finger, before any wiring.</figcaption></figure><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>BNO055</span><span>Flex sensors ×5</span><span>ESP32 ×2</span><span>ESP-NOW</span><span>Servos</span></div></div>
   </div>
 </section><div class="next"><div class="wrap"><a href="analog-labs.html"><div><div class="lbl">Next project</div><h3>Analog & Sensors Coursework</h3></div><span class="ar">→</span></a></div></div>
