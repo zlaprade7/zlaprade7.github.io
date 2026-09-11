@@ -581,7 +581,8 @@ main{position:relative;z-index:1}
           rx:leaf.rotation.x, ry:leaf.rotation.y, rz:leaf.rotation.z,
           sp:rnd(.70,1.44),                // own natural rate
           ph:rnd(0,6.283), ph2:rnd(0,6.283),
-          amp:rnd(.62,1.48)});             // own give: some leaves are stiffer
+          amp:rnd(.62,1.48),               // own give: some leaves are stiffer
+          pk:0, tau:rnd(.055,.26)});       // pointer deflection, and how slowly it arrives
       }
       if(i%4===1&&t>.12&&t<.9){
         const o=new THREE.Mesh(new THREE.SphereGeometry(rnd(.055,.075),12,10),Math.random()<.32?silverMat:oliveMat);
@@ -597,7 +598,8 @@ main{position:relative;z-index:1}
            the joint and the arm; the loop rotates the arm. */
         berries.push({o:o, at:t, br:(flip>0?0:1), z:bz,
           ax:P.x, ay:P.y, ox:nx*.14, oy:ny*.14,
-          sp:rnd(.62,1.05), ph:rnd(0,6.283)});
+          sp:rnd(.62,1.05), ph:rnd(0,6.283),
+          pk:0, pg:rnd(.55,1.35), tau:rnd(.10,.34)});  // heavier than a leaf, so slower to give
       }
     }
   }
@@ -741,13 +743,34 @@ main{position:relative;z-index:1}
         const amp=(0.09+0.13*f.at)*gust*env*f.amp*settle;
         const p=f.o.position;
         const dx=p.x-pxw, dy=p.y-pyw, d2=dx*dx+dy*dy;
-        const k=Math.exp(-d2*1.7)*settle;
+        const reach=Math.exp(-d2*1.7);
+        /* The pointer used to add `reach*0.30*side` — one number, the same for
+           every leaf the same distance from the cursor, applied on the frame it
+           was computed. So the whole patch under the cursor swung by the same
+           amount at the same instant: a block, by construction, which is why
+           hovering still looked like the leaves moving together.
+
+           A hand brushing a branch does not do that. Each leaf turns AWAY from
+           the hand, and which way that is depends on where the leaf is pointing
+           relative to it, so neighbours part in opposite directions. sin() of
+           that angle keeps it smooth and bounded; `f.amp` (already each leaf's
+           own stiffness) means they do not all give by the same amount. */
+        let turn=Math.atan2(dy,dx)-f.rz;
+        turn=Math.atan2(Math.sin(turn),Math.cos(turn));     // wrap to -pi..pi
+        const target=reach*Math.sin(turn)*0.55*f.amp;
+        /* And it arrives over time, not on one frame. Each leaf has its own
+           time constant, so they bend and recover raggedly rather than snapping
+           in unison — the lag is what makes it read as separate leaves. */
+        f.pk+=(target-f.pk)*(1-Math.exp(-dt/f.tau));
+        // a leaf pointing straight at the cursor has no side to turn to, so
+        // everything near it also lifts slightly; that covers the dead spot
+        const lift=reach*0.26*f.amp;
         /* Rotation only. Pushing the leaf bodily aside moved it off the stem -
            the pivot is at the attachment point, so turning it keeps it joined
            to the branch however hard the pointer leans on it. */
-        f.o.rotation.z=f.rz+sweep*amp+k*0.30*f.side;   // the swing
-        f.o.rotation.x=f.rx+twist*amp*0.85+k*0.22;     // the twist, showing the pale underside
-        f.o.rotation.y=f.ry+sweep*amp*0.35;            // out of plane, so it is not a flat flap
+        f.o.rotation.z=f.rz+sweep*amp+f.pk*settle;                  // the swing
+        f.o.rotation.x=f.rx+twist*amp*0.85+(f.pk*0.45+lift)*settle; // twist, showing the pale underside
+        f.o.rotation.y=f.ry+sweep*amp*0.35+f.pk*0.25*settle;        // out of plane, not a flat flap
       }
       /* The olives were in the entrance array only, so they had not moved
          since load while every leaf around them fluttered. They swing on
@@ -759,8 +782,11 @@ main{position:relative;z-index:1}
         const env=0.45+0.55*(0.5+0.5*front);
         const w=Math.sin(tw*1.75*b.sp+b.ph);   // its own pendulum, slower than a leaf
         const dx=b.ax+b.ox-pxw, dy=b.ay+b.oy-pyw;
-        const k=Math.exp(-(dx*dx+dy*dy)*1.7)*settle;
-        const th=(w*0.30*gust*env+k*0.35)*settle;
+        // same fix as the leaves: its own gain and its own lag, so the fruit
+        // near the cursor does not all lurch by one shared amount
+        const target=Math.exp(-(dx*dx+dy*dy)*1.7)*0.40*b.pg;
+        b.pk+=(target-b.pk)*(1-Math.exp(-dt/b.tau));
+        const th=(w*0.30*gust*env+b.pk)*settle;
         const c=Math.cos(th), sn=Math.sin(th);
         b.o.position.set(b.ax + b.ox*c - b.oy*sn,
                          b.ay + b.ox*sn + b.oy*c,
