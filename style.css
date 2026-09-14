@@ -199,19 +199,13 @@ figure{margin:0}
 figcaption{font-family:var(--mono);font-size:12px;color:var(--grey);padding-top:10px;border-top:2px solid var(--accent)}
 figcaption b{color:var(--ink);font-weight:500}
 
-/* ── interactive model ────────────────────────────────────────────────
-   A rotatable part sits in the same square frame a photograph does, so the
-   page does not suddenly acquire a second visual language for one figure.
-   No auto-rotate: it holds still until someone drags it, which is also what
-   a reduced-motion setting would want. */
-/* `height:auto` is load-bearing: model-viewer's own :host rule sets
-   height:150px, and `aspect-ratio` is ignored unless a dimension is auto, so
-   without it the figure collapses to a 574x150 letterbox. */
-.frame model-viewer{width:100%;height:auto;aspect-ratio:4/3;display:block;
-  background:var(--panel);cursor:grab}
-.frame model-viewer:active{cursor:grabbing}
-.mvposter{display:flex;align-items:center;justify-content:center;height:100%;
-  background:var(--panel);font-family:var(--mono);font-size:12px;letter-spacing:.11em;color:#8d95a1}
+/* The rotatable CAD model that used to be FIG. 6 on the water bottle is gone
+   (2026-09-14). It loaded but never painted — model-viewer reported
+   loaded:true with modelIsVisible:false, so all a reader ever saw was an empty
+   dark rectangle. FIG. 5 shows the printed housing on the bottle, which is the
+   thing worth seeing, and the viewer cost a CDN module script, a 1 MB GLB and
+   a WebGL context to show nothing. tools/stl_to_glb.py still exists if a model
+   is ever wanted again. */
 
 /* the lens itself. `.frame` is overflow:hidden, so it clips at the photo edge,
    which is what you want — the magnifier never floats outside the picture. */
