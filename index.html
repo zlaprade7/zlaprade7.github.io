@@ -244,7 +244,7 @@ main{position:relative;z-index:1}
     </div>
     <div class="meta">
       <span class="num">001</span>
-      <span>2025 to present</span>
+      <span>May 2025 — Present</span>
       <span>Solo</span>
       <span>Live demo</span>
     </div>
@@ -261,7 +261,7 @@ main{position:relative;z-index:1}
       </div>
     <div class="meta">
       <span class="num">002</span>
-      <span>2026</span>
+      <span>January — May 2026</span>
       <span>Team of 5</span>
       <span>Hardware lead</span>
     </div>
@@ -278,7 +278,7 @@ main{position:relative;z-index:1}
       </div>
     <div class="meta">
       <span class="num">003</span>
-      <span>2026</span>
+      <span>January — August 2026</span>
       <span>Solo</span>
     </div>
     <div class="body">
@@ -294,7 +294,7 @@ main{position:relative;z-index:1}
     </div>
     <div class="meta">
       <span class="num">004</span>
-      <span>2026 to present</span>
+      <span>February 2026 — Present</span>
       <span>Robotics lab</span>
     </div>
     <div class="body">
@@ -344,7 +344,7 @@ main{position:relative;z-index:1}
 
   <div class="entry mcol rv">
     <div class="meta">
-      <span class="org">University of Georgia</span>
+      <span class="org">UGA Robotics Research</span>
       <span>Athens, GA</span>
       <span>February 2026 — Present</span>
     </div>
@@ -445,7 +445,7 @@ main{position:relative;z-index:1}
   <div class="entry skills mcol rv">
     <div class="meta"><span class="org">Spoken</span></div>
     <div class="body">
-      <div class="chipset skillrow"><span>English</span><span>Spanish · advanced</span><span>French · advanced</span></div>
+      <div class="chipset skillrow"><span>English · fluent</span><span>Spanish · advanced</span><span>French · advanced</span></div>
     </div>
   </div>
 </section>
@@ -660,7 +660,15 @@ main{position:relative;z-index:1}
         o.userData.grown=1; o.userData.at=t;
         // hang off the stem itself, on the inner side, same as the leaves
         const nx=-Math.cos(a), ny=-Math.sin(a);
-        const bz=P.z+rnd(-.03,.1)*flip;
+        /* Forward of the leaves, always. The offset used to be
+           rnd(-.03,.1)*flip, so on one branch every berry sat BEHIND the leaf
+           plane by up to 0.1 — and a sphere of radius ~0.07 straddling a flat
+           sheet gets sliced in half by it. That hard intersection line is what
+           reads as the berry clipping through the leaf.
+           A leaf near its base swings out of plane by about 0.14, so 0.26
+           clears it with the whole berry in front. Fruit nearer the camera than
+           the foliage is also just what an olive branch looks like. */
+        const bz=P.z+0.26+rnd(0,.10);
         o.position.set(P.x+nx*.14,P.y+ny*.14,bz);
         wreath.add(o);
         /* An olive hangs off the branch on a short stalk, so it swings about
