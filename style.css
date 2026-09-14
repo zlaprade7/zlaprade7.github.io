@@ -64,6 +64,15 @@ nav .brand{white-space:nowrap}
   nav .wrap{justify-content:center}
   nav .links{gap:clamp(10px,3.4vw,20px);font-size:11px;letter-spacing:.05em}
 }
+/* Six links instead of five. Measured across widths: they fit down to 390px and
+   then clip — 4px over at 360, 21px over at 320, which is a lot of common
+   Android and the small iPhones. Tightening the gap and the tracking below 380
+   buys back more than enough without shrinking the type to something unreadable
+   or hiding a section behind a menu. */
+@media(max-width:380px){
+  nav .links{gap:7px;letter-spacing:.02em;font-size:10.5px}
+  nav .wrap{padding-left:10px;padding-right:10px}
+}
 
 /* home hero */
 .hero{min-height:100svh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;overflow:hidden}
