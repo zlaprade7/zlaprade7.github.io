@@ -70,7 +70,6 @@
 </section><section class="doc">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Plan</h2></div>
-    <p class="slede rv">The three circuits I was responsible for.</p>
     <h3 class="rv">Voltmeter: an ADC built from bare parts</h3>
 <p class="rv">The voltmeter is a 6-bit successive-approximation converter made from an R-2R resistor ladder and a comparator. The ladder, driven from six GPIO pins, generates a trial voltage. The comparator checks that trial against the unknown input and returns one bit. The Pi walks from the most significant bit down, keeping each bit that doesn't overshoot. Six comparisons give six bits, basically a binary search in hardware.</p>
 <p class="rv">Normally you'd just use an off-the-shelf ADC chip. Building one instead taught me a lot about what's inside them: the ladder's output impedance, the comparator's offset and delay, the settling time between trials, and why six bits was as much resolution as this design could honestly claim.</p>
@@ -112,7 +111,6 @@
 </section><section class="doc">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
-    <p class="slede rv">We prototyped and probed every stage on the bench before doing the layout.</p>
 <figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bench-proto.jpg" alt="The instrument breadboarded, each stage labelled on paper tags"></div><figcaption><b>FIG. 2</b> &mdash; Breadboard prototype, all four modes.</figcaption></figure>
     <ul class="rv">
 <li><b>Settling time was real.</b> Stepping the ladder and reading the comparator immediately gave wrong answers. The ladder needs time to settle after each trial, and I had to find that number on a scope since no datasheet covers a circuit you built yourself.</li>
