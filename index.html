@@ -86,8 +86,18 @@ main{position:relative;z-index:1}
   letter-spacing:-.01em;line-height:1.05;border-top:2px solid var(--ink);padding-top:12px}
 .sec .lede{color:#c6d0e0;font-size:clamp(17px,2vw,20px);max-width:54ch;margin-top:14px}
 @media(min-width:1040px){
-  .sec h2{grid-column:1;font-size:30px;line-height:1.08}
-  .sec .lede{grid-column:2 / -1;margin-top:0;padding-top:12px}
+  /* The section titles used to SHRINK on desktop — 30px here against up to 44px
+     on a phone — because they were being made to fit inside the 250px label
+     column. That is backwards: a section opening should be the most prominent
+     thing on the line, and on the widest screen it was the least.
+     The rule now runs the full measure rather than stopping at the label
+     column, so it reads as a section break instead of a caption underline, and
+     the title is set large against it. It still starts on the same left edge as
+     every label below it, so the margin-column grammar is intact. */
+  .sec{border-top:2px solid var(--ink);padding-top:18px}
+  .sec h2{grid-column:1 / span 2;font-size:clamp(44px,4.6vw,60px);line-height:1.0;
+    border-top:none;padding-top:0;align-self:start}
+  .sec .lede{grid-column:3;margin-top:0;padding-top:10px;align-self:end}
 }
 /* `.span` is the same geometry as `.mcol` with the two columns fused, for the
    things that run the whole measure: the header rule and the awards strip.
