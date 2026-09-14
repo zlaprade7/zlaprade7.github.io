@@ -50,7 +50,7 @@
     <div class="crumb"><a href="../index.html#work">← All work</a><span>Project 003</span><span>January&ndash;August 2026</span></div>
     <h1><span class="row"><span>Smart Water</span></span><span class="row"><span>Bottle</span></span></h1>
     <p class="deck">A water bottle that measures what you drink, the conditions around you, and how much you move, then sets a daily hydration target that shifts with your day. Built solo for a sensors course.</p>
-    <div class="chips"><div class="chip"><div class="v">$31.70</div><div class="l">of a $50 cap</div></div><div class="chip"><div class="v">0.15%</div><div class="l">best temp error</div></div><div class="chip"><div class="v"><0.3%</div><div class="l">level error</div></div><div class="chip"><div class="v">5</div><div class="l">sensors fused</div></div></div>
+    <div class="chips"><div class="chip"><div class="v">$31.70</div><div class="l">of a $50 cap</div></div><div class="chip"><div class="v">0.15%</div><div class="l">best temp error</div></div><div class="chip"><div class="v"><0.3%</div><div class="l">level error</div></div><div class="chip"><div class="v">5</div><div class="l">sensors fused</div></div><div class="chip"><div class="v">20 ms</div><div class="l">response</div></div></div>
   </div>
 </header><section class="doc">
   <div class="wrap">
@@ -62,8 +62,8 @@
 </section><section class="doc">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Plan</h2></div>
-    <h3 class="rv">Measure the water without touching it</h3>
-<p class="rv">The cheap option was capacitive rods inside the bottle, but the electrodes would sit in the water I drink, the reading drifts with water temperature, and a metal bottle throws it off further. A waterproof ultrasonic sensor reads the surface from above and never touches the water. It cost more and has its own quirks, but they're smaller and easier to predict.</p>
+    <h3 class="rv">Measure the water by its capacitance</h3>
+<p class="rv">Water has a much higher dielectric constant than air, so a pair of electrodes running the height of the bottle reads a capacitance that tracks how full it is. It is cheap, it has no moving parts and nothing protrudes into the drinking path. The costs are real: the reading drifts with water temperature, and the metal body couples into it, so the electrodes are isolated from the wall and the temperature I am already measuring is used to correct the level. Flow out of the bottle is the level falling between readings.</p>
 <h3 class="rv">Measure temperature twice, and trust the fusion</h3>
 <p class="rv">A raw thermistor barely changes its signal over the range that matters, so I built a small analog front end, a bridge circuit into an instrumentation amplifier, to stretch that signal into something worth digitizing. A second packaged sensor reads temperature and humidity independently, and the two get fused. Humidity matters more than it sounds, since humid air dehydrates you faster.</p>
 <h3 class="rv">Detect drinking with geometry</h3>
@@ -71,7 +71,7 @@
 <h3 class="rv">Power it like something a person carries</h3>
 <p class="rv">I went with a rechargeable lithium cell over a disposable 9V, since it fits the housing and doesn't sag as it drains. That meant adding a full charging and protection chain to the board, which felt worth it for a battery living in something I carry around all day.</p>
 <div class="figrow rv">
-<figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch: the ultrasonic sensor firing down through the water, electronics stacked in the side column"></div><figcaption><b>FIG. 1</b> — Concept sketch.</figcaption></figure>
+<figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch: capacitive electrodes running the height of the bottle, electronics stacked in the side column"></div><figcaption><b>FIG. 1</b> — Concept sketch.</figcaption></figure>
 <figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bottle-pcb.jpg" alt="The custom two-layer board: microcontroller centre, analog front end right, power along the bottom"></div><figcaption><b>FIG. 2</b> — The two-layer board.</figcaption></figure>
 </div>
   </div>
@@ -109,7 +109,7 @@
 <h3 class="rv">Each sensor fails differently, so each got its own filter</h3>
 <ul class="rv">
 <li><b>Temperature: Kalman filter.</b> Room temperature doesn't physically jump, so spikes get averaged away. When the reading genuinely changes, like walking from AC into summer heat, the filter follows it instead of rejecting it.</li>
-<li><b>Water level: median of five.</b> The ultrasonic only fires when the bottle moves, so there's no continuous history to predict from. Taking the median just throws out the outliers.</li>
+<li><b>Water level: median of five.</b> The capacitance is only sampled when the bottle moves, so there's no continuous history to predict from. Taking the median just throws out the outliers.</li>
 <li><b>Motion: none needed.</b> Averaging tilt and velocity into one number was stable enough.</li>
 </ul>
 <h3 class="rv">The housing was harder than the circuit</h3>
@@ -131,8 +131,8 @@
 <tr><td>Ambient</td><td>70.2 °F</td><td>70.4 °F</td><td class="err">0.28%</td></tr>
 <tr><td>Ambient</td><td>68.4 °F</td><td>68.5 °F</td><td class="err">0.15%</td></tr>
 <tr><td>Ambient</td><td>74.1 °F</td><td>74.3 °F</td><td class="err">0.27%</td></tr></table>
-<p class="rv">The worst level error is at the near end of the sensor's range, which is where you'd expect it. Notifications reach my phone as a morning target, catch-up nudges, and an evening summary. The moving target is the part the apps I tried couldn't do.</p>
-<p class="rv">I'm planning a version two. The current build only fits one specific bottle, which works against the whole point, so the rebuild will be smaller and work with any bottle.</p><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>ESP32-C3</span><span>INA333 · gain 3</span><span>Semitec 103AT-2</span><span>SHT40</span><span>MPU-6050</span><span>A02YYUW ultrasonic</span><span>Wheatstone bridge</span><span>Beta-model linearization</span><span>TP4056 + DW01A/FS8205A</span><span>EasyEDA / JLCPCB</span><span>AutoCAD · PETG</span></div></div>
+<p class="rv">Fused, the five sensors agree with the references to 99.1%, and a reading lands 20 ms after the bottle is picked up. The worst level error is at the shallow end, where the covered electrode area is smallest and a millimetre of water moves the capacitance least. Notifications reach my phone as a morning target, catch-up nudges, and an evening summary. The moving target is the part the apps I tried couldn't do.</p>
+<p class="rv">I'm planning a version two. The current build only fits one specific bottle, which works against the whole point, so the rebuild will be smaller and work with any bottle.</p><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>ESP32-C3</span><span>INA333 · gain 3</span><span>Semitec 103AT-2</span><span>SHT40</span><span>MPU-6050</span><span>Capacitive level electrodes</span><span>I²C</span><span>HTTPS / TCP</span><span>Wheatstone bridge</span><span>Beta-model linearization</span><span>TP4056 + DW01A/FS8205A</span><span>EasyEDA / JLCPCB</span><span>AutoCAD · PETG</span></div></div>
   </div>
 </section><div class="next"><div class="wrap"><a href="schmitt-pcb.html"><div><div class="lbl">Next project</div><h3>Light-Activated Switch PCB</h3></div><span class="ar">→</span></a></div></div>
 </main>
