@@ -85,8 +85,8 @@
     </svg>
   </div>
   <figcaption><b>FIG. 1</b> &mdash; Propagated uncertainty across the sweep. The
-  capacitor sets the floor the whole way along; what tilts the curve is that
-  sensitivity goes as 1/f&#178;, so the slow end of the range is the worse end.</figcaption>
+  capacitor sets the floor across the whole range. The curve tilts because
+  sensitivity goes as 1/f&#178;, so the error is largest at the slow end.</figcaption>
 </figure>
 
 <p class="rv">The uncertainty analysis taught me the most. Propagating component tolerances through the transfer function showed that the capacitor dominates the error budget, and that the total uncertainty isn't constant across the range: it runs from about 1.7% at one end to 4% at the other, because sensitivity scales with 1/f². The measurement is noticeably worse at one end of the sweep, and nothing in the schematic tells you that.</p><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>ELEE 4270 · analog design</span><span>ELEE 4230 · sensors</span><span>LTspice</span><span>Multisim</span><span>555 timer</span><span>ESP32</span><span>RSS uncertainty propagation</span></div></div>

@@ -71,15 +71,15 @@
 <h3 class="rv">Power it like something a person carries</h3>
 <p class="rv">I went with a rechargeable lithium cell over a disposable 9V, since it fits the housing and doesn't sag as it drains. That meant adding a full charging and protection chain to the board, which felt worth it for a battery living in something I carry around all day.</p>
 <div class="figrow rv">
-<figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch: the ultrasonic sensor firing down through the water, electronics stacked in the side column"></div><figcaption><b>FIG. 1</b> — Concept. Ultrasonic firing down through the water, electronics stacked in the side column.</figcaption></figure>
-<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bottle-pcb.jpg" alt="The custom two-layer board: microcontroller centre, analog front end right, power along the bottom"></div><figcaption><b>FIG. 2</b> — Custom two-layer board. Microcontroller centre, analog front end right, power along the bottom.</figcaption></figure>
+<figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/bottle-sketch.jpg" alt="Concept sketch: the ultrasonic sensor firing down through the water, electronics stacked in the side column"></div><figcaption><b>FIG. 1</b> — Concept. The ultrasonic sensor fires down through the water, with the electronics stacked in the side column.</figcaption></figure>
+<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bottle-pcb.jpg" alt="The custom two-layer board: microcontroller centre, analog front end right, power along the bottom"></div><figcaption><b>FIG. 2</b> — Custom two-layer board. Microcontroller center, analog front end right, power along the bottom.</figcaption></figure>
 </div>
   </div>
 </section><div class="giant"><div class="rv"><div class="n">0.06 → 0.01 V</div><div class="c">Noise on the temperature signal, before and after one capacitor</div></div></div><section class="doc">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
     <p class="slede rv">The circuit mostly behaved. The housing did not.</p>
-    <figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bottle-proto.jpg" alt="The sensor front end on a breadboard, calipers alongside"></div><figcaption><b>FIG. 3</b> &mdash; The front end on a breadboard, before any of it was a board.</figcaption></figure>
+    <figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/bottle-proto.jpg" alt="The sensor front end on a breadboard, calipers alongside"></div><figcaption><b>FIG. 3</b> &mdash; The analog front end on a breadboard, before the PCB.</figcaption></figure>
 <h3 class="rv">The noise problem</h3>
 <p class="rv">Moving the circuit or bringing other electronics near it put visible spikes on the temperature signal. One capacitor at the right node cut the noise to about a sixth of what it was. Since the signal moves slowly anyway, filtering out the fast noise doesn't cost anything.</p>
 <figure class="rv kal-fig" style="max-width:900px;margin-top:26px">
@@ -103,10 +103,10 @@
       <text id="k-note2" class="k-sub" x="516" y="188"></text>
     </svg>
   </div>
-  <figcaption><b>FIG. 4</b> &mdash; The filter running on the temperature signal.
-  Thin line is the raw reading, thick line is what the bottle uses. It flattens
-  the noise while the room is steady, and still follows the step when the
-  reading genuinely changes.</figcaption>
+  <figcaption><b>FIG. 4</b> &mdash; The filter running on the temperature signal. The
+  thin line is the raw reading, the thick line is what the bottle uses. It
+  averages out the noise while the room is steady, and still follows a real
+  step change.</figcaption>
 </figure>
 
 <h3 class="rv">Each sensor fails differently, so each got its own filter</h3>
@@ -126,7 +126,7 @@
       exposure="1.1" shadow-intensity="0.6" interaction-prompt="none">
       <div class="mvposter" slot="poster">3D MODEL · DRAG TO ROTATE</div>
     </model-viewer></div>
-  <figcaption><b>FIG. 6</b> &mdash; The same part from the CAD. The thread that took the calipers is on the underside.</figcaption></figure>
+  <figcaption><b>FIG. 6</b> &mdash; The same part in CAD. The reverse-engineered thread is on the underside.</figcaption></figure>
   </div>
 </section><section class="doc" style="border-bottom:none">
   <div class="wrap">
