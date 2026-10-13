@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="A Raspberry Pi that runs my room: lighting, display power over DDC/CI, sleep tracking and an always-on dashboard. Running for over a year.">
+<meta name="description" content="A Raspberry Pi that runs my room: lighting, an always-on wall display, a homework planner, a wake-up alarm and plain-sentence commands. Running for over a year.">
 <link rel="icon" type="image/png" sizes="512x512" href="../images/icon-512.png">
 <link rel="apple-touch-icon" href="../images/icon-180.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Zack LaPrade">
 <meta property="og:title" content="MonCoeur | Zack LaPrade">
-<meta property="og:description" content="A Raspberry Pi that runs my room: lighting, display power over DDC/CI, sleep tracking and an always-on dashboard. Running for over a year.">
+<meta property="og:description" content="A Raspberry Pi that runs my room: lighting, an always-on wall display, a homework planner, a wake-up alarm and plain-sentence commands. Running for over a year.">
 <meta property="og:url" content="https://zlaprade7.github.io/projects/moncoeur.html">
 <meta property="og:image" content="https://zlaprade7.github.io/images/og-card.png">
 <meta property="og:image:width" content="1200">
@@ -82,13 +82,13 @@
     <p class="slede rv">Everything added this year had to pass one test: does it give me one less thing to keep track of.</p>
 <figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/moncoeur-v2.jpg" alt="Version two of the dashboard: one screen with the briefing, the word of the day, water and the agenda"></div><figcaption><b>FIG. 1</b> &mdash; Version two, September 2026.</figcaption></figure>
 <h3 class="rv">Pages</h3>
-<p class="rv">Version two was one screen. Version three is five pages on the phone and laptop: today, the plan, food, the gym and shopping. The wall still shows only today, since it has no touchscreen.</p>
+<p class="rv">Version two was one screen. Version three is five pages on the phone and laptop. Today is what the wall shows: the next thing, the day's blocks, water and the briefing. Plan lays out homework and study time for the weeks ahead. Food plans the week's dinners and keeps the grocery list. Gym logs each set next to what I lifted last time. Shop shows sales on the specific things I'm waiting to buy. The wall still shows only Today, since it has no touchscreen.</p>
 <h3 class="rv">It plans my homework</h3>
-<p class="rv">Due dates come in from the course site on their own. The Pi plans every assignment and study block 37 days ahead around my classes and calendar, aims to finish two days before anything is due, and learns how long each kind of assignment actually takes me from what I log. Exams get study time starting a week out.</p>
+<p class="rv">Due dates come in from the course site on their own. The Pi plans every assignment and study block 37 days ahead around my classes and calendar, aims to finish two days before anything is due, and learns how long each kind of assignment actually takes me from what I log. Exams get study time starting a week out. Once I start a block it stays put, and nothing gets pulled earlier during the day, so the plan doesn't shift under me while I'm working through it.</p>
 <h3 class="rv">It wakes me up</h3>
-<p class="rv">I sleep through phone alarms, so MonCoeur sets its own. It reads my first commitment of the day and wakes me an hour before it. Fifteen minutes out the lamps fade up from a warm 2200K to 3000K, then a tone plays through a USB speaker, starting quiet and getting louder, every five minutes until the motion sensor sees me up. It also learns how long I take to get out of bed and adds that on class days.</p>
+<p class="rv">I sleep through phone alarms, so MonCoeur sets its own. It finds my first real commitment of the day in the calendar and my task list, a class, an exam or an interview, and wakes me an hour before it, never later than 10am. Before it rings it checks that I'm actually home, and when it isn't sure, it rings anyway. Fifteen minutes out the lamps fade up from a warm 2200K to 3000K, then a tone plays through a USB speaker, starting quiet and getting louder, every five minutes until the motion sensor sees me up. It also learns how long I take to get out of bed and adds that on class days.</p>
 <h3 class="rv">It reads what I type</h3>
-<p class="rv">I can type a sentence the way I would to a person. A rule-based reader handles the common ones. For anything it can't read, a small language model running on the Pi, Qwen2.5 3B through llama.cpp, turns the sentence into the same commands the buttons use. Nothing it produces is trusted as-is: the output is forced into a fixed format, every item and date is checked against my real list, and the change is read back to me in plain words and waits for a yes. The model runs on the Pi itself, with no AI service behind it.</p>
+<p class="rv">I can type a sentence the way I would to a person. A rule-based reader handles the common ones. For anything it can't read, a small language model running on the Pi, Qwen2.5 3B through llama.cpp, turns the sentence into the same commands the buttons use. Nothing it produces is trusted as-is: the output is forced into a fixed format, every item and date is checked against my real list, and the change is read back to me in plain words and waits for a yes. The model runs on the Pi itself, with no AI service behind it, and if it's down everything behaves exactly as it did before it was added.</p>
 <h3 class="rv">Fewer texts</h3>
 <p class="rv">The reminders added up to 96 texts in two weeks, and I stopped reading them. Now the evening is one conversation at 9pm: it asks what I got done, and each answer brings the next question. It also watches public job boards for entry-level electrical roles and sends the day's matches in one text. No feature gets to text me once per item.</p>
 <h3 class="rv">Staying up, again</h3>
