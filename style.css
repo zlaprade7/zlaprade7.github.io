@@ -378,3 +378,11 @@ footer a{color:var(--accent)}
 
   a{color:#000!important;text-decoration:none!important}
 }
+
+/* The MonCoeur demo frame. 16:10 suits a laptop, but on a phone it is 350x219:
+   landscape, so the dashboard inside takes its WALL layout and arrives clipped
+   and unreadable. Tall on narrow screens, so it picks its phone layout and
+   scrolls like the real thing. */
+@media (max-width:700px){
+  .demofig .frame{aspect-ratio:auto!important;height:min(80svh,680px)}
+}
