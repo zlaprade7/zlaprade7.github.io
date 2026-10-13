@@ -63,11 +63,6 @@
     <div class="shead rv"><h2 class="big">Plan</h2></div>
     <p class="slede rv">A photoresistor and a Schmitt trigger.</p>
     <p class="rv">The circuit switches a load when ambient light crosses a threshold. A photoresistor senses the light, and a Schmitt trigger makes the decision. A Schmitt trigger is a comparator with hysteresis, meaning two thresholds instead of one, made by feeding the output back to the non-inverting input. That's useful for a slow, noisy signal like fading daylight: the output can't rapidly flip back and forth, because the input has to travel a real distance to switch it back.</p>
-  </div>
-</section><section class="doc">
-  <div class="wrap">
-    <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
-    <p class="slede rv">Six versions of one circuit, and almost everything I learned was on the physical side.</p>
 <figure class="rv hys-fig" style="max-width:900px;margin-top:8px">
   <div class="frame hys">
     <svg viewBox="0 0 680 250" role="img"
@@ -96,6 +91,12 @@
   </div>
   <figcaption><b>FIG. 1</b> &mdash; Schmitt trigger hysteresis.</figcaption>
 </figure>
+  </div>
+</section><section class="doc">
+  <div class="wrap">
+    <div class="shead rv"><h2 class="big">Trials & Errors</h2></div>
+    <p class="slede rv">Six versions of one circuit, and almost everything I learned was on the physical side.</p>
+
 
 
     <p class="rv">Four breadboard revisions to get the thresholds and switching behavior right, then two board revisions. The schematic barely changed. What changed was everything around it: footprints that didn't match real parts, routing that passed the design rule check but would have been miserable to assemble, and slowly realizing that a board is a mechanical object as much as an electrical one.</p>

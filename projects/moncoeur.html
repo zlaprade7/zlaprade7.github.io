@@ -74,15 +74,17 @@
     <p class="slede rv">The first version worked, and I still stopped using it within a week.</p>
     <p class="rv">I built the first version over a spring break as a web page on the local network. It worked fine, but opening a browser to check my own room was annoying, and I couldn't read the layout from across the room. Nothing was broken. I had just built the wrong thing.</p>
 <p class="rv">The rebuild became an always-on display with one rule: I should be able to read everything from my bed. That rule shaped the whole interface, and it's also why I needed control over the display's brightness, which led me to DDC/CI.</p>
+<figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/moncoeur-wall.jpg" alt="The wall display running in the room at night"></div><figcaption><b>FIG. 1</b> &mdash; The wall display.</figcaption></figure>
 <div class="note rv"><p><b>My favorite part</b> is the summary panel. The calendar shows events, the sensors show readings, the weather shows weather, but one panel pulls it all together into a short summary of what I actually need to know. That's the part that makes it feel like a system instead of a wall of numbers.</p></div>
+<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/moncoeur-v2.jpg" alt="Version two of the dashboard: one screen with the briefing, the word of the day, water and the agenda"></div><figcaption><b>FIG. 2</b> &mdash; Version two, September 2026.</figcaption></figure>
   </div>
 </section><div class="giant"><div class="rv"><div class="n">96 texts</div><div class="c">In two weeks, before the evenings became one conversation</div></div></div><section class="doc">
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Version three</h2></div>
     <p class="slede rv">Everything added this year had to pass one test: does it give me one less thing to keep track of.</p>
-<figure class="rv" style="max-width:900px"><div class="frame" data-lens><img src="../images/moncoeur-v2.jpg" alt="Version two of the dashboard: one screen with the briefing, the word of the day, water and the agenda"></div><figcaption><b>FIG. 1</b> &mdash; Version two, September 2026.</figcaption></figure>
 <h3 class="rv">Pages</h3>
 <p class="rv">Version two was one screen. Version three is five pages on the phone and laptop. Today is what the wall shows: the next thing, the day's blocks, water and the briefing. Plan lays out homework and study time for the weeks ahead. Food plans the week's dinners and keeps the grocery list. Gym logs each set next to what I lifted last time. Shop shows sales on the specific things I'm waiting to buy. The wall still shows only Today, since it has no touchscreen.</p>
+<figure class="rv wide demofig" style="max-width:820px"><div class="frame" style="aspect-ratio:16/10"><iframe src="../demo/index.html" style="width:100%;height:100%;border:0" title="MonCoeur dashboard, live demo" loading="lazy"></iframe></div><figcaption><b>DEMO</b> — Version three, on synthetic data.</figcaption></figure>
 <h3 class="rv">It plans my homework</h3>
 <p class="rv">Due dates come in from the course site on their own. The Pi plans every assignment and study block 37 days ahead around my classes and calendar, aims to finish two days before anything is due, and learns how long each kind of assignment actually takes me from what I log. Exams get study time starting a week out. Once I start a block it stays put, and nothing gets pulled earlier during the day, so the plan doesn't shift under me while I'm working through it.</p>
 <h3 class="rv">It wakes me up</h3>
@@ -105,8 +107,8 @@
   <div class="wrap">
     <div class="shead rv"><h2 class="big">Result</h2></div>
     <p class="slede rv">Running since early 2025.</p>
-<figure class="rv wide demofig" style="max-width:820px"><div class="frame" style="aspect-ratio:16/10"><iframe src="../demo/index.html" style="width:100%;height:100%;border:0" title="MonCoeur dashboard, live demo" loading="lazy"></iframe></div><figcaption><b>DEMO</b> — Version three, on synthetic data.</figcaption></figure>
-<figure class="rv" style="max-width:900px"><div class="frame"><img src="../images/moncoeur-wall.jpg" alt="The wall display running in the room at night"></div><figcaption><b>FIG. 2</b> &mdash; The wall display.</figcaption></figure><div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>Raspberry Pi</span><span>SHT40</span><span>PIR motion</span><span>WiZ over UDP</span><span>DDC/CI via ddcutil</span><span>BLE presence scan</span><span>Google Calendar API</span><span>Open-Meteo</span><span>Flask</span><span>ntfy</span><span>systemd</span><span>openWakeWord</span><span>Vosk</span><span>Piper TTS</span><span>USB speaker</span><span>llama.cpp</span><span>Qwen2.5 3B</span><span>Memory cgroups</span><span>zram</span><span>Hardware watchdog</span></div></div>
+
+<div class="hw rv"><div class="k">Hardware and tools</div><div class="parts"><span>Raspberry Pi</span><span>SHT40</span><span>PIR motion</span><span>WiZ over UDP</span><span>DDC/CI via ddcutil</span><span>BLE presence scan</span><span>Google Calendar API</span><span>Open-Meteo</span><span>Flask</span><span>ntfy</span><span>systemd</span><span>openWakeWord</span><span>Vosk</span><span>Piper TTS</span><span>USB speaker</span><span>llama.cpp</span><span>Qwen2.5 3B</span><span>Memory cgroups</span><span>zram</span><span>Hardware watchdog</span></div></div>
   </div>
 </section><div class="next"><div class="wrap"><a href="bench-instrument.html"><div><div class="lbl">Next project</div><h3>Multitool Bench</h3></div><span class="ar">→</span></a></div></div>
 </main>
