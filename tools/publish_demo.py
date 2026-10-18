@@ -183,7 +183,14 @@ def strip_html(doc):
 FIXUPS = [
     # The job watch is private and lives at /jobs on the Pi. On GitHub Pages
     # that is a 404, and the pill and the drawer row both link to it.
-    ("</style>", "#jobsBtn,#jobsSec{display:none!important}</style>"),
+    # The Shop tab (the price watch) and the presentation toggle are private
+    # too: the tab is hidden and #/shop falls back to Today.
+    ("</style>", "#jobsBtn,#jobsSec,.nv[data-r=\"shop\"],#pgShop,#presentSec"
+                 "{display:none!important}</style>"),
+    (",['shop','pgShop','Shop']];", "];"),
+    # Presentation mode's privacy filter names the companies he is talking
+    # to. The generic words stay; the names do not go public.
+    ("interviews?|rovisys|raytheon|rtx|siemens|nc3|", "interviews?|"),
     # The demo is a page, not an installable app; this 404s on Pages.
     ('<link rel="manifest" href="/manifest.webmanifest">', ""),
     # Root-absolute icons 404 on Pages; the portfolio has its own.

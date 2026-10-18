@@ -85,18 +85,52 @@ button{font-family:var(--f);cursor:pointer}
 .pslide::before{content:'';position:absolute;inset:-8%;
   background-image:var(--blur,var(--img));background-size:cover;
   background-position:center;
-  filter:blur(38px) brightness(.42) saturate(.85);transform:scale(1.1)}
+  filter:blur(38px) brightness(.86) saturate(1.1);transform:scale(1.1)}
 #photoLayer.pre .pslide::before{filter:none}
  
-.pgrid{position:absolute;inset:0;display:flex;gap:10px;padding:10px;
+.pgrid{position:absolute;inset:0;display:flex;gap:0;padding:0;
   align-items:stretch;justify-content:center}
-.pimg{flex:1 1 0;min-width:0;background-repeat:no-repeat;background-position:center;
-  background-size:contain;border-radius:4px;
+ 
+.pcell{position:relative;flex:1 1 0;min-width:0;min-height:0;display:flex;
+  align-items:center;justify-content:center;padding:14px}
+ 
+.pslide::after{content:'';position:absolute;inset:-8%;z-index:0;
+  background-image:var(--blur2,none);background-size:cover;background-position:center;
+  filter:blur(38px) brightness(.86) saturate(1.1);transform:scale(1.1);
+  -webkit-mask-image:linear-gradient(to right,transparent 34%,#000 66%);
+  mask-image:linear-gradient(to right,transparent 34%,#000 66%)}
+#photoLayer.pre .pslide::after{filter:none}
+.pgrid{z-index:1}
+ 
+.pbg{position:absolute;left:50%;top:50%;z-index:0;pointer-events:none;
+  width:calc(var(--w,0px) * 1.6);height:calc(var(--h,0px) * 1.6);
+  transform:translate(-50%,-50%);object-fit:fill;
+  filter:blur(26px) brightness(.86) saturate(1.1);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent),
+                     linear-gradient(to bottom,transparent,#000 15%,#000 85%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent),
+             linear-gradient(to bottom,transparent,#000 15%,#000 85%,transparent);
+  mask-composite:intersect}
+#photoLayer.pre .pbg{filter:none}
+.pimg{position:relative;z-index:1;display:block;max-width:100%;max-height:100%;width:auto;height:auto;
+  -webkit-mask-image:linear-gradient(to right,transparent,rgba(0,0,0,.45) 5%,rgba(0,0,0,.85) 11%,#000 17%,#000 83%,rgba(0,0,0,.85) 89%,rgba(0,0,0,.45) 95%,transparent),
+                     linear-gradient(to bottom,transparent,rgba(0,0,0,.45) 5%,rgba(0,0,0,.85) 11%,#000 17%,#000 83%,rgba(0,0,0,.85) 89%,rgba(0,0,0,.45) 95%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent,rgba(0,0,0,.45) 5%,rgba(0,0,0,.85) 11%,#000 17%,#000 83%,rgba(0,0,0,.85) 89%,rgba(0,0,0,.45) 95%,transparent),
+             linear-gradient(to bottom,transparent,rgba(0,0,0,.45) 5%,rgba(0,0,0,.85) 11%,#000 17%,#000 83%,rgba(0,0,0,.85) 89%,rgba(0,0,0,.45) 95%,transparent);
+  mask-composite:intersect;
   transform:scale(1);transition:transform 30s linear}
 .pslide.show .pimg{transform:scale(1.03)}
  
-.pgrid.solo{gap:0;padding:0}
-.pgrid.solo .pimg{border-radius:0}
+.pgrid.solo .pcell{padding:0}
+
+html.present #jobsBtn,html.present #setBtn,html.present #jask,html.present #jaskSaid,
+html.present #jarvis-note,html.present .nv[data-r="shop"],html.present #pgShop,
+html.present #drawer,html.present #ovl{display:none!important}
+#presentSec{display:none}
+@media (pointer:coarse){ #presentSec:not([hidden]){display:block} }
+html.is-wall #presentSec{display:none!important}
 
 #photoLayer .pempty{position:absolute;inset:0;display:flex;align-items:center;
   justify-content:center;color:var(--tm);font-family:var(--fm);font-size:13px;
@@ -1072,6 +1106,19 @@ table.sets tr.on td.sn{color:var(--accent)}
 .ubar button{flex:0 0 auto}
  
 html.is-wall #plancard{display:none}
+ 
+html:not(.is-wall) #wallWork{display:none!important}
+#wallWork{padding-top:10px;padding-bottom:2px}
+#wallWork .wwhd{font-family:var(--fm);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+#wallWork .wwrow{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--br)}
+#wallWork .wwn{font-family:var(--f);font-size:19px;color:var(--tx);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#wallWork .wwm{font-family:var(--fm);font-size:15px;color:var(--t2);flex:0 0 auto}
+#wallWork .wwgap{font-family:var(--fm);font-size:14px;color:var(--t2);margin-top:7px}
+ 
+.sess.dl .st{font-variant-numeric:tabular-nums}
+.sess.dl.isdone .sn{color:var(--t2);text-decoration:none;opacity:.7}
+.dlmeta{font-family:var(--fm);font-size:13px;color:var(--t2);padding:10px 2px 2px;line-height:1.6}
+.dlmeta .dlgap{color:var(--accent)}
 html.is-wall #calcard{display:none}
 html.is-wall .nav,html.is-wall .tbar{display:none}
 html.is-wall #pgPlan,html.is-wall #pgFood,html.is-wall #pgGym{display:none}
@@ -1189,7 +1236,7 @@ html.is-wall #jarvis-output{
 
 .ico{width:1em;height:1em;display:inline-block;vertical-align:-0.125em}
 .st .ico.star,.imp .ico.star{width:.78em;height:.78em}
-#jobsBtn,#jobsSec{display:none!important}</style>
+#jobsBtn,#jobsSec,.nv[data-r="shop"],#pgShop,#presentSec{display:none!important}</style>
 </head>
 <body>
 <div class="demo-banner" id="demoBanner">MonCoeur · live demo · synthetic data</div>
@@ -1242,6 +1289,7 @@ html.is-wall #jarvis-output{
     </div>
     <div class="card" id="agenda">
       <div class="hd pad" style="display:flex;justify-content:space-between;padding-bottom:0"><span id="agTitle">Agenda</span><span class="mono" id="agCount"></span></div>
+      <div id="wallWork" class="pad" hidden></div>
       <div id="agList" class="pad" style="padding-top:4px"></div>
     </div>
   </div>
@@ -1652,6 +1700,12 @@ html.is-wall #jarvis-output{
       <button class="tbtn" id="setClose">Close</button>
     </span>
   </div>
+
+  <section class="sec" id="presentSec" hidden>
+    <div class="sech"><span>Presenting</span><span class="mono" id="presentState">off</span></div>
+    <div class="rowset"><button class="tbtn" id="presentBtn" type="button">Start presenting</button></div>
+    <div class="note">Your laptop hides jobs, shopping, settings, the conversation box and anything about interviews. The wall and this phone stay as they are, texts wait until you stop, and it turns itself off after 3 hours.</div>
+  </section>
 
   <section class="sec">
     <div class="sech"><span>Homework</span></div>
@@ -2128,6 +2182,15 @@ document.getElementById('pwSave').onclick=async()=>{
   }catch(e){hint.textContent='COULD NOT REACH THE PI'}
 };
 
+document.getElementById('presentBtn').onclick=async()=>{
+  const next=!LIVE.present;
+  try{
+    const r=await api('/api/present',{method:'POST',headers:{'Content-Type':'application/json'},
+                                      body:JSON.stringify({on:next})});
+    LIVE.present=!!r.on;LIVE.presentUntil=r.until||null;
+  }catch(e){}
+  paintPresentBtn();
+};
 document.getElementById('photoBtn').onclick=async()=>{
 
   const showing = photoSurface() ? PHOTOS.on : (LIVE.wallMode === 'photos');
@@ -2176,7 +2239,7 @@ function photoNext(){
   return PHOTOS.bag.pop();
 }
 
-function photoBackdrop(u){return PHOTOS.pre&&/^\/photo\//.test(u)?u+'/blur':u}
+function photoBackdrop(u){return PHOTOS.pre&&/^\/photo\//.test(u)?u+'/blur?v='+(PHOTOS.blurV||1):u}
 
 const PHOTO_RATIO = {};
 const PORTRAIT_MAX = 0.92;          
@@ -2231,16 +2294,25 @@ async function photoShow(tries){
   const grid=next.querySelector('.pgrid');
 
   next.style.setProperty('--blur','url("'+photoBackdrop(set[0])+'")');
+  if(set[1])next.style.setProperty('--blur2','url("'+photoBackdrop(set[1])+'")');
+  else next.style.removeProperty('--blur2');
   layer.classList.toggle('pre',!!PHOTOS.pre);
 
   grid.classList.toggle('solo',set.length===1&&!isPortrait(set[0]));
   grid.innerHTML='';
   set.forEach(u=>{
-    const d=document.createElement('div');
-    d.className='pimg';
-    d.style.backgroundImage='url("'+u+'")';
-    grid.appendChild(d);
+    const c=document.createElement('div');c.className='pcell';
+    const bg=document.createElement('img');
+    bg.className='pbg';bg.alt='';bg.src=photoBackdrop(u);
+    const im=document.createElement('img');
+    im.className='pimg';im.alt='';im.src=u;   
+    c.appendChild(bg);c.appendChild(im);grid.appendChild(c);
   });
+
+  requestAnimationFrame(()=>grid.querySelectorAll('.pcell').forEach(c=>{
+    const i=c.querySelector('.pimg');
+    c.style.setProperty('--w',i.offsetWidth+'px');c.style.setProperty('--h',i.offsetHeight+'px');
+  }));
 
   next.classList.remove('show');void next.offsetWidth;
   next.classList.add('show');
@@ -2267,7 +2339,7 @@ async function loadPhotos(){
   if(LIVE.on){
     try{
       const r=await api('/api/photos');
-      PHOTOS.pre=!!r.pillow;
+      PHOTOS.pre=!!r.pillow;PHOTOS.blurV=r.blurV||1;
       const next=(r.photos||[]).map(p=>'/photo/'+p.id);
 
       if(next.join('\n')!==PHOTOS.list.join('\n')){
@@ -2657,7 +2729,7 @@ function jarvisRender(){
   if(LIVE.on&&LIVE.brief&&LIVE.brief.lines&&LIVE.brief.lines.length){
     const bullets=document.getElementById('jarvis-bullets');
     const out=document.getElementById('jarvis-output');
-    const html=LIVE.brief.lines.map((l,i)=>`<div class="jl${i===0?' lead':''}${
+    const html=LIVE.brief.lines.filter(l=>!(presentOn()&&isPrivate(l))).map((l,i)=>`<div class="jl${i===0?' lead':''}${
         /\d+\s*(out|outside|°)/.test(l)?' wx':''}">${esc(l)}</div>`).join('');
     const imp=[...ITEMS].filter(i=>i.imp&&i.when>now).sort((a,b)=>a.when-b.when).slice(0,2);
     const bhtml=imp.map(i=>
@@ -3000,7 +3072,7 @@ function dueLabel(iso){
 }
 
 const ROUTES=[['','pgHome','Today'],['plan','pgPlan','Plan'],
-              ['food','pgFood','Food'],['gym','pgGym','Gym'],['shop','pgShop','Shop']];
+              ['food','pgFood','Food'],['gym','pgGym','Gym']];
 function wallPinned(){ return document.documentElement.classList.contains('is-wall') }
 function routeNow(){
   let h='';
@@ -3121,10 +3193,123 @@ function hm(m){const h=Math.floor(m/60),mi=m%60,ap=h>=12?'pm':'am',h12=h%12||12;
 const ASKS={item:[['Done with it','done'],['Worked on it','some'],["Didn't get to it",'none']],
             hair:[['Washed','washed'],['Skipped','skipped']]};
 
+function dueWord(iso){const w=dueLabel(iso); return w?(w==='overdue'?'overdue':'due '+w):''}
+function gapsLine(day){
+  const nowm=nowMin();
+  return (day.gaps||[]).filter(g=>g.end>nowm)
+    .map(g=>(g.start<=nowm+1?'now':hm(g.start))+'\u2013'+hm(g.end)).join(' \u00b7 ')
+}
+function fixedLine(day){
+  return (day.fixed||[]).map(f=>f.name+' '+hm(f.start)).join(' \u00b7 ')
+}
+function renderDayList(el,day){
+  el.textContent='';
+  const rows=(day.list||[]);
+  const todo=rows.filter(r=>r.state==='todo'), done=rows.filter(r=>r.state==='done');
+  if(!todo.length&&!done.length){
+    const d=document.createElement('div'); d.className='pempty';
+    d.textContent=day.override&&day.override.off?'Today is off. The work went to other days.'
+      :(PLAN&&PLAN.counted)?'Nothing left today.':'Nothing due yet. Add something under Homework.';
+    el.appendChild(d);
+  }
+  todo.forEach(r=>{
+    const inner=document.createElement('div');
+    inner.className='sess dl'+(r.type==='study'?' study':'');
+    const st=document.createElement('span'); st.className='st'; st.textContent='~'+fmtMins(r.minutes);
+    const sn=document.createElement('span'); sn.className='sn'; sn.textContent=r.name||'';
+    const sm=document.createElement('span'); sm.className='sm';
+    sm.textContent=[r.late?'late':'',dueWord(r.due)].filter(Boolean).join(' \u00b7 ');
+    inner.appendChild(st); inner.appendChild(sn); inner.appendChild(sm);
+    inner.setAttribute('aria-label',(r.name||'')+', about '+fmtMins(r.minutes)+' today, '+dueWord(r.due)+
+                       '. Swipe when you are done with it for today.');
+    if(r.id!=null){ inner.classList.add('hasdone'); inner.appendChild(doneBtn(r.id,r.name)); }
+    el.appendChild(mkRow('done today',inner,()=>tickToday(r,day)));
+  });
+  done.forEach(r=>{
+    const d=document.createElement('div'); d.className='sess dl isdone';
+    d.innerHTML='<span class="st">\u2713</span><span class="sn">'+esc(r.name||'')+'</span>'+
+                '<span class="sm">'+esc(fmtMins(r.doneMinutes))+' done</span>';
+    const w=document.createElement('div'); w.className='srow'; w.appendChild(d); el.appendChild(w);
+  });
+  const fx=fixedLine(day), gp=gapsLine(day);
+  if(fx||gp){
+    const m=document.createElement('div'); m.className='dlmeta';
+    if(fx){ const a=document.createElement('div'); a.textContent=fx; m.appendChild(a); }
+    if(gp){ const b=document.createElement('div'); b.className='dlgap'; b.textContent='Free '+gp; m.appendChild(b); }
+    el.appendChild(m);
+  }
+}
+
+async function tickToday(r,day){
+  const blks=(day.blocks||[]).filter(b=>b.kind==='item'&&b.id===r.id&&['next','now','ask'].includes(b.state));
+  r.state='done'; r.doneMinutes=(r.doneMinutes||0)+r.minutes; const was=r.minutes; r.minutes=0;
+  renderPlan();
+  const send=(method)=>LIVE.on?Promise.all(blks.map(b=>api('/api/plan/done',{method:method,
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:b.id,date:day.date,startMin:b.startMin,minutes:b.minutes})}))).then(loadPlan,()=>{})
+    :Promise.resolve();
+  send('POST');
+  showUndo('Done for today \u00b7 '+(r.name||''),()=>{ r.state='todo'; r.minutes=was;
+    r.doneMinutes-=was; renderPlan(); send('DELETE'); });
+}
+ 
+function renderWallWork(day){
+  const w=document.getElementById('wallWork'); if(!w)return;
+  const todo=((day&&day.list)||[]).filter(r=>r.state==='todo');
+  w.textContent='';
+  if(!day||!Array.isArray(day.list)){ w.hidden=true; return; }
+  const h=document.createElement('div'); h.className='wwhd';
+  h.textContent=todo.length?'Work today':'Nothing left to do today';
+  w.appendChild(h);
+  todo.slice(0,4).forEach(r=>{
+    const row=document.createElement('div'); row.className='wwrow';
+    row.innerHTML='<span class="wwn">'+esc(r.name||'')+'</span><span class="wwm">~'+esc(fmtMins(r.minutes))+
+                  (r.late?' \u00b7 late':'')+'</span>';
+    w.appendChild(row);
+  });
+  const gp=gapsLine(day);
+  if(gp&&todo.length){ const g=document.createElement('div'); g.className='wwgap'; g.textContent='Free '+gp; w.appendChild(g); }
+  w.hidden=false;
+}
+
+function renderNowList(day){
+  const L=document.getElementById('nowLead'),T=document.getElementById('nowTitle'),
+        S=document.getElementById('nowSub'),A=document.getElementById('nowActs'),
+        N=document.getElementById('nowThen'),card=document.getElementById('nowcard');
+  const nowm=nowMin(), evs=todayEvents();
+  const evNow=evs.find(e=>e.start<=nowm&&nowm<e.end);
+  const top=(day.list||[]).find(r=>r.state==='todo');
+  const gap=(day.gaps||[]).find(g=>g.start<=nowm&&nowm<g.end);
+  const nextEv=evs.find(e=>e.start>nowm);
+  let lead='',title='',sub='';
+  if(evNow){ lead='Now'; title=evNow.name; sub=evNow.endKnown?'until '+hm(evNow.end):'started '+hm(evNow.start); }
+  else if(gap&&top){ lead='Free until '+hm(gap.end); title=top.name;
+    sub='~'+fmtMins(top.minutes)+' today'+(top.due?' \u00b7 '+dueWord(top.due):''); }
+  else if(nextEv){ lead='Next'; title=nextEv.name; sub=hm(nextEv.start)+', in '+fmtMins(nextEv.start-nowm); }
+  else if(top){ lead='Today'; title=top.name; sub='~'+fmtMins(top.minutes)+' left'; }
+  else{ lead='Today'; title='Nothing else today.'; }
+  L.textContent=lead; T.textContent=title; S.textContent=sub; S.hidden=!sub;
+  const bw=document.getElementById('nowBarWrap'), bi=document.getElementById('nowBar');
+  if(bw&&bi){ bw.hidden=!evNow; if(evNow)bi.style.width=Math.max(2,Math.min(100,Math.round(100*(nowm-evNow.start)/Math.max(1,evNow.end-evNow.start))))+'%'; }
+  A.textContent=''; A.hidden=true;
+  const after=(evNow||!gap)?null:nextEv;
+  N.textContent=after?'Then '+after.name+' at '+hm(after.start):''; N.hidden=!N.textContent;
+  card.classList.remove('asking');
+}
+
 function renderPlan(){
   renderPlanWeek();
   const el=document.getElementById('planList'); if(!el)return;
   const day=PLAN&&PLAN.day;
+  renderWallWork(day);
+  if(day&&Array.isArray(day.list)&&Array.isArray(day.blocks)){
+    renderDayList(el,day);
+    renderDayCtl(day,day.blocks.filter(b=>['next','now'].includes(b.state)));
+    DAYSIG=day.list.map(r=>r.id+':'+r.state).join('|');
+    renderNow();
+    if(render._today!==planShowsToday())render();
+    return;
+  }
   if(!day||!Array.isArray(day.blocks)){ renderPlanSessions(el); return; }
   const nowm=nowMin();
   const live=day.blocks.map(b=>Object.assign({},b,{state:dayState(b,nowm)}))
@@ -3244,6 +3429,7 @@ function renderNow(){
         S=document.getElementById('nowSub'),A=document.getElementById('nowActs'),
         N=document.getElementById('nowThen');
   const nowm=nowMin(), day=PLAN&&PLAN.day;
+  if(day&&Array.isArray(day.list)){ renderNowList(day); return; }
   const {blocks,evs,ask,evNow,bNow}=nowPick(nowm);
   const ahead=[...evs.filter(e=>e.start>nowm).map(e=>({name:e.name,at:e.start})),
                ...blocks.filter(b=>b.state==='next').map(b=>({name:b.name,at:b.startMin}))]
@@ -5144,6 +5330,7 @@ function demoGym(split){
 
 async function loadPlan(){
   try{PLAN=await api('/api/plan?days=14')}catch(e){PLAN=demoPlan()}
+  if(presentOn())PLAN=scrubPlan(PLAN);
   renderPlan(); renderPlanWeek(); renderAhead();
 }
 function renderAhead(){
@@ -5154,6 +5341,7 @@ function renderAhead(){
 }
 async function loadHw(){
   try{HW=await api('/api/todos')}catch(e){HW=demoHw()}
+  if(presentOn()&&Array.isArray(HW))HW=HW.filter(t=>!isPrivate(t));
   renderHw();
 }
 
@@ -5199,7 +5387,19 @@ function demoDay(sess){
   const ended=b.filter(x=>(x.kind==='item'||x.kind==='hair')&&x.startMin+x.minutes<=nowm);
   ended.slice(0,-1).forEach(x=>{x.state=x.kind==='hair'?'washed':'some'});
   b.forEach(x=>{x.key=x.kind==='item'?'i'+x.id+'@'+x.startMin:x.kind});
-  return {date:ymd(new Date()),blocks:b,override:{},note:''};
+
+  const by={};
+  b.filter(x=>x.kind==='item').forEach(x=>{
+    const r=by[x.id]=by[x.id]||{id:x.id,name:x.name,type:x.type,due:null,minutes:0,doneMinutes:0,late:false};
+    const st=dayState(x,nowm);
+    if(st==='some'||st==='done')r.doneMinutes+=x.minutes; else r.minutes+=x.minutes;
+  });
+  const list=Object.values(by).map(r=>Object.assign(r,{state:r.minutes?'todo':'done'}));
+  const evs=todayEvents(), gaps=[]; let cur=Math.max(nowm,8*60);
+  evs.forEach(e=>{ if(e.start-15-cur>=30)gaps.push({start:cur,end:e.start-15}); cur=Math.max(cur,e.end+15); });
+  if(22*60-cur>=30)gaps.push({start:cur,end:22*60});
+  return {date:ymd(new Date()),blocks:b,override:{},note:'',list:list,gaps:gaps,
+          fixed:evs.filter(e=>e.end>nowm).map(e=>({name:e.name,start:e.start,end:e.end}))};
 }
 
 function initPlanner(){
@@ -5301,6 +5501,8 @@ async function pull(){
                                         api('/api/wall').catch(()=>null)]);
     LIVE.on=true;LIVE.everOn=true;LIVE.miss=0;
     LIVE.brief=brief;LIVE.fresh=brief.fresh;LIVE.agenda=ag.days;
+    
+    if(wall){LIVE.present=!!wall.present;LIVE.presentUntil=wall.presentUntil||null}
 
     loadPlan(); loadHw(); loadLarder(); loadCook();
     paintJobsCount(brief);
@@ -5379,6 +5581,42 @@ function rangeEnd(when,rng){
   const e=new Date(when); e.setHours(H,+t[2],0,0);
   return e>when?e:null;
 }
+
+const PRIV=/\b(interviews?|recruit\w*|jobs?|thank-you note)\b|^\s*prep:/i;
+function presentOn(){
+  return !!LIVE.present&&!document.documentElement.classList.contains('is-wall')
+    &&!!(window.matchMedia&&matchMedia('(pointer:fine)').matches);
+}
+function isPrivate(x){
+  if(!x)return false;
+  if(typeof x==='string')return PRIV.test(x);
+  if(String(x.course||x.s||'').trim().toLowerCase()==='career')return true;
+  return PRIV.test([x.name,x.n,x.summary,x.sub,x.s,x.title].filter(Boolean).join(' '));
+}
+function scrubPlan(P){
+  if(!P||typeof P!=='object')return P;
+  const q=JSON.parse(JSON.stringify(P));
+  if(q.days)Object.keys(q.days).forEach(k=>{q.days[k]=(q.days[k]||[]).filter(r=>!isPrivate(r))});
+  if(q.day)['list','fixed','blocks','gaps'].forEach(f=>{if(Array.isArray(q.day[f]))q.day[f]=q.day[f].filter(r=>!isPrivate(r))});
+  ['atRisk','overdue','beyond','ahead'].forEach(f=>{if(Array.isArray(q[f]))q[f]=q[f].filter(r=>!isPrivate(r))});
+  return q;
+}
+function applyPresent(){
+  const on=presentOn();
+  document.documentElement.classList.toggle('present',on);
+  if(on&&routeNow()==='shop')location.hash='#/';
+  paintPresentBtn();
+}
+function paintPresentBtn(){
+  const sec=document.getElementById('presentSec'),b=document.getElementById('presentBtn'),
+        st=document.getElementById('presentState');
+  if(!sec||!b||!st)return;
+  sec.hidden=!LIVE.on;
+  b.textContent=LIVE.present?'Stop presenting':'Start presenting';
+  let until='';
+  try{if(LIVE.presentUntil)until=new Date(LIVE.presentUntil).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}catch(_){}
+  st.textContent=LIVE.present?('on'+(until?' until '+until:'')):'off';
+}
 function serverItems(days){
   const out=[];
   (days||[]).forEach(d=>(d.items||[]).forEach(i=>{
@@ -5400,7 +5638,8 @@ function applyLive(){
   if(bn)bn.style.display=LIVE.on?'none':'';
   
   document.title=LIVE.on?'MonCoeur':'MonCoeur, live demo (synthetic data)';
-  if(LIVE.on&&LIVE.agenda){ITEMS=serverItems(LIVE.agenda)}
+  if(LIVE.on&&LIVE.agenda){ITEMS=serverItems(LIVE.agenda).filter(i=>!(presentOn()&&isPrivate(i)))}
+  applyPresent();
 
   syncLights();
   syncRoomTemp();
